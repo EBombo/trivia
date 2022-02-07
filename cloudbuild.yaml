@@ -1,0 +1,76 @@
+steps:
+  # Pull image
+  - name: "gcr.io/cloud-builders/docker"
+    entrypoint: "bash"
+    args: ["-c", "docker pull gcr.io/${PROJECT_ID}/${PROJECT_ID}-red:latest || exit 0"]
+
+  # Build the container image
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "-t",
+        "gcr.io/${PROJECT_ID}/${PROJECT_ID}-red",
+        "--cache-from",
+        "gcr.io/${PROJECT_ID}/${PROJECT_ID}-red:latest",
+        "--build-arg=NEXT_PUBLIC_CONFIG=$_CONFIG",
+        "--build-arg=NEXT_PUBLIC_DOMAIN=$_DOMAIN",
+        "--build-arg=NEXT_PUBLIC_PORT=$_PORT",
+        ".",
+      ]
+
+  # Push the container image to Container Registry
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/${PROJECT_ID}/${PROJECT_ID}-red"]
+
+  # Deploy container image to Cloud Run
+  - name: "gcr.io/cloud-builders/gcloud"
+    args:
+      [
+        "run",
+        "deploy",
+        "${PROJECT_ID}-red",
+        "--image",
+        "gcr.io/${PROJECT_ID}/${PROJECT_ID}-red",
+        "--region",
+        "us-central1",
+        "--platform",
+        "managed",
+        "--allow-unauthenticated",
+      ]
+
+  # Force the new revision to serve 100% of traffic.
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: "gcloud"
+    args:
+      [
+        "run",
+        "services",
+        "update-traffic",
+        "${PROJECT_ID}-red",
+        "--to-latest",
+        "--platform",
+        "managed",
+        "--region",
+        "us-central1",
+      ]
+
+    # TODO: Create access to the Google Cloud Storage object to xxxx-compute@developer.gserviceaccount.com.
+    #- name: "gcr.io/cloud-builders/gsutil"
+    #args: ["-m" , "cp" , "-r" , "-n" ,"gs://${PROJECT_ID}-dev.appspot.com/*", "gs://${PROJECT_ID}.appspot.com"]
+
+images:
+  - "gcr.io/${PROJECT_ID}/${PROJECT_ID}-red"
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  # Reference:
+  # Highcpu machine with 8 CPUs.
+  # https://cloud.google.com/build/docs/api/reference/rest/v1/projects.builds#machinetype
+  # https://cloud.google.com/build/pricing
+  machineType: "E2_HIGHCPU_8"
+
+  # TODO: Solicitar confirmacion de build y deploy de una nueva version. [PROD]
+  # TODO: Enviar correo donde se informa la actualizacion. [PROD]
+  # TODO: Notificar que el envio fallo.[mejorar con github]
+  # TODO: Add tests
