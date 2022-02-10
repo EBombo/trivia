@@ -2,7 +2,7 @@ steps:
   # Pull image
   - name: "gcr.io/cloud-builders/docker"
     entrypoint: "bash"
-    args: ["-c", "docker pull gcr.io/${PROJECT_ID}/${PROJECT_ID}-red:latest || exit 0"]
+    args: ["-c", "docker pull gcr.io/${PROJECT_ID}/${PROJECT_ID}-gold:latest || exit 0"]
 
   # Build the container image
   - name: "gcr.io/cloud-builders/docker"
@@ -10,9 +10,9 @@ steps:
       [
         "build",
         "-t",
-        "gcr.io/${PROJECT_ID}/${PROJECT_ID}-red",
+        "gcr.io/${PROJECT_ID}/${PROJECT_ID}-gold",
         "--cache-from",
-        "gcr.io/${PROJECT_ID}/${PROJECT_ID}-red:latest",
+        "gcr.io/${PROJECT_ID}/${PROJECT_ID}-gold:latest",
         "--build-arg=NEXT_PUBLIC_CONFIG=$_CONFIG",
         "--build-arg=NEXT_PUBLIC_DOMAIN=$_DOMAIN",
         "--build-arg=NEXT_PUBLIC_PORT=$_PORT",
@@ -21,7 +21,7 @@ steps:
 
   # Push the container image to Container Registry
   - name: "gcr.io/cloud-builders/docker"
-    args: ["push", "gcr.io/${PROJECT_ID}/${PROJECT_ID}-red"]
+    args: ["push", "gcr.io/${PROJECT_ID}/${PROJECT_ID}-gold"]
 
   # Deploy container image to Cloud Run
   - name: "gcr.io/cloud-builders/gcloud"
@@ -29,9 +29,9 @@ steps:
       [
         "run",
         "deploy",
-        "${PROJECT_ID}-red",
+        "${PROJECT_ID}-gold",
         "--image",
-        "gcr.io/${PROJECT_ID}/${PROJECT_ID}-red",
+        "gcr.io/${PROJECT_ID}/${PROJECT_ID}-gold",
         "--region",
         "us-central1",
         "--platform",
@@ -47,7 +47,7 @@ steps:
         "run",
         "services",
         "update-traffic",
-        "${PROJECT_ID}-red",
+        "${PROJECT_ID}-gold",
         "--to-latest",
         "--platform",
         "managed",
@@ -60,7 +60,7 @@ steps:
     args: ["-m" , "cp" , "-r" , "-n" ,"gs://trivia-dev-321021.appspot.com/*", "gs://${PROJECT_ID}.appspot.com"]
 
 images:
-  - "gcr.io/${PROJECT_ID}/${PROJECT_ID}-red"
+  - "gcr.io/${PROJECT_ID}/${PROJECT_ID}-gold"
 
 options:
   logging: CLOUD_LOGGING_ONLY
