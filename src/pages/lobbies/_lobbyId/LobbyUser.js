@@ -13,6 +13,7 @@ import { spinLoaderMin } from "../../../components/common/loader";
 import { mediaQuery, Tablet } from "../../../constants";
 import { Image } from "../../../components/common/Image";
 import debounce from "lodash/debounce";
+import moment from "moment";
 
 const userListSizeRatio = 50;
 const currentTime = moment().format("x");
