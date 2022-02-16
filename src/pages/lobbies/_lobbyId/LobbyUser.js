@@ -15,6 +15,7 @@ import { Image } from "../../../components/common/Image";
 import debounce from "lodash/debounce";
 
 const userListSizeRatio = 50;
+const currentTime = moment().format("x");
 
 export const LobbyUser = (props) => {
   const router = useRouter();
@@ -87,10 +88,11 @@ export const LobbyUser = (props) => {
       last_changed: firebase.database.ServerValue.TIMESTAMP,
     };
 
+    // TODO change field last_changed to a proper name (changedAt)
     const isOnlineForDatabase = {
       ...mappedUser,
       state: "online",
-      last_changed: firebase.database.ServerValue.TIMESTAMP,
+      last_changed: currentTime,
     };
 
     // Create reference.
