@@ -85,7 +85,7 @@ export const LobbyUser = (props) => {
     const isOfflineForDatabase = {
       ...mappedUser,
       state: "offline",
-      last_changed: firebase.database.ServerValue.TIMESTAMP,
+      last_changed: currentTime,
     };
 
     // TODO change field last_changed to a proper name (changedAt)
@@ -127,7 +127,7 @@ export const LobbyUser = (props) => {
       email: authUser?.email ?? null,
       avatar: authUser?.avatar ?? null,
       nickname: authUser?.nickname ?? null,
-      last_changed: firebase.database.ServerValue.TIMESTAMP,
+      last_changed: currentTime,
     };
 
     return () => {
