@@ -83,7 +83,7 @@ export const Chat = (props) => {
   return (
     <Container>
       <div className="title" key={`key-title1-${lobbyId}`}>
-        Chat de Ruleta
+        Chat de Trivia
       </div>
       <Content>
         <div className="chat-body" ref={chatRef}>

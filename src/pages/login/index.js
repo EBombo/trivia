@@ -79,7 +79,7 @@ const Login = (props) => {
 
       // AuthUser is admin.
       if (authUser.lobby?.game?.usersIds?.includes(authUser.id))
-        return router.push(`/roulette/lobbies/${authUser.lobby.id}`);
+        return router.push(`/trivia/lobbies/${authUser.lobby.id}`);
 
       // Replace "newUser" if user has already logged in before with the same email.
       const user_ = authUser?.email ? await fetchUserByEmail(authUser.email, authUser.lobby.id) : null;
@@ -88,11 +88,11 @@ const Login = (props) => {
       if (user_) {
         await setAuthUser(user_);
         setAuthUserLs(user_);
-        return router.push(`/roulette/lobbies/${authUser.lobby.id}`);
+        return router.push(`/trivia/lobbies/${authUser.lobby.id}`);
       }
 
       // Redirect to lobby.
-      if (!lobby?.isPlaying) return router.push(`/roulette/lobbies/${authUser.lobby.id}`);
+      if (!lobby?.isPlaying) return router.push(`/trivia/lobbies/${authUser.lobby.id}`);
 
       const userId = authUser?.id ?? firestore.collection("users").doc().id;
 
@@ -128,7 +128,7 @@ const Login = (props) => {
       setAuthUserLs(newUser);
 
       // Redirect to lobby.
-      await router.push(`/roulette/lobbies/${authUser.lobby.id}`);
+      await router.push(`/trivia/lobbies/${authUser.lobby.id}`);
     };
 
     initialize();

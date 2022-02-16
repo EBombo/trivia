@@ -35,7 +35,7 @@ const MyApp = ({ Component, pageProps }) => {
     <ThemeProvider theme={get(authUserLS, "theme") === "lightTheme" ? lightTheme : darkTheme}>
       <GlobalStyle />
       <Head>
-        <title>Ruleta</title>
+        <title>Trivia</title>
         <meta charSet="UTF-8" />
         <meta name="google" value="notranslate" />
         <meta
