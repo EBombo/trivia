@@ -93,8 +93,9 @@ export const Lobby = (props) => {
   useEffect(() => {
     if (!lobby) return;
 
+    const gameId = (lobby.gameId || lobby.game?.id);
     const fetchGame = () =>
-      firestore.doc(`games/${lobby.gameId}`).onSnapshot((gameRef) => {
+      firestore.doc(`games/${gameId}`).onSnapshot((gameRef) => {
         const _game = gameRef.data();
         setGame(_game);
         setLoading(false);

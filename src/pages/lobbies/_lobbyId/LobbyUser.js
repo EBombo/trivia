@@ -103,7 +103,6 @@ export const LobbyUser = (props) => {
     // https://firebase.google.com/docs/firestore/solutions/presence
     const createPresence = () =>
       database.ref(".info/connected").on("value", async (snapshot) => {
-        if (!snapshot?.val) return;
         if (!snapshot.val()) return;
 
         // Reference: https://firebase.google.com/docs/reference/node/firebase.database.OnDisconnect
