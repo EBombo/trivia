@@ -55,7 +55,7 @@ export const LobbyHeader = (props) => {
       };
 
       // Add users to lobby.
-      const promiseLobbyRoulette = firestore.doc(`lobbies/${lobbyId}`).update(newLobby);
+      const promiseLobbyTrivia = firestore.doc(`lobbies/${lobbyId}`).update(newLobby);
       const promiseLobbyGames = firestoreBomboGames.doc(`lobbies/${lobbyId}`).update(newLobby);
 
       if (!gameStarted) return;
@@ -85,7 +85,7 @@ export const LobbyHeader = (props) => {
       // The new users saved as members.
       const promiseMembers = users ? saveMembers(props.lobby, users) : null;
 
-      await Promise.all([promiseLobbyRoulette, promiseLobbyGames, promiseMembers]);
+      await Promise.all([promiseLobbyTrivia, promiseLobbyGames, promiseMembers]);
     } catch (error) {
       if (!gameStarted) setIsLoadingStart(false);
       props.showNotification("ERROR", "Lobby not exist");
