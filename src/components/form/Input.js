@@ -104,6 +104,12 @@ const StyledInput = styled.input`
   background: ${(props) => props.theme.basic.whiteLight};
   color: ${(props) => props.theme.basic.blackDarken};
 
+  ${(props) => props.className.includes('dark') ? `
+    background: ${props.theme.basic.secondary};
+    color: ${props.theme.basic.whiteLight};
+    border: none !important;
+  ` : null};
+
   &:focus {
     outline: none;
     border: none;
