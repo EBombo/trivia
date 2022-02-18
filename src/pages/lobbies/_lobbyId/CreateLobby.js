@@ -108,7 +108,6 @@ export const CreateLobby = (props) => {
         isClosed: false,
         deleteDuplicated: false,
         notDoublePrice: true,
-        amountWinners: 1,
         settings: {
           ...settings,
           audio: settings.audio ?? { id: audios[0]?.id },
@@ -170,7 +169,10 @@ export const CreateLobby = (props) => {
         createLobby={createLobby}
         isLoadingSave={isLoadingSave}
         onAudioChange={(audioId) => setSettings({ ...settings, audio: { id: audioId } })}
-        onLanguageChange={(language) => setSettings({ ...settings, language: language })}
+        onLanguageChange={(language) => setSettings({ ...settings, language })}
+        onUserIdentity={(userIdentity) => setSettings({ ...settings, userIdentity })}
+
+        onAwards={(awards) => setSettings({ ...settings, awards })}
       />
     </div>
   );

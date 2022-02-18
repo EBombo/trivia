@@ -1,4 +1,4 @@
-import React, { useState } from "reactn";
+import React, { useState, useEffect } from "reactn";
 import styled from "styled-components";
 import {Collapse} from "antd";
 import {ButtonAnt, Select, Switch, Input} from "./form";
@@ -20,6 +20,16 @@ export const GameMenu = (props) => {
   const [showAwards, setShowAwards] = useState(true);
 
   const [userIdentity, setUserIdentity] = useState(false);
+
+  useEffect(() => {
+    if (!showAwards) return props.onAwards?.([]);
+
+    props.onAwards?.(awards);
+  }, [showAwards, awards]);
+
+  useEffect(() => {
+    props.onUserIdentity?.(userIdentity);
+  }, [userIdentity]);
 
   return (
     <GameCss className="w-full m-auto max-w-[500px] p-4 text-white md: p-[20px]">
@@ -109,7 +119,7 @@ export const GameMenu = (props) => {
               {showAwards && (
                 <div id={awards.length} className="grid items-center mx-auto my-[2px] px-[10px] py-[5px] text-[13px] leading-[16px] bg-primaryDarken rounded-[2px] text-whiteLight">
                   {defaultTo(awards, []).map((award, index) => (
-                    <div className="grid grid-cols-[auto_min-content] my-1" key={`award-${index}`}>
+                    <div className="relative my-1" key={`award-${index}`}>
                       <Input
                         type="text"
                         name={`award-${index}`}
@@ -124,7 +134,7 @@ export const GameMenu = (props) => {
                         key={`award-${index}-${award.order}`}
                       />
                       <button
-                        className="float-right px-2"
+                        className="absolute top-1/2 right-0 translate-y-[-50%] px-2"
                         onClick={() => {
                           let newAwards = awards.filter((award, idx) => idx !== index);
 
@@ -132,7 +142,7 @@ export const GameMenu = (props) => {
                         }}
                       >
                         <Image
-                          src={`${config.storageUrl}/resources/close.svg`}
+                          src={`${config.storageUrl}/resources/close_white.svg`}
                           height="15px"
                           width="15px"
                           cursor="pointer"
