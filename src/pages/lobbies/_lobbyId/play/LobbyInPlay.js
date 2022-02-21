@@ -10,6 +10,7 @@ import { darkTheme } from "../../../../theme";
 import defaultTo from "lodash/defaultTo";
 import isEmpty from "lodash/isEmpty";
 import { Image } from "../../../../components/common/Image";
+import { LobbyHeader } from "./LobbyHeader"
 
 export const LobbyInPlay = (props) => {
   const router = useRouter();
@@ -30,6 +31,7 @@ export const LobbyInPlay = (props) => {
 
   return (
     <div className="bg-secondary w-screen bg-center bg-contain bg-lobby-pattern overflow-auto">
+      <LobbyHeader/>
     </div>
   );
 };
