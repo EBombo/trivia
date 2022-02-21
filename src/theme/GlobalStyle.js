@@ -18,4 +18,10 @@ export const GlobalStyle = createGlobalStyle`
   ::-webkit-scrollbar-thumb:hover {
     background-color: ${(props) => props.theme.basic.action};
   }
+
+  /*-------------- SWITCH ANT----------------*/
+  
+  .ant-switch-checked {
+    background-color: ${(props) => props.theme.basic.success} !important;
+  }
 `;

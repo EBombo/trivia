@@ -22,6 +22,8 @@ const SwitchContainer = styled.div`
 
 const StyledSwitch = styled(AntSwitch)`
   margin-bottom: 1rem !important;
+  background-color: #00000040;
+
   ${(props) =>
     props.hasError &&
     `
