@@ -1,5 +1,6 @@
-import React, { useGlobal, useState } from "reactn";
+import React, { useGlobal, useState, useEffect, useMemo } from "reactn";
 import { useRouter } from "next/router";
+import { Tablet, Desktop } from "../../../../constants";
 
 export const Timer = (props) => {
   const router = useRouter();
@@ -8,45 +9,85 @@ export const Timer = (props) => {
 
   const [authUser] = useGlobal("user");
 
-  const secondsLeft = props.secondsLeft ?? 20;
-  const secondsLeftPercentage = Math.round(((secondsLeft) / 30) * 100);
-  const totalSeconds = (props.totalSeconds ?? 30) * 2 * Math.PI;
+  const [totalSeconds, setTotalSeconds] = useState(props.totalSeconds ?? 40);
+
+  // const totalSecondsInRad = useMemo(
+  //   () => ((totalSeconds ?? 40) * 2 * Math.PI),
+  //   [totalSeconds]);
+
+  const [secondsLeft, setSecondsLeft] = useState(props.secondsLeft ?? 20);
+
+  const [secondsLeftPercentage, setSecondsLeftPercentage] = useState(0);
+  
+  useEffect(() => {
+    setSecondsLeftPercentage(
+      Math.round(((secondsLeft) / totalSeconds) * 100)
+    );
+  }, [secondsLeft]);
 
   return (
     <div>
-      <div className="text-center">
+      <div className="text-center font-bold flex flex-row md:flex-col items-center">
         <div
           className="inline-flex items-center justify-center overflow-hidden rounded-full"
         >
           <svg className="w-40 h-40">
-            <circle
-              className="text-gray-300"
-              strokeWidth="10"
-              stroke="currentColor"
-              fill="transparent"
-              r="60"
-              cx="80"
-              cy="80"
-            />
-            <circle
-              className="text-blue-600"
-              strokeWidth="12"
-              strokeDasharray={totalSeconds}
-              strokeDashoffset={totalSeconds - secondsLeftPercentage / 100 * totalSeconds}
-              strokeLinecap="round"
-              stroke="currentColor"
-              fill="transparent"
-              r="60"
-              cx="80"
-              cy="80"
-            />
+            <Desktop>
+              <circle
+                className="text-secondaryDarken"
+                strokeWidth="10"
+                stroke="currentColor"
+                fill="transparent"
+                r="60"
+                cx="80"
+                cy="80"
+              />
+              <circle
+                className="text-success origin-center scale-x-[-1] rotate-90 transition-all ease-out duration-500"
+                strokeWidth="12"
+                strokeDasharray={totalSeconds}
+                strokeDashoffset={totalSeconds - secondsLeftPercentage / 100 * totalSeconds}
+                strokeLinecap="round"
+                stroke="currentColor"
+                fill="transparent"
+                pathLength={totalSeconds}
+                r="60"
+                cx="80"
+                cy="80"
+              />
+            </Desktop>
+            <Tablet>
+              <circle
+                className="text-secondaryDarken"
+                strokeWidth="8"
+                stroke="currentColor"
+                fill="transparent"
+                r="40"
+                cx="50%"
+                cy="50%"
+              />
+              <circle
+                className="text-success origin-center  transition-all ease-out duration-500"
+                strokeWidth="8"
+                strokeDasharray={totalSeconds}
+                strokeDashoffset={totalSeconds - secondsLeftPercentage / 100 * totalSeconds}
+                strokeLinecap="round"
+                stroke="currentColor"
+                fill="transparent"
+                pathLength={totalSeconds}
+                r="40"
+                cx="50%"
+                cy="50%"
+              />
+            </Tablet>
+
           </svg>
           <div className="absolute text-whiteLight">
-            <span className="text-4xl">{secondsLeft}</span>
-            <div>segundos</div>
-
+            <span className="text-2xl md:text-4xl">{secondsLeft}</span>
+            <div className="text-xs md:text-base">segundos</div>
           </div>
         </div>
+        <div className="text-left">{props.label ?? ""}</div>
       </div>
     </div>
   );
