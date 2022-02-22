@@ -38,6 +38,10 @@ module.exports = {
         grayLighten: "#C4C4C4",
         gray: "#E4E4E4",
         secondGray: "#EFEFEF",
+        inGameRed: "#D62323",
+        inGameBlue: "#20409B",
+        inGameYellow: "#F9A31D",
+        inGameGreen: "#03A45E",
       },
       backgroundImage: (theme) => ({
         selector: `url('${config.storageUrl}/resources/selector.png')`,
