@@ -11,6 +11,12 @@ import defaultTo from "lodash/defaultTo";
 import isEmpty from "lodash/isEmpty";
 import { Image } from "../../../../components/common/Image";
 import { LobbyHeader } from "./LobbyHeader"
+import { AnswerCard } from "./AnswerCard"
+import { TrueFalseAnswerCard } from "./TrueFalseAnswerCard"
+
+const ALTERNATIVE = 'alternative';
+const TRUE_OR_FALSE = 'truefalse';
+const OPEN = 'open';
 
 export const LobbyInPlay = (props) => {
   const router = useRouter();
@@ -28,10 +34,30 @@ export const LobbyInPlay = (props) => {
   const [isVisibleModalMessage, setIsVisibleModalMessage] = useState(false);
   const [winner, setWinner] = useState(null);
 
+  const typeAnswer = TRUE_OR_FALSE;
 
   return (
-    <div className="bg-secondary w-screen bg-center bg-contain bg-lobby-pattern overflow-auto">
+    <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto">
       <LobbyHeader/>
+      <div className="flex flex-col">
+        {typeAnswer === ALTERNATIVE
+        ? (<>
+          <AnswerCard color="red" />
+          <AnswerCard color="green" />
+          <AnswerCard color="yellow" />
+          <AnswerCard color="blue" />
+        </>)
+        : typeAnswer === TRUE_OR_FALSE
+        ? (<>
+          <TrueFalseAnswerCard color="red" value={true} />
+          <TrueFalseAnswerCard color="green" value={false} />
+        </>)
+        : typeAnswer === OPEN
+        ? (<>
+          <OpenAnswerCard color="red" value={true} />
+        </>)
+        : null}
+      </div>
     </div>
   );
 };
