@@ -3,8 +3,8 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 type Question = {
   id: string;
-  options?: Array<string>;
-  answer: number | string | Array<string>;
+  options?: string[];
+  answer: number | string | string[];
   time: number;
   type: string;
 };
