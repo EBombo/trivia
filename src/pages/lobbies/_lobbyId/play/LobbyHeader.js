@@ -1,6 +1,7 @@
 import React, { useGlobal, useState } from "reactn";
 import { useRouter } from "next/router";
 import { Timer } from "./Timer";
+import { QuestionStep } from "./QuestionStep";
 
 export const LobbyHeader = (props) => {
   const router = useRouter();
@@ -11,12 +12,14 @@ export const LobbyHeader = (props) => {
 
   return (
     <div className="grid grid-rows-[minmax(160px,min-content)_auto]">
-      <div className="bg-whiteLight py-4 text-center text-2xl md:text-3xl font-bold flex">
-        <div className="self-center w-full text-secondaryDarken">
+      <div className="relative bg-whiteLight py-4 text-center text-2xl md:text-3xl font-bold flex">
+        <QuestionStep/>
+
+        <div className="relative self-center w-full text-secondaryDarken">
           ¿Esta es una pregunta muy achorada muy achorada muy achorad muy achoradaa muy achoradaa  muy achoradaa muy achorada muy achorada muy achoradaaaa?
         </div>
       </div>
-      <div className="grid grid-cols-[2fr_1fr] grid-rows-[auto auto] md:grid-cols-[1fr_3fr_1fr] md:grid-rows-1 text-whiteLight mb-8">
+      <div className="grid grid-cols-[2fr_1fr] grid-rows-[auto auto] md:grid-cols-[1fr_3fr_1fr] md:grid-rows-1 text-whiteLight bg-secondaryDark bg-opacity-50 py-8">
         <div className="self-center">
           <Timer label="Espera que acabe el tiempo..."/>
         </div>

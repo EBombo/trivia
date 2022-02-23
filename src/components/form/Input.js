@@ -1,6 +1,6 @@
 import React, {forwardRef, useEffect, useState} from "reactn";
 import styled from "styled-components";
-import {sizes} from "../../constants";
+import {sizes, mediaQuery} from "../../constants";
 import {EyeInvisibleOutlined, EyeOutlined, SearchOutlined} from "@ant-design/icons";
 import {config} from "../../firebase";
 import {Image} from "../common/Image";
@@ -95,6 +95,11 @@ const EyeInvisibleOutlinedCss = styled(EyeInvisibleOutlined)`
   }
 `;
 
+  // font-size: ${(props) => (props.fontSize ? props.fontSize : "14px")};
+  //
+  // ${mediaQuery.afterTablet} {
+  //   font-size: ${(props) => (props.fontSizeDesktop ? props.fontSizeDesktop : "18px")};
+  // }
 const StyledInput = styled.input`
   width: 100%;
   height: ${(props) => (props.height ? props.height : "36px")};
