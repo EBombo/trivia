@@ -58,8 +58,6 @@ function getOriginHeaders(reqOrigin: string | undefined, origin: StaticOrigin) {
   return headers;
 }
 
-// originHeadersFromReq
-
 async function originHeadersFromReq(req: Request, origin: StaticOrigin | OriginFn) {
   const reqOrigin = req.headers.get("Origin") || undefined;
   const value = typeof origin === "function" ? await origin(reqOrigin, req) : origin;
