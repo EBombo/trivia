@@ -1,13 +1,13 @@
-import type { NextRequest } from "next/server";
-import cors from "../../lib/cors";
+import initMiddleware from "../../lib";
+import Cors from "cors";
+import type { NextApiRequest, NextApiResponse } from "next";
 
-export const middleware = (req: NextRequest) => {
-  // `cors` also takes care of handling OPTIONS requests
-  return cors(
-    req,
-    new Response(JSON.stringify({ message: "Trivia backend reached" }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
+export const middleware = async (req: NextApiRequest, res: NextApiResponse) => {
+  const cors = initMiddleware(
+    Cors({
+      methods: ["GET", "PUT", "POST", "DELETE", "OPTIONS"],
     })
   );
+
+  await cors(req, res);
 };
