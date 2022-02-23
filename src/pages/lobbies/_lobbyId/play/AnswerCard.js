@@ -30,12 +30,12 @@ export const AnswerCard = (props) => {
     [props.color]);
 
   return (
-    <div className="relative mx-4 my-2 min-h-[70px] grid grid-cols-[min-content_auto] overflow-hidden rounded">
+    <div className="relative mx-4 my-2 min-h-[70px] md:min-h-[100px] grid grid-cols-[min-content_auto] overflow-hidden rounded">
       <div className={`${colorClass} inline-block w-[70px] p-5`}>
         <Image src={iconUrl} />
       </div>
       <div className="bg-whiteLight flex justify-center">
-        <div className="self-center bg-whiteLight font-bold text-secondaryDarken text-lg">
+        <div className="self-center bg-whiteLight font-bold text-secondaryDarken text-lg md:text-2xl">
           {props.label ?? 'Alternativa'}
         </div>
       </div>
