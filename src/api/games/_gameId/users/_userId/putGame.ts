@@ -1,9 +1,10 @@
-import {firestore} from "../../../../../firebase";
-import {snapshotToArray} from "../../../../../utils";
+import { firestore } from "../../../../../firebase";
+import { snapshotToArray } from "../../../../../utils";
+import type { NextApiRequest, NextApiResponse } from "next";
 
-const putGame = async (req, res) => {
+const putGame = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const { gameId, userId } = req.query;
+    const { gameId, userId } = req.query as { [key: string]: string; };
     const game = req.body;
 
     let options = null;

@@ -29,16 +29,16 @@ if (DOMAIN?.includes("local") || DOMAIN?.includes("red") || DOMAIN?.includes("de
   console.log("prod", version);
 }
 
-let firestore;
-let storage;
-let auth;
-let analytics;
-let database;
+let firestore : firebase.firestore.Firestore;
+let storage : firebase.storage.Storage;
+let auth : firebase.auth.Auth;
+let analytics : firebase.analytics.Analytics;
+let database : firebase.database.Database;
 
-let analyticsEvents;
-let firestoreEvents;
-let storageEvents;
-let authEvents;
+let analyticsEvents : firebase.analytics.Analytics;
+let firestoreEvents : firebase.firestore.Firestore;
+let storageEvents : firebase.storage.Storage;
+let authEvents: firebase.auth.Auth;
 
 let firestoreBomboGames;
 
