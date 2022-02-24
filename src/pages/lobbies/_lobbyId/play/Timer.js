@@ -31,8 +31,8 @@ export const Timer = (props) => {
         <div
           className="inline-flex items-center justify-center overflow-hidden rounded-full"
         >
-          <svg className="w-40 h-40">
-            <Desktop>
+          <Desktop>
+            <svg className="w-40 h-40">
               <circle
                 className="text-secondaryDarken"
                 strokeWidth="10"
@@ -55,14 +55,16 @@ export const Timer = (props) => {
                 cx="80"
                 cy="80"
               />
-            </Desktop>
-            <Tablet>
+            </svg>
+          </Desktop>
+          <Tablet>
+            <svg className="w-20 h-20 mx-4">
               <circle
                 className="text-secondaryDarken"
                 strokeWidth="8"
                 stroke="currentColor"
                 fill="transparent"
-                r="40"
+                r="30"
                 cx="50%"
                 cy="50%"
               />
@@ -75,19 +77,19 @@ export const Timer = (props) => {
                 stroke="currentColor"
                 fill="transparent"
                 pathLength={totalSeconds}
-                r="40"
+                r="30"
                 cx="50%"
                 cy="50%"
               />
-            </Tablet>
+            </svg>
+          </Tablet>
 
-          </svg>
           <div className="absolute text-whiteLight">
             <span className="text-2xl md:text-4xl">{secondsLeft}</span>
-            <div className="text-xs md:text-base">segundos</div>
+            <div className="text-xs md:text-base hidden md:block">segundos</div>
           </div>
         </div>
-        <div className="text-left">{props.label ?? ""}</div>
+        <div className="text-left hidden md:block">{props.label ?? ""}</div>
       </div>
     </div>
   );
