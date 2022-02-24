@@ -14,10 +14,13 @@ import { LobbyHeader } from "./LobbyHeader"
 import { AnswerCard } from "./AnswerCard"
 import { TrueFalseAnswerCard } from "./TrueFalseAnswerCard"
 import { OpenAnswerCard } from "./OpenAnswerCard"
+import { NextRoundLoader } from "./NextRoundLoader"
 
 const ALTERNATIVE = 'alternative';
 const TRUE_OR_FALSE = 'truefalse';
 const OPEN = 'open';
+
+const LOADING_STATE = 'LOADING';
 
 export const LobbyInPlay = (props) => {
   const router = useRouter();
@@ -39,10 +42,22 @@ export const LobbyInPlay = (props) => {
   // const typeAnswer = ALTERNATIVE;
   const typeAnswer = OPEN;
 
+  if (props.lobby.game?.state === LOADING_STATE)
+    return (
+      <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto text-center flex flex-col justify-center">
+        <div className="my-4">
+          <NextRoundLoader/>
+        </div>
+        <div class="font-bold text-whiteLight text-xl">¿Te sientes confiado?</div>
+      </div>);
+
   return (
     <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto">
       <LobbyHeader/>
       <div className="grid md:grid-cols-[1fr_3fr_1fr] mb-8 bg-secondaryDark bg-opacity-50 py-8">
+        <div className="text-center self-end">
+          <span className="text-whiteLight text-lg cursor-pointer">Finalizar</span>
+        </div>
         <div className="grid md:grid-cols-2 md:col-start-2 md:col-end-3">
           {typeAnswer === ALTERNATIVE
           ? (<>
