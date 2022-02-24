@@ -1,12 +1,12 @@
-import React, {useGlobal, useState} from "reactn";
-import {config} from "../../firebase";
-import {Image} from "../../components/common/Image";
-import {ButtonLobby, InputBingo} from "../../components/form";
-import {object, string} from "yup";
-import {useForm} from "react-hook-form";
-import {Carousel} from "../../components/common/Carousel";
-import {avatars} from "../../components/common/DataList";
-import {darkTheme} from "../../theme";
+import React, { useGlobal, useState } from "reactn";
+import { config } from "../../firebase";
+import { Image } from "../../components/common/Image";
+import { ButtonLobby, InputBingo } from "../../components/form";
+import { object, string } from "yup";
+import { useForm } from "react-hook-form";
+import { Carousel } from "../../components/common/Carousel";
+import { avatars } from "../../components/common/DataList";
+import { darkTheme } from "../../theme";
 
 export const PinStep = (props) => {
   const [authUser] = useGlobal("user");

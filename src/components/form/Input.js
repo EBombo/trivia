@@ -1,9 +1,9 @@
-import React, {forwardRef, useEffect, useState} from "reactn";
+import React, { forwardRef, useEffect, useState } from "reactn";
 import styled from "styled-components";
-import {sizes} from "../../constants";
-import {EyeInvisibleOutlined, EyeOutlined, SearchOutlined} from "@ant-design/icons";
-import {config} from "../../firebase";
-import {Image} from "../common/Image";
+import { sizes } from "../../constants";
+import { EyeInvisibleOutlined, EyeOutlined, SearchOutlined } from "@ant-design/icons";
+import { config } from "../../firebase";
+import { Image } from "../common/Image";
 
 export const Input = forwardRef((props, ref) => {
   const [hide, setHide] = useState(false);
@@ -104,11 +104,14 @@ const StyledInput = styled.input`
   background: ${(props) => props.theme.basic.whiteLight};
   color: ${(props) => props.theme.basic.blackDarken};
 
-  ${(props) => props.className.includes('dark') ? `
+  ${(props) =>
+    props.className.includes("dark")
+      ? `
     background: ${props.theme.basic.secondary};
     color: ${props.theme.basic.whiteLight};
     border: none !important;
-  ` : null};
+  `
+      : null};
 
   &:focus {
     outline: none;

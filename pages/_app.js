@@ -1,17 +1,17 @@
-import React, {useEffect, useGlobal} from "reactn";
+import React, { useEffect, useGlobal } from "reactn";
 import "antd/dist/antd.css";
 import "../src/theme/globals.css";
-import {notification} from "antd";
-import {useUser} from "../src/hooks";
+import { notification } from "antd";
+import { useUser } from "../src/hooks";
 import get from "lodash/get";
-import {darkTheme, GlobalStyle, lightTheme} from "../src/theme";
-import {ThemeProvider} from "styled-components";
-import {ErrorBoundary} from "react-error-boundary";
-import {ErrorFallback} from "../src/components/error-fallback/ErrorFallback";
-import {WithAuthentication} from "../src/session/WithAuthentication";
-import {WithConfiguration} from "../src/session/WithConfiguration";
-import {config, firestoreEvents} from "../src/firebase";
-import {snapshotToArray} from "../src/utils";
+import { darkTheme, GlobalStyle, lightTheme } from "../src/theme";
+import { ThemeProvider } from "styled-components";
+import { ErrorBoundary } from "react-error-boundary";
+import { ErrorFallback } from "../src/components/error-fallback/ErrorFallback";
+import { WithAuthentication } from "../src/session/WithAuthentication";
+import { WithConfiguration } from "../src/session/WithConfiguration";
+import { config, firestoreEvents } from "../src/firebase";
+import { snapshotToArray } from "../src/utils";
 import Head from "next/head";
 import Script from "next/script";
 

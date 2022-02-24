@@ -27,10 +27,5 @@ export const LobbyInPlay = (props) => {
   const [isVisibleModalMessage, setIsVisibleModalMessage] = useState(false);
   const [winner, setWinner] = useState(null);
 
-
-  return (
-    <div className="bg-secondary w-screen bg-center bg-contain bg-lobby-pattern overflow-auto">
-    </div>
-  );
+  return <div className="bg-secondary w-screen bg-center bg-contain bg-lobby-pattern overflow-auto"></div>;
 };
-
