@@ -83,6 +83,34 @@ if (isEmpty(firebase.apps)) {
   } catch (error) {
     console.error("error initializeApp", error);
   }
+} else {
+
+    firestore = firebase.firestore();
+
+    database = firebase.database();
+    storage = firebase.storage();
+    auth = firebase.auth();
+
+    if (typeof window !== "undefined") analytics = firebase.analytics();
+
+    firestore.settings({ ignoreUndefinedProperties: true });
+
+
+
+    firestoreEvents = firebase.app("events").firestore();
+    storageEvents = firebase.app("events").storage();
+    authEvents = firebase.app("events").auth();
+
+    if (typeof window !== "undefined") {
+      analyticsEvents = firebase.app("events").analytics();
+    }
+
+    firestoreEvents.settings({ ignoreUndefinedProperties: true });
+
+
+    firestoreBomboGames = firebase.app("bombo-games").firestore();
+
+    firestoreBomboGames.settings({ ignoreUndefinedProperties: true });
 }
 
 if (DOMAIN?.includes("localhost")) {
