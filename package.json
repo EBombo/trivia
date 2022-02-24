@@ -19,6 +19,7 @@
     "startFunctions": "firebase emulators:start --only functions"
   },
   "dependencies": {
+    "@types/cors": "^2.8.12",
     "antd": "^4.14.1",
     "cors": "^2.8.5",
     "country-list": "^2.2.0",

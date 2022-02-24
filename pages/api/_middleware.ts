@@ -1,7 +1,23 @@
-import type { NextRequest, NextResponse } from "next/server";
-import cors from "../../lib/cors";
+import { NextApiRequest, NextApiResponse } from "next";
+import Cors from "cors";
 
-export const middleware = async (req: NextRequest, res: NextResponse) => {
-  // `cors` also takes care of handling OPTIONS requests
+const initMiddleware = (middleware) => (req, res) =>
+  new Promise((resolve, reject) =>
+    middleware(req, res, (result) => {
+      if (result instanceof Error) return reject(result);
+
+      return resolve(result);
+    })
+  );
+
+const cors = initMiddleware(
+  Cors({
+    methods: ["GET", "PUT", "POST", "DELETE", "OPTIONS"],
+  })
+);
+
+const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<any> => {
   await cors(req, res);
 };
+
+export default handler;
