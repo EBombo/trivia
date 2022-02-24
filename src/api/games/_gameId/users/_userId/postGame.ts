@@ -18,21 +18,21 @@ const postGame = async (req: NextApiRequest, res: NextApiResponse) => {
 
     delete game.questions;
 
-    const gamesRef = firestore.collection("games");
-    const gameId = game.id;
-
-    await gamesRef.doc(gameId).set({
-      ...game,
-      id: gameId,
-      usersIds: [userId],
-      createAt: new Date(),
-      updateAt: new Date(),
-      deleted: false,
-    });
+    await firestore
+      .collection("games")
+      .doc(game.id)
+      .set({
+        ...game,
+        usersIds: [userId],
+        createAt: new Date(),
+        updateAt: new Date(),
+        deleted: false,
+      });
 
     questions.map(async (question: Question) => {
-      await gamesRef
-        .doc(gameId)
+      await firestore
+        .collection("games")
+        .doc(game.id)
         .collection("questions")
         .doc(question.id)
         .set({
