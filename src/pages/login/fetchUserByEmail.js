@@ -1,5 +1,5 @@
-import {firestore} from "../../firebase";
-import {snapshotToArray} from "../../utils";
+import { firestore } from "../../firebase";
+import { snapshotToArray } from "../../utils";
 
 export const fetchUserByEmail = async (email, lobbyId) => {
   const userQuery = await firestore

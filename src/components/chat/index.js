@@ -1,17 +1,17 @@
-import React, {useEffect, useGlobal, useRef, useState} from "reactn";
+import React, { useEffect, useGlobal, useRef, useState } from "reactn";
 import styled from "styled-components";
-import {config, firestore} from "../../firebase";
+import { config, firestore } from "../../firebase";
 import isEmpty from "lodash/isEmpty";
-import {snapshotToArray} from "../../utils";
-import {spinLoader} from "../common/loader";
-import {useFetch} from "../../hooks/useFetch";
-import {useSendError} from "../../hooks";
-import {mediaQuery} from "../../constants";
-import {ButtonAnt, Input} from "../form";
-import {useRouter} from "next/router";
-import {ChatMessage} from "./ChatMessage";
-import {object, string} from "yup";
-import {useForm} from "react-hook-form";
+import { snapshotToArray } from "../../utils";
+import { spinLoader } from "../common/loader";
+import { useFetch } from "../../hooks/useFetch";
+import { useSendError } from "../../hooks";
+import { mediaQuery } from "../../constants";
+import { ButtonAnt, Input } from "../form";
+import { useRouter } from "next/router";
+import { ChatMessage } from "./ChatMessage";
+import { object, string } from "yup";
+import { useForm } from "react-hook-form";
 
 export const Chat = (props) => {
   const router = useRouter();

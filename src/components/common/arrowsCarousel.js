@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import React from "react";
-import {Image} from "./Image";
-import {config} from "../../firebase";
+import { Image } from "./Image";
+import { config } from "../../firebase";
 
 export const Arrows = (props) => {
   return (

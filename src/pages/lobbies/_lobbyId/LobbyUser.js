@@ -6,7 +6,7 @@ import { MoreOutlined, UserOutlined } from "@ant-design/icons";
 import { firebase, config } from "../../../firebase/config";
 import { useInView } from "react-intersection-observer";
 import { LobbyHeader } from "./LobbyHeader";
-import { TransitionGroup, CSSTransition } from 'react-transition-group';
+import { TransitionGroup, CSSTransition } from "react-transition-group";
 import { Popover } from "antd";
 import { useMemo } from "react";
 import { spinLoaderMin } from "../../../components/common/loader";
@@ -49,18 +49,21 @@ export const LobbyUser = (props) => {
       .limitToLast(newUserListSizeRatio);
 
     const fetchUsers = () =>
-      UsersQueryRef.on("value", debounce((snapshot) => {
-        let users_ = [];
+      UsersQueryRef.on(
+        "value",
+        debounce((snapshot) => {
+          let users_ = [];
 
-        snapshot.forEach((docRef) => {
-          const user = docRef.val();
-          if (user.state.includes("online")) users_.unshift(user);
-        });
+          snapshot.forEach((docRef) => {
+            const user = docRef.val();
+            if (user.state.includes("online")) users_.unshift(user);
+          });
 
-        setUserListSize(newUserListSizeRatio);
-        setIsLoading(false);
-        setUsers(users_);
-      }, 100));
+          setUserListSize(newUserListSizeRatio);
+          setIsLoading(false);
+          setUsers(users_);
+        }, 100)
+      );
 
     const userQueryListener = fetchUsers();
 
@@ -167,8 +170,7 @@ export const LobbyUser = (props) => {
         <LobbyHeader {...props} />
 
         <div className="px-[15px] py-[10px] md: px-[5px]">
-
-          { !authUser?.isAdmin && (
+          {!authUser?.isAdmin && (
             <div className="notification-joint-user font-bold text-white bg-green-800 text-center sm:text-lg py-2">
               Entró correctamente al juego.
               <div className="inline-block bg-primary p-2 m-2 rounded shadow-xl">{authUser.nickname} (Tú)</div>
@@ -176,7 +178,7 @@ export const LobbyUser = (props) => {
           )}
 
           <Tablet>
-            { !authUser?.isAdmin && (
+            {!authUser?.isAdmin && (
               <div className="font-bold text-white text-lg text-center my-4">
                 El administrador iniciará el juego pronto
               </div>
@@ -192,16 +194,19 @@ export const LobbyUser = (props) => {
                   width="15px"
                   size="contain"
                 />
-              </span> 
+              </span>
             </div>
           </Tablet>
 
           <TransitionGroup className="grid grid-cols-[1fr_1fr_1fr] max-w-[1000px] gap-[4px] mx-auto md:grid-cols-[1fr_1fr_1fr_1fr_1fr] md:gap-[10px] my-4">
             {users.map((user, i) => (
-              <CSSTransition key={`user-${i}`} classNames="itemfade" timeout={500} >
+              <CSSTransition key={`user-${i}`} classNames="itemfade" timeout={500}>
                 <div
                   key={user.userId}
-                  className={`px-[10px] py-[8px] md:text-lg text-base text-center rounded-[5px] text-white font-bold md:py-[12px] px-[10px] ${authUser.id === user.userId ? 'bg-primary' : 'bg-secondaryDarken' }`}>
+                  className={`px-[10px] py-[8px] md:text-lg text-base text-center rounded-[5px] text-white font-bold md:py-[12px] px-[10px] ${
+                    authUser.id === user.userId ? "bg-primary" : "bg-secondaryDarken"
+                  }`}
+                >
                   {user.nickname}
                 </div>
               </CSSTransition>
@@ -235,4 +240,3 @@ const LobbyUserCss = styled.div`
     transition: opacity 500ms ease-in;
   }
 `;
-

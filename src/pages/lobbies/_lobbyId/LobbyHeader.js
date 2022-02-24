@@ -433,4 +433,3 @@ const LobbyHeaderStyled = styled.div`
     grid-row: 2 / 3;
   }
 `;
-

@@ -1,7 +1,7 @@
-import React, {useRef, useState} from "react";
-import {Carousel as CarouselAntd} from "antd";
+import React, { useRef, useState } from "react";
+import { Carousel as CarouselAntd } from "antd";
 import styled from "styled-components";
-import {Arrows} from "./arrowsCarousel";
+import { Arrows } from "./arrowsCarousel";
 
 export const Carousel = (props) => {
   const slider = useRef(null);

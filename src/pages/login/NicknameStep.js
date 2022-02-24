@@ -1,12 +1,12 @@
-import React, {useGlobal} from "reactn";
-import {ButtonLobby, InputBingo} from "../../components/form";
-import {Image} from "../../components/common/Image";
-import {useForm} from "react-hook-form";
-import {config} from "../../firebase";
+import React, { useGlobal } from "reactn";
+import { ButtonLobby, InputBingo } from "../../components/form";
+import { Image } from "../../components/common/Image";
+import { useForm } from "react-hook-form";
+import { config } from "../../firebase";
 import styled from "styled-components";
-import {object, string} from "yup";
-import {useUser} from "../../hooks";
-import {ValidateNickname} from "./ValidateNickname";
+import { object, string } from "yup";
+import { useUser } from "../../hooks";
+import { ValidateNickname } from "./ValidateNickname";
 
 export const NicknameStep = (props) => {
   const [, setAuthUserLs] = useUser();

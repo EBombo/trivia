@@ -93,7 +93,7 @@ export const Lobby = (props) => {
   useEffect(() => {
     if (!lobby) return;
 
-    const gameId = (lobby.gameId || lobby.game?.id);
+    const gameId = lobby.gameId || lobby.game?.id;
     const fetchGame = () =>
       firestore.doc(`games/${gameId}`).onSnapshot((gameRef) => {
         const _game = gameRef.data();
@@ -125,4 +125,3 @@ export const Lobby = (props) => {
   /** Before starting the game. **/
   return <LobbyUser {...additionalProps} />;
 };
-

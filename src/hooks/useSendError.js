@@ -1,8 +1,8 @@
-import {useGlobal} from "reactn";
+import { useGlobal } from "reactn";
 import get from "lodash/get";
-import {config, hostName} from "../firebase";
-import {useRouter} from "next/router";
-import {useFetch} from "./useFetch";
+import { config, hostName } from "../firebase";
+import { useRouter } from "next/router";
+import { useFetch } from "./useFetch";
 
 export const useSendError = () => {
   const { Fetch } = useFetch();

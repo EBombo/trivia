@@ -1,7 +1,7 @@
-import React, {forwardRef} from "reactn";
+import React, { forwardRef } from "reactn";
 import styled from "styled-components";
 import Button from "antd/lib/button";
-import {darkTheme} from "../../theme";
+import { darkTheme } from "../../theme";
 
 export const ButtonAnt = forwardRef((props, ref) => (
   <ButtonAntCss
