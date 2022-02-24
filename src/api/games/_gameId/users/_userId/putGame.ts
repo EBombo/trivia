@@ -33,13 +33,15 @@ const putGame = async (req: NextApiRequest, res: NextApiResponse) => {
         await firestore.collection("games").doc(gameId).collection("questions").doc(question.id).delete()
     );
 
-    questions.map(async (question: Question) => {
+    const questionsPromises = questions.map(async (question: Question) => {
       await firestore
         .doc(`games/${gameId}`)
         .collection("questions")
         .doc(question.id)
         .set({ ...question });
     });
+
+    await Promise.all(questionsPromises);
 
     return res.send({ success: true });
   } catch (error) {
