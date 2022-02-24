@@ -11,40 +11,38 @@ type Question = {
 
 const postGame = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const { userId } = req.query;
+    const { userId } = req.query as { [key: string]: string };
     const game = req.body;
 
     let questions = game.questions;
 
     delete game.questions;
 
-    const gamesRef = firestore.collection("games");
-    const gameId = game.id;
-    console.log('>>> my questions', questions);
+    await firestore
+      .collection("games")
+      .doc(game.id)
+      .set({
+        ...game,
+        usersIds: [userId],
+        createAt: new Date(),
+        updateAt: new Date(),
+        deleted: false,
+      });
 
-    await gamesRef.doc(gameId).set({
-      ...game,
-      id: gameId,
-      usersIds: [userId],
-      createAt: new Date(),
-      updateAt: new Date(),
-      deleted: false,
-    });
-
-    let promises = questions.map((question: Question) =>
-      gamesRef
-        .doc(gameId)
+    questions.map(async (question: Question) => {
+      console.log(question);
+      await firestore
+        .collection("games")
+        .doc(game.id)
         .collection("questions")
         .doc(question.id)
         .set({
           ...question,
-          usersIds: [userId],
           createAt: new Date(),
           updateAt: new Date(),
           deleted: false,
-        })
-    );
-    Promise.all(promises);
+        });
+    });
 
     return res.send({ success: true });
   } catch (error) {

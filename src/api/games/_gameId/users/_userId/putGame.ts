@@ -2,37 +2,44 @@ import { firestore } from "../../../../../firebase";
 import { snapshotToArray } from "../../../../../utils";
 import type { NextApiRequest, NextApiResponse } from "next";
 
+type Question = {
+  id: string;
+  options?: string[];
+  answer: number | string | string[];
+  time: number;
+  type: string;
+};
+
 const putGame = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { gameId, userId } = req.query as { [key: string]: string };
     const game = req.body;
 
-    let options = null;
+    let questions = game.questions;
 
-    if (!game.isLive) options = [...game.options];
-
-    delete game.options;
+    delete game.questions;
 
     await firestore.doc(`games/${gameId}`).update({
       ...game,
       updateAt: new Date(),
     });
 
-    if (options) {
-      const oldOptionsQuery = await firestore.collection("games").doc(gameId).collection("options").get();
+    const oldQuestionsQuery = await firestore.collection("games").doc(gameId).collection("questions").get();
 
-      const oldOptions = snapshotToArray(oldOptionsQuery);
+    const oldQuestions = snapshotToArray(oldQuestionsQuery);
 
-      oldOptions.map(
-        async (option) => await firestore.collection("games").doc(gameId).collection("options").doc(option.id).delete()
-      );
+    oldQuestions.map(
+      async (question) =>
+        await firestore.collection("games").doc(gameId).collection("questions").doc(question.id).delete()
+    );
 
-      options.map(async (option) => {
-        const optionId = firestore.collection("games").doc(gameId).collection("options").doc().id;
-
-        await firestore.doc(`games/${gameId}`).collection("options").doc(optionId).set({ option, id: optionId });
-      });
-    }
+    questions.map(async (question: Question) => {
+      await firestore
+        .doc(`games/${gameId}`)
+        .collection("questions")
+        .doc(question.id)
+        .set({ ...question });
+    });
 
     return res.send({ success: true });
   } catch (error) {
