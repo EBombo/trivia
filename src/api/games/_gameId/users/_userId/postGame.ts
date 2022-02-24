@@ -29,7 +29,7 @@ const postGame = async (req: NextApiRequest, res: NextApiResponse) => {
         deleted: false,
       });
 
-    questions.map(async (question: Question) => {
+    const questionsPromises = questions.map(async (question: Question) => {
       console.log(question);
       await firestore
         .collection("games")
@@ -43,6 +43,8 @@ const postGame = async (req: NextApiRequest, res: NextApiResponse) => {
           deleted: false,
         });
     });
+
+    await Promise.all(questionsPromises);
 
     return res.send({ success: true });
   } catch (error) {
