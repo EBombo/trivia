@@ -4,7 +4,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 const putGame = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const { gameId, userId } = req.query as { [key: string]: string; };
+    const { gameId, userId } = req.query as { [key: string]: string };
     const game = req.body;
 
     let options = null;
@@ -37,7 +37,7 @@ const putGame = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.send({ success: true });
   } catch (error) {
     console.error(error);
-    return res.status(500).send({ error: error?.message ?? "Something went wrong" });
+    return res.status(500).send("Something went wrong");
   }
 };
 
