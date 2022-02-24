@@ -12,12 +12,11 @@ const initMiddleware = (middleware) => (req, res) =>
 
 const cors = initMiddleware(
   Cors({
+    origin: ["http://localhost:3001", "https://ebombo.com", "https://red.ebombo.com/"],
     methods: ["GET", "PUT", "POST", "DELETE", "OPTIONS"],
   })
 );
 
-const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<any> => {
+export const middleware = async (req: NextApiRequest, res: NextApiResponse): Promise<any> => {
   await cors(req, res);
 };
-
-export default handler;
