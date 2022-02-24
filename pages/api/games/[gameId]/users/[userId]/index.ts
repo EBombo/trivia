@@ -1,4 +1,4 @@
-import postGame from "../../../../../../src/api/games/_gameId/users/_userId/postGame";
+import postGame from "../../../../../../src/api/games/_gameId/users/_userId/postGame.js";
 import putGame from "../../../../../../src/api/games/_gameId/users/_userId/putGame";
 import deleteGame from "../../../../../../src/api/games/_gameId/users/_userId/deleteGame";
 import Cors from "cors";
