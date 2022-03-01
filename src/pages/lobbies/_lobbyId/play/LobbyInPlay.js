@@ -15,6 +15,13 @@ import { AnswerCard } from "./AnswerCard"
 import { TrueFalseAnswerCard } from "./TrueFalseAnswerCard"
 import { OpenAnswerCard } from "./OpenAnswerCard"
 import { NextRoundLoader } from "./NextRoundLoader"
+import { Footer } from "./Footer"
+import { BarResult } from "./BarResult"
+import { TrueFalseBarResult } from "./TrueFalseBarResult"
+import { OpenAnswerCellResult } from "./OpenAnswerCellResult"
+import { ResultCard } from "./ResultCard"
+import { Scoreboard } from "./Scoreboard"
+import { getIconUrl } from "../../../../components/common/DataList";
 
 const ALTERNATIVE = 'alternative';
 const TRUE_OR_FALSE = 'truefalse';
@@ -22,6 +29,7 @@ const OPEN = 'open';
 
 const LOADING_STATE = 'LOADING';
 const QUESTION_RESULT_STATE = 'QUESTION_RESULT';
+const SHOW_RANKING_STATE = 'SHOW_RANKING_STATE';
 
 export const LobbyInPlay = (props) => {
   const router = useRouter();
@@ -39,6 +47,9 @@ export const LobbyInPlay = (props) => {
   const [isVisibleModalMessage, setIsVisibleModalMessage] = useState(false);
   const [winner, setWinner] = useState(null);
 
+  const [showImage, setShowImage] = useState(false);
+
+
   // const typeAnswer = TRUE_OR_FALSE;
   // const typeAnswer = ALTERNATIVE;
   const typeAnswer = OPEN;
@@ -52,30 +63,51 @@ export const LobbyInPlay = (props) => {
         <div class="font-bold text-whiteLight text-xl">¿Te sientes confiado?</div>
       </div>);
 
-  if (props.lobby.game?.state !== QUESTION_RESULT_STATE)
+  if (props.lobby.game?.state === SHOW_RANKING_STATE)
+    return (
+      <Scoreboard/>
+    );
+
+  if (props.lobby.game?.state === QUESTION_RESULT_STATE)
     return (
       <div className="font-['Lato'] font-bold bg-secondary bg-center bg-contain bg-lobby-pattern w-screen min-h-screen overflow-auto text-center">
         <div className="min-h-screen flex flex-col justify-center bg-secondaryDark bg-opacity-50">
-          <div className="relative my-4 mx-4 pt-8 pb-4 bg-whiteLight text-lg min-w-[300px] self-center rounded-lg">
-            <div className="absolute top-[-20px] left-1/2 translate-x-[-50%] bg-success rounded max-w-[250px] whitespace-nowrap px-8 text-secondaryDarken">
-              <span className="inline-block py-4 pr-4 align-middle">
-                <Image src={`${config.storageUrl}/resources/check-with-depth.svg`} width="16px"/>
-              </span>
-              Respuesta correcta
-            </div>
-
-            <div className="text-black"><span className="inline-block py-4 align-middle"><Image src={`${config.storageUrl}/resources/red-fire-streak.svg`} width="12px"/></span> Racha de respuestas: 8</div>
-            <div className="text-black text-3xl py-8">+600 puntos</div>
-            <div className="text-black">Puntaje actual: 1500 pts</div>
-            <div className="text-black">Puesto: 25/200</div>
-          </div>
+          <ResultCard/>
         </div>
       </div>
     );
 
   return (
     <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto">
-      <LobbyHeader/>
+      <LobbyHeader>
+        {showImage
+        ? (<div className="aspect-[4/1] w-full bg-secondaryDark"></div>)
+        : (<div className="aspect-[4/1] w-full">
+          { (typeAnswer === ALTERNATIVE)
+            ? (<div>
+                <BarResult color="red" value={20} count={8} />
+                <BarResult color="green" value={50} count={12} />
+                <BarResult color="yellow" value={91} count={2} />
+                <BarResult color="blue" value={20} count={4} />
+              </div>)
+            : (typeAnswer === TRUE_OR_FALSE)
+            ? (<div>
+                <TrueFalseBarResult option={true} value={91} count={2} />
+                <TrueFalseBarResult option={false} value={20} count={4} />
+              </div>)
+            : (typeAnswer === OPEN)
+            ? (<div className="grid grid-cols-4 gap-2">
+                {[{}].map((_, i) => (
+                  <OpenAnswerCellResult key={`open-answer-${i}`} count={0} isCorrect={false} answer={'A'} />
+                ))}
+              </div>)
+            : null
+          }
+          </div>
+        )}
+        <div><span className="cursor-pointer underline"
+              onClick={() => setShowImage((oldValue) => !oldValue)}>Mostrar imagen</span></div>
+      </LobbyHeader>
       <div className="grid md:grid-cols-[1fr_3fr_1fr] mb-8 bg-secondaryDark bg-opacity-50 py-8">
         <div className="text-center self-end">
           <span className="text-whiteLight text-lg cursor-pointer">Finalizar</span>
@@ -83,7 +115,7 @@ export const LobbyInPlay = (props) => {
         <div className="grid md:grid-cols-2 md:col-start-2 md:col-end-3">
           {typeAnswer === ALTERNATIVE
           ? (<>
-            <AnswerCard color="red"/>
+            <AnswerCard color="red" />
             <AnswerCard color="green" />
             <AnswerCard color="yellow" />
             <AnswerCard color="blue" />
@@ -100,16 +132,7 @@ export const LobbyInPlay = (props) => {
           : null}
         </div>
       </div>
-      <div className="text-whiteLight flex flex-col md:flex-row md:justify-between items-center mx-4 py-4">
-        <div className="text-lg md:text-2xl px-4 py-2">
-          <span>Entra a </span>
-          <span className="font-bold">{hostName}</span>
-        </div>
-        <div className="text-2xl px-4 py-2">
-          <span>PIN </span>
-          <span>{props.lobby?.pin}</span>
-        </div>
-      </div>
+      <Footer/>
     </div>
   );
 };

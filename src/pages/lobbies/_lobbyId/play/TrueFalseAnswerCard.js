@@ -25,6 +25,7 @@ export const TrueFalseAnswerCard = (props) => {
     <div className={`
       relative mx-4 my-2 min-h-[70px] md:min-h-[150px]
       grid ${props.value ? 'grid-cols-[auto_min-content] md:grid-cols-[min-content_auto]' : 'grid-cols-[auto_min-content]'}
+      ${props.enableOpacity && "opacity-20"}
       overflow-hidden rounded`}>
       <div className={`inline-block w-[90px] p-7
         ${colorClass}

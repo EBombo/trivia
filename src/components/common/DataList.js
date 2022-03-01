@@ -82,3 +82,15 @@ export const languages = [
 ];
 
 export const PLAYING = "PLAYING";
+
+export const getIconUrl = (color) =>
+((color === "red")
+  ? `${config.storageUrl}/resources/red-star.svg`
+  : color === "blue"
+  ? `${config.storageUrl}/resources/blue-square.svg`
+  : color === "green"
+  ? `${config.storageUrl}/resources/green-circle.svg`
+  : color === "yellow"
+  ? `${config.storageUrl}/resources/yellow-triangle.svg`
+  : ""
+);

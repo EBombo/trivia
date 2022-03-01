@@ -1,21 +1,11 @@
 import React, { useGlobal, useState, useMemo } from "reactn";
 import { config } from "../../../../firebase";
 import { Image } from "../../../../components/common/Image";
+import { getIconUrl } from "../../../../components/common/DataList";
 
 export const AnswerCard = (props) => {
 
-  const iconUrl = useMemo(() =>
-    ((props.color === "red")
-      ? `${config.storageUrl}/resources/red-star.svg`
-      : props.color === "blue"
-      ? `${config.storageUrl}/resources/blue-square.svg`
-      : props.color === "green"
-      ? `${config.storageUrl}/resources/green-circle.svg`
-      : props.color === "yellow"
-      ? `${config.storageUrl}/resources/yellow-triangle.svg`
-      : ""
-    ), 
-    [props.color]);
+  const iconUrl = useMemo(() => getIconUrl(props.color), [props.color]);
 
   const colorClass = useMemo(() =>
     (props.color === "red"
@@ -30,12 +20,17 @@ export const AnswerCard = (props) => {
     [props.color]);
 
   return (
-    <div className="relative mx-4 my-2 min-h-[70px] md:min-h-[100px] grid grid-cols-[min-content_auto] overflow-hidden rounded">
+    <div className={`relative
+      mx-4 my-2
+      min-h-[70px] md:min-h-[100px]
+      grid grid-cols-[min-content_auto] overflow-hidden rounded
+      cursor-pointer
+      ${props.enableOpacity && "opacity-20"}`}>
       <div className={`${colorClass} inline-block w-[70px] p-5`}>
         <Image src={iconUrl} />
       </div>
       <div className="bg-whiteLight flex justify-center">
-        <div className="self-center bg-whiteLight font-bold text-secondaryDarken text-lg md:text-2xl">
+        <div className="self-center font-bold text-secondaryDarken text-lg md:text-2xl">
           {props.label ?? 'Alternativa'}
         </div>
       </div>

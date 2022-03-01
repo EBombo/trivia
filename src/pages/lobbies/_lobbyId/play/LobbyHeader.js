@@ -27,8 +27,8 @@ export const LobbyHeader = (props) => {
           )}
           <Timer label="Espera que acabe el tiempo..."/>
         </div>
-        <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:row-start-1 md:row-end-2 md:col-start-2 md:col-end-3 mx-4">
-          <div className="aspect-[3/1] w-full h-[270px] bg-secondaryDark"></div>
+        <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:row-start-1 md:row-end-2 md:col-start-2 md:col-end-3 mx-4 text-center">
+          {props.children}
         </div>
         <div className={`text-center ${!props.lobby?.isAdmin && "self-center"} flex flex-row-reverse md:flex-col justify-around items-center`}>
           { props.lobby?.isAdmin && (
