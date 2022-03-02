@@ -11,10 +11,6 @@ export const Timer = (props) => {
 
   const [totalSeconds, setTotalSeconds] = useState(props.totalSeconds ?? 40);
 
-  // const totalSecondsInRad = useMemo(
-  //   () => ((totalSeconds ?? 40) * 2 * Math.PI),
-  //   [totalSeconds]);
-
   const [secondsLeft, setSecondsLeft] = useState(props.secondsLeft ?? 20);
 
   const [secondsLeftPercentage, setSecondsLeftPercentage] = useState(0);

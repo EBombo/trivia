@@ -95,11 +95,6 @@ const EyeInvisibleOutlinedCss = styled(EyeInvisibleOutlined)`
   }
 `;
 
-  // font-size: ${(props) => (props.fontSize ? props.fontSize : "14px")};
-  //
-  // ${mediaQuery.afterTablet} {
-  //   font-size: ${(props) => (props.fontSizeDesktop ? props.fontSizeDesktop : "18px")};
-  // }
 const StyledInput = styled.input`
   width: 100%;
   height: ${(props) => (props.height ? props.height : "36px")};

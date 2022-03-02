@@ -137,19 +137,6 @@ export const LobbyClosed = (props) => {
         >
           Volver al inicio
         </ButtonAnt>
-        {/*
-          <ButtonAnt
-            variant="contained"
-            color="primary"
-            margin="20px auto"
-            width="80%"
-            onClick={() => {
-              props.logout();
-            }}
-          >
-            Salir
-          </ButtonAnt>
-        */}
       </div>
     ),
     []
@@ -233,6 +220,7 @@ export const LobbyClosed = (props) => {
           ))}
         </div>
       )}
+
       {!isVisibleTitle && (
         <div className="footer">
           <div className="anchor-link" onClick={initializeTransitionToListWinners}>
