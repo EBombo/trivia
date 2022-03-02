@@ -1,6 +1,6 @@
 import React, { forwardRef, useEffect, useState } from "reactn";
 import styled from "styled-components";
-import { sizes } from "../../constants";
+import { sizes, mediaQuery } from "../../constants";
 import { EyeInvisibleOutlined, EyeOutlined, SearchOutlined } from "@ant-design/icons";
 import { config } from "../../firebase";
 import { Image } from "../common/Image";

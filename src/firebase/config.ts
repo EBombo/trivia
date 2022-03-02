@@ -40,7 +40,7 @@ let firestoreEvents: firebase.firestore.Firestore;
 let storageEvents: firebase.storage.Storage;
 let authEvents: firebase.auth.Auth;
 
-let firestoreBomboGames : firebase.firestore.Firestore;
+let firestoreBomboGames: firebase.firestore.Firestore;
 
 if (isEmpty(firebase.apps)) {
   // Default connection.

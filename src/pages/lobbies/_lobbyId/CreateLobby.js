@@ -103,7 +103,7 @@ export const CreateLobby = (props) => {
         gameId: game.id,
         updateAt: new Date(),
         createAt: new Date(),
-        startAt: game.isLive ? null : new Date(),
+        startAt: null,
         isLocked: false,
         isClosed: false,
         deleteDuplicated: false,

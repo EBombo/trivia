@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { spinLoaderMin } from "../../../components/common/loader";
 import { LobbyUser } from "./LobbyUser";
 import { LobbyLoading } from "./LobbyLoading";
+import { LobbyClosed } from "./closed/LobbyClosed";
 import { LobbyInPlay } from "./play/LobbyInPlay";
 import { useUser } from "../../../hooks";
 import { snapshotToArray } from "../../../utils";
@@ -115,6 +116,11 @@ export const Lobby = (props) => {
     game,
     ...props,
   };
+
+  const lobbyIsClosed = lobby?.isClosed && authUser?.isAdmin;
+
+  /** Game report. **/
+  if (lobbyIsClosed) return <LobbyClosed {...additionalProps} />;
 
   /** The game is playing. **/
   if (lobby?.isPlaying) return <LobbyInPlay {...additionalProps} />;
