@@ -18,8 +18,9 @@ export const LobbyLoading = (props) => {
     updateLobby();
   }, []);
 
-  return (<div>
-    {authUser.isAdmin ? (
+  return (
+    <div>
+      {authUser.isAdmin ? (
         <>
           <div className="step-one">
             <Image
@@ -64,5 +65,6 @@ export const LobbyLoading = (props) => {
           </div>
         </>
       )}
-  </div>);
+    </div>
+  );
 };

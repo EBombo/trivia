@@ -77,7 +77,7 @@ export const LobbyClosed = (props) => {
   const itemPlayAgain = useMemo(
     () => (
       <div className="item flex">
-        <div className="content-center text-lg md:text-3xl" >
+        <div className="content-center text-lg md:text-3xl">
           <span className="inline-block mb-4">¿Se divirtieron?</span>
           <ButtonAnt
             variant="contained"
@@ -157,7 +157,9 @@ export const LobbyClosed = (props) => {
     );
 
   return showResume ? (
-    <LobbyResumeCss showResumeAnimation={showResumeAnimation} showWinnersAnimation={showWinnersAnimation}
+    <LobbyResumeCss
+      showResumeAnimation={showResumeAnimation}
+      showWinnersAnimation={showWinnersAnimation}
       className="bg-secondary bg-center bg-contain bg-lobby-pattern flex min-h-screen"
     >
       <div className="resume w-full md:w-auto">
@@ -371,4 +373,3 @@ const LobbyWinnersCss = styled.div`
     color: ${(props) => props.theme.basic.white};
   }
 `;
-

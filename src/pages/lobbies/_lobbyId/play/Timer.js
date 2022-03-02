@@ -14,19 +14,15 @@ export const Timer = (props) => {
   const [secondsLeft, setSecondsLeft] = useState(props.secondsLeft ?? 20);
 
   const [secondsLeftPercentage, setSecondsLeftPercentage] = useState(0);
-  
+
   useEffect(() => {
-    setSecondsLeftPercentage(
-      Math.round(((secondsLeft) / totalSeconds) * 100)
-    );
+    setSecondsLeftPercentage(Math.round((secondsLeft / totalSeconds) * 100));
   }, [secondsLeft]);
 
   return (
     <div>
       <div className="text-center font-bold flex flex-row md:flex-col items-center">
-        <div
-          className="inline-flex items-center justify-center overflow-hidden rounded-full"
-        >
+        <div className="inline-flex items-center justify-center overflow-hidden rounded-full">
           <Desktop>
             <svg className="w-40 h-40">
               <circle
@@ -42,7 +38,7 @@ export const Timer = (props) => {
                 className="text-success origin-center scale-x-[-1] rotate-90 transition-all ease-out duration-500"
                 strokeWidth="12"
                 strokeDasharray={totalSeconds}
-                strokeDashoffset={totalSeconds - secondsLeftPercentage / 100 * totalSeconds}
+                strokeDashoffset={totalSeconds - (secondsLeftPercentage / 100) * totalSeconds}
                 strokeLinecap="round"
                 stroke="currentColor"
                 fill="transparent"
@@ -68,7 +64,7 @@ export const Timer = (props) => {
                 className="text-success origin-center  transition-all ease-out duration-500"
                 strokeWidth="8"
                 strokeDasharray={totalSeconds}
-                strokeDashoffset={totalSeconds - secondsLeftPercentage / 100 * totalSeconds}
+                strokeDashoffset={totalSeconds - (secondsLeftPercentage / 100) * totalSeconds}
                 strokeLinecap="round"
                 stroke="currentColor"
                 fill="transparent"
@@ -89,4 +85,4 @@ export const Timer = (props) => {
       </div>
     </div>
   );
-}
+};

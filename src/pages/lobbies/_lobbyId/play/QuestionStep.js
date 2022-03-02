@@ -8,4 +8,3 @@ export const QuestionStep = (props) => (
     <div class="relative font-bold text-whiteLight text-lg pl-2 pr-10">10 de 30</div>
   </div>
 );
-

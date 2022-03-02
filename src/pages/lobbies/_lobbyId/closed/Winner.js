@@ -67,4 +67,3 @@ const WinnerCss = styled.div`
     }
   }
 `;
-
