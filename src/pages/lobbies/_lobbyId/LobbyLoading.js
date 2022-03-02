@@ -1,6 +1,7 @@
 import React, { useEffect, useGlobal, useRef, useState } from "reactn";
 import { config, firestore } from "../../../firebase";
 import { timeoutPromise } from "../../../utils/promised";
+import { INTRODUCING_QUESTION } from "../../../components/common/DataList";
 
 export const LobbyLoading = (props) => {
   const [authUser] = useGlobal("user");
@@ -11,6 +12,7 @@ export const LobbyLoading = (props) => {
       await timeoutPromise(10000);
 
       await firestore.doc(`lobbies/${props.lobby.id}`).update({
+        state: INTRODUCING_QUESTION,
         isPlaying: true,
       });
     };

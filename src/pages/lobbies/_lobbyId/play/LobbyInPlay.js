@@ -53,6 +53,12 @@ export const LobbyInPlay = (props) => {
   // const typeAnswer = ALTERNATIVE;
   const typeAnswer = OPEN;
 
+  useEffect(() => {
+    if (authUser.isAdmin) {
+
+    }
+  }, []);
+
   if (props.lobby.game?.state === LOADING_STATE)
     return (
       <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto text-center flex flex-col justify-center">
