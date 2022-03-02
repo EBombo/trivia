@@ -1,20 +1,21 @@
 import React, { useEffect, useGlobal, useRef, useState } from "reactn";
 import { config, firestore } from "../../../firebase";
+import { timeoutPromise } from "../../../utils/promised";
 
 export const LobbyLoading = (props) => {
   const [authUser] = useGlobal("user");
 
+  // awaits for 10 seconds then go to the game
   useEffect(() => {
-    const timer = setTimeout(() => {
-      const updateLobby = async () =>
-        await firestore.doc(`lobbies/${props.lobby.id}`).update({
-          isPlaying: true,
-        });
+    const updateLobby = async () => {
+      await timeoutPromise(10000);
 
-      updateLobby();
-    }, 10000);
+      await firestore.doc(`lobbies/${props.lobby.id}`).update({
+        isPlaying: true,
+      });
+    };
 
-    return () => clearTimeout(timer);
+    updateLobby();
   }, []);
 
   return (<div>
