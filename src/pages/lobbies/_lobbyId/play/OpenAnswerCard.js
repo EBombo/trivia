@@ -11,7 +11,7 @@ export const OpenAnswerCard = (props) => {
         {props.isAnswered && (
           <Image
             className="absolute top-0 right-2"
-            src={`${config.storageUrl}/resources/check_black.svg`}
+            src={`${config.storageUrl}/resources/check-black.svg`}
             width="36px"
           />
         )}

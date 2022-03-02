@@ -147,7 +147,7 @@ export const GameMenu = (props) => {
                         }}
                       >
                         <Image
-                          src={`${config.storageUrl}/resources/close_white.svg`}
+                          src={`${config.storageUrl}/resources/close-white.svg`}
                           height="15px"
                           width="15px"
                           cursor="pointer"
