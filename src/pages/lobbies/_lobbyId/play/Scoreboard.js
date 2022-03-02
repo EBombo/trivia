@@ -43,6 +43,7 @@ export const Scoreboard = (props) => {
         >
           Tu puesto
         </div>
+
         {RankingItem({}, 0)}
 
         {true && (
