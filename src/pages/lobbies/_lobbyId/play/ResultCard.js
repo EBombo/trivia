@@ -35,7 +35,6 @@ export const ResultCard = (props) => (
       )
     }
     
-
     <div className="text-black">Puntaje actual: 1500 pts</div>
     <div className="text-black">Puesto: 25/200</div>
   </div> 
