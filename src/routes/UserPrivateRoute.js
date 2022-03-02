@@ -1,5 +1,5 @@
-import React, {useEffect, useGlobal} from "reactn";
-import {spinLoader} from "../components/common/loader";
+import React, { useEffect, useGlobal } from "reactn";
+import { spinLoader } from "../components/common/loader";
 
 export const UserPrivateRoute = (props) => {
   const [authUser] = useGlobal("user");

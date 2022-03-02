@@ -65,4 +65,3 @@ export const LobbyLoading = (props) => {
       )}
   </div>);
 };
-

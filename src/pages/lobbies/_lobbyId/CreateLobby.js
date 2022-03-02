@@ -171,7 +171,6 @@ export const CreateLobby = (props) => {
         onAudioChange={(audioId) => setSettings({ ...settings, audio: { id: audioId } })}
         onLanguageChange={(language) => setSettings({ ...settings, language })}
         onUserIdentity={(userIdentity) => setSettings({ ...settings, userIdentity })}
-
         onAwards={(awards) => setSettings({ ...settings, awards })}
       />
     </div>

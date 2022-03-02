@@ -1,9 +1,9 @@
-import {useEffect} from "react";
+import { useEffect } from "react";
 import styled from "styled-components";
-import {timeoutPromise} from "../src/utils/promised";
-import {useRouter} from "next/router";
-import {Image} from "../src/components/common/Image";
-import {config} from "../src/firebase";
+import { timeoutPromise } from "../src/utils/promised";
+import { useRouter } from "next/router";
+import { Image } from "../src/components/common/Image";
+import { config } from "../src/firebase";
 
 const ErrorPage = () => {
   const router = useRouter();

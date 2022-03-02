@@ -1,4 +1,4 @@
-import {config} from "../../firebase";
+import { config } from "../../firebase";
 
 export const avatars = [
   `${config.storageUrl}/resources/avatars/dog.svg`,

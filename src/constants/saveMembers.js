@@ -1,6 +1,6 @@
-import {firestoreEvents} from "../firebase";
-import {snapshotToArray} from "../utils";
-import {firebase} from "../firebase/config";
+import { firestoreEvents } from "../firebase";
+import { snapshotToArray } from "../utils";
+import { firebase } from "../firebase/config";
 
 export const saveMembers = async (lobby, users) => {
   if (!lobby.companyId) return;

@@ -1,7 +1,7 @@
 import React from "reactn";
 import styled from "styled-components";
-import {Wheel} from "react-custom-roulette";
-import {mediaQuery} from "../../constants";
+import { Wheel } from "react-custom-roulette";
+import { mediaQuery } from "../../constants";
 
 const FortuneWheel = (props) => {
   const spin = (e) => {
