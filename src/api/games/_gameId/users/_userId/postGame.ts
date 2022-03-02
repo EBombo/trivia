@@ -29,8 +29,7 @@ const postGame = async (req: NextApiRequest, res: NextApiResponse) => {
         deleted: false,
       });
 
-    const questionsPromises = questions.map(async (question: Question) => {
-      console.log(question);
+    const questionsPromises = questions.map(async (question: Question, index: number) => {
       await firestore
         .collection("games")
         .doc(game.id)
@@ -38,6 +37,7 @@ const postGame = async (req: NextApiRequest, res: NextApiResponse) => {
         .doc(question.id)
         .set({
           ...question,
+          questionNumber: index + 1,
           createAt: new Date(),
           updateAt: new Date(),
           deleted: false,
