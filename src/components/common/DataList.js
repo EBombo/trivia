@@ -81,17 +81,18 @@ export const languages = [
   { key: "english", value: "english", name: "Inglés" },
 ];
 
+// game states
 export const INITIALIZING = "INITIALIZING";
-
 export const INTRODUCING_QUESTION = "INTRODUCING_QUESTION";
 export const ANSWERING_QUESTION = "ANSWERING_QUESTION";
 export const QUESTION_TIMEOUT = "ANSWERING_QUESTION";
 export const QUESTION_RESULTS = "QUESTION_RESULTS";
 export const RANKING = "RANKING";
 
-export const LOADING_STATE = "LOADING";
-export const QUESTION_RESULT_STATE = "QUESTION_RESULT";
-export const SHOW_RANKING_STATE = "SHOW_RANKING_STATE";
+// type questions
+export const TRUE_FALSE_QUESTION_TYPE = "trueFalse";
+export const ALTERNATIVES_QUESTION_TYPE = "quiz";
+export const OPEN_QUESTION_TYPE = "shortAnswer";
 
 export const getIconUrl = (color) =>
   color === "red"
@@ -103,3 +104,4 @@ export const getIconUrl = (color) =>
     : color === "yellow"
     ? `${config.storageUrl}/resources/yellow-triangle.svg`
     : "";
+

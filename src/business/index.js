@@ -9,3 +9,6 @@ export const SPEED = {
   max: 20,
   default: 10,
 };
+
+export const getCurrentQuestion = (questions, currentQuestionNumber) =>
+  find(questions, (q) => q.questionNumber === currentQuestionNumber);

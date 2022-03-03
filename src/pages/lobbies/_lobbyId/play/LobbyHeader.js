@@ -1,8 +1,9 @@
-import React, { useGlobal, useState } from "reactn";
+import React, { useGlobal, useEffect, useState } from "reactn";
 import { useRouter } from "next/router";
 import { Timer } from "./Timer";
 import { QuestionStep } from "./QuestionStep";
 import { ButtonAnt } from "../../../../components/form";
+import { firestore } from "../../../../firebase";
 
 export const LobbyHeader = (props) => {
   const router = useRouter();
@@ -10,6 +11,28 @@ export const LobbyHeader = (props) => {
   const { lobbyId } = router.query;
 
   const [authUser] = useGlobal("user");
+
+  const [question, setQuestion] = useState(null);
+
+  useEffect(() => {
+    if (props.lobby.game.state === ANSWERING_QUESTION) {
+      const question_ = getCurrentQuestion(props.lobby.game.questions, props.lobby.game.currentQuestionNumber ?? 1);
+
+      setQuestion(question_);
+    }
+  }, [props.lobby.game.state]);
+
+  const totalSeconds = useMemo(() => {
+    if (typeof question.time === "string")
+      return parseInt(question.time) 
+    return null
+  }, [question])
+
+  const updateGameState = async (newGame) => {
+    await firestore.doc(`lobbies/${lobbyId}`).update({
+      game: newGame,
+    });
+  };
 
   return (
     <div className="grid grid-rows-[minmax(160px,min-content)_auto]">
@@ -30,7 +53,10 @@ export const LobbyHeader = (props) => {
               </ButtonAnt>
             </div>
           )}
-          <Timer label="Espera que acabe el tiempo..." />
+          <Timer
+            label="Espera que acabe el tiempo..."
+            onUpdateGame={updateGameState}
+            totalSeconds={totalSeconds} />
         </div>
         <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:row-start-1 md:row-end-2 md:col-start-2 md:col-end-3 mx-4 text-center">
           {props.children}
