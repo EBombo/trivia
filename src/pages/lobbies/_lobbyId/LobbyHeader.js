@@ -52,8 +52,8 @@ export const LobbyHeader = (props) => {
       let newLobby = {
         isLocked,
         startAt: gameStarted,
-        state: INITIALIZING,
         updateAt: new Date(),
+        game: { ...props.lobby.game, state: INITIALIZING },
       };
 
       // Add users to lobby.

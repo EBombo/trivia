@@ -1,3 +1,5 @@
+import find from "lodash/find";
+
 export const ANIMATION = {
   min: 4,
   max: 10,

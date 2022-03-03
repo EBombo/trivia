@@ -8,6 +8,7 @@ import { LobbyClosed } from "./closed/LobbyClosed";
 import { LobbyInPlay } from "./play/LobbyInPlay";
 import { useUser } from "../../../hooks";
 import { snapshotToArray } from "../../../utils";
+import { INITIALIZING } from "../../../components/common/DataList";
 
 export const Lobby = (props) => {
   const router = useRouter();
@@ -126,7 +127,7 @@ export const Lobby = (props) => {
   if (lobby?.isPlaying) return <LobbyInPlay {...additionalProps} />;
 
   /** Loading page. **/
-  if (lobby?.state === INITIALIZING) return <LobbyLoading {...additionalProps} />;
+  if (lobby?.game.state === INITIALIZING) return <LobbyLoading {...additionalProps} />;
 
   /** Before starting the game. **/
   return <LobbyUser {...additionalProps} />;

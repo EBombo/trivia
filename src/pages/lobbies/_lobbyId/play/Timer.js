@@ -1,37 +1,42 @@
 import React, { useGlobal, useState, useEffect, useMemo } from "reactn";
-import { useRouter } from "next/router";
 import { Tablet, Desktop } from "../../../../constants";
 import { useInterval } from "../../../../hooks/useInterval";
-import { QUESTION_TIMEOUT } from "../../../../components/common/DataList";
+import { ANSWERING_QUESTION, QUESTION_TIMEOUT } from "../../../../components/common/DataList";
 
 export const Timer = (props) => {
-  // const router = useRouter();
 
-  // const { lobbyId } = router.query;
+  const [authUser] = useGlobal("user");
 
-  // const [authUser] = useGlobal("user");
+  const totalSeconds = useMemo(() => {
+    if (typeof props.time === "number")
+      return props.time;
+    else if (typeof props.time === "string")
+      return parseInt(props.time);
+    return null
+  }, [props.time])
 
-  const [totalSeconds] = useState(props.totalSeconds ?? 40);
-
-  const [secondsLeft, setSecondsLeft] = useState(props.lobby.game.secondsLeft ?? props.totalSeconds);
+  const [secondsLeft, setSecondsLeft] = useState(props.lobby.game.secondsLeft ?? totalSeconds);
 
   const [secondsLeftPercentage, setSecondsLeftPercentage] = useState(0);
 
   useInterval(() => {
     if (secondsLeft === null) return null;
 
+    // only admin has control over timer
+    if (!authUser.isAdmin) return;
+
+    if (props.lobby.game.state === QUESTION_TIMEOUT) return null;
+
     if (secondsLeft <= 0 && props.lobby.game.state === ANSWERING_QUESTION)
       return props.onUpdateGame?.({ state: QUESTION_TIMEOUT });
 
-    if (props.lobby.state === QUESTION_TIMEOUT) return;
-
-    setSecondsLeft(secondsLeft - 1);
+    // setSecondsLeft(secondsLeft - 1);
   }, 1000);
 
   useEffect(() => {
     setSecondsLeftPercentage(Math.round((secondsLeft / totalSeconds) * 100));
 
-    props.onUpdateGame?.({ secondsLeft: secondsLeft })
+    props.onUpdateGame?.({ secondsLeft: secondsLeft });
   }, [secondsLeft]);
 
   return (

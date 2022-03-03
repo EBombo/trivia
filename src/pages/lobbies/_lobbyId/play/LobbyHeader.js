@@ -1,9 +1,10 @@
-import React, { useGlobal, useEffect, useState } from "reactn";
+import React, { useGlobal, useEffect, useState, useMemo } from "reactn";
 import { useRouter } from "next/router";
 import { Timer } from "./Timer";
 import { QuestionStep } from "./QuestionStep";
 import { ButtonAnt } from "../../../../components/form";
 import { firestore } from "../../../../firebase";
+import { RANKING } from "../../../../components/common/DataList";
 
 export const LobbyHeader = (props) => {
   const router = useRouter();
@@ -12,25 +13,15 @@ export const LobbyHeader = (props) => {
 
   const [authUser] = useGlobal("user");
 
-  const [question, setQuestion] = useState(null);
-
-  useEffect(() => {
-    if (props.lobby.game.state === ANSWERING_QUESTION) {
-      const question_ = getCurrentQuestion(props.lobby.game.questions, props.lobby.game.currentQuestionNumber ?? 1);
-
-      setQuestion(question_);
-    }
-  }, [props.lobby.game.state]);
-
-  const totalSeconds = useMemo(() => {
-    if (typeof question.time === "string")
-      return parseInt(question.time) 
-    return null
-  }, [question])
-
   const updateGameState = async (newGame) => {
     await firestore.doc(`lobbies/${lobbyId}`).update({
-      game: newGame,
+      game: { ...props.lobby.game, ...newGame},
+    });
+  };
+
+  const goToRanking = async () => {
+    await firestore.doc(`lobbies/${lobbyId}`).update({
+      game: { ...props.lobby.game, state: RANKING},
     });
   };
 
@@ -40,8 +31,7 @@ export const LobbyHeader = (props) => {
         <QuestionStep />
 
         <div className="relative self-center w-full text-secondaryDarken">
-          ¿Esta es una pregunta muy achorada muy achorada muy achorad muy achoradaa muy achoradaa muy achoradaa muy
-          achorada muy achorada muy achoradaaaa?
+          { props.question?.question }
         </div>
       </div>
       <div className="grid grid-cols-[min-content_1fr] grid-rows-[auto auto] md:grid md:grid-cols-[1fr_3fr_1fr] md:grid-rows-1 text-whiteLight bg-secondaryDark bg-opacity-50 py-8">
@@ -56,7 +46,7 @@ export const LobbyHeader = (props) => {
           <Timer
             label="Espera que acabe el tiempo..."
             onUpdateGame={updateGameState}
-            totalSeconds={totalSeconds} />
+            {...props} />
         </div>
         <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:row-start-1 md:row-end-2 md:col-start-2 md:col-end-3 mx-4 text-center">
           {props.children}
@@ -66,9 +56,9 @@ export const LobbyHeader = (props) => {
             !props.lobby?.isAdmin && "self-center"
           } flex flex-row-reverse md:flex-col justify-around items-center`}
         >
-          {props.lobby?.isAdmin && (
+          {authUser.isAdmin && (
             <div className="inline-block md:mb-8">
-              <ButtonAnt size="big" color="success" className="font-bold text-lg">
+              <ButtonAnt size="big" color="success" className="font-bold text-lg" onClick={goToRanking}>
                 Siguiente
               </ButtonAnt>
             </div>

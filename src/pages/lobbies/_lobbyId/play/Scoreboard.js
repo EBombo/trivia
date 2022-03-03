@@ -1,10 +1,12 @@
-import React from "reactn";
+import React, { useGlobal } from "reactn";
 import { config, hostName } from "../../../../firebase";
 import { Image } from "../../../../components/common/Image";
 import { ButtonAnt } from "../../../../components/form/Button";
 
 export const Scoreboard = (props) => {
   const ranking = (props.ranking ?? [{}, {}, {}, {}, {}]).slice(0, 5);
+
+  const [authUser] = useGlobal("user");
 
   const RankingItem = (user, i) => (
     <div
@@ -24,11 +26,11 @@ export const Scoreboard = (props) => {
   );
 
   return (
-    <div className="font-['Lato'] font-bold bg-secondary bg-center bg-contain bg-lobby-pattern w-screen min-h-screen overflow-auto text-center">
-      <div className="min-h-screen flex flex-col py-5 bg-opacity-50 px-4">
-        {true && (
+    <div className="font-['Lato'] font-bold bg-secondary bg-center bg-contain bg-lobby-pattern w-screen overflow-auto text-center">
+      <div className="min-h-[calc(100vh-50px)] flex flex-col py-5 bg-opacity-50 px-4">
+        {authUser.isAdmin && (
           <div className="mb-20 flex justify-end">
-            <ButtonAnt color="success" width="200px" className="font-bold text-xl px-8">
+            <ButtonAnt color="success" width="200px" className="font-bold text-xl px-8" onClick={props.onGoToNextQuestion?.()}>
               Siguiente
             </ButtonAnt>
           </div>
@@ -46,7 +48,7 @@ export const Scoreboard = (props) => {
 
         {RankingItem({}, 0)}
 
-        {true && (
+        {authUser.isAdmin && (
           <div className="my-6 text-center flex justify-center">
             <ButtonAnt color="danger" width="200px" className="inline-block font-bold text-lg px-8">
               Finalizar

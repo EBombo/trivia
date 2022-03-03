@@ -6,6 +6,8 @@ import defaultTo from "lodash/defaultTo";
 import { useRouter } from "next/router";
 import { useSendError, useUser } from "../../../hooks";
 import { GameMenu } from "../../../components/GameMenu";
+import { snapshotToArray } from "../../../utils";
+import { INITIALIZING } from "../../../components/common/DataList";
 
 export const CreateLobby = (props) => {
   const { Fetch } = useFetch();
@@ -21,6 +23,8 @@ export const CreateLobby = (props) => {
   const [, setAuthUser] = useGlobal("user");
 
   const [game, setGame] = useState(null);
+  const [gameQuestions, setGameQuestions] = useState([]);
+
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingSave, setIsLoadingSave] = useState(false);
   const [settings, setSettings] = useState({});
@@ -51,15 +55,22 @@ export const CreateLobby = (props) => {
       return gameRef.data();
     };
 
+    const fetchGameQuestions = async () => {
+      const questionsRef = await firestore.collection(`games/${gameId}/questions`).get();
+      return snapshotToArray(questionsRef);
+    };
+
     const fetchUserByToken = async () => {
       try {
         const promiseUser = verifyUser();
         const promiseGame = fetchGame();
+        const promiseQuestions = fetchGameQuestions();
 
-        const response = await Promise.all([promiseUser, promiseGame]);
+        const response = await Promise.all([promiseUser, promiseGame, promiseQuestions]);
 
         const authUser = response[0];
         const game = response[1];
+        const questions = response[2];
 
         const formatUser = {
           id: authUser.uid,
@@ -75,7 +86,8 @@ export const CreateLobby = (props) => {
 
         await setAuthUser(formatUser);
         setLSAuthUser(formatUser);
-        setGame(game);
+        setGame({ ...game });
+        setGameQuestions(questions);
         setSettings({ ...settings });
         setIsLoading(false);
       } catch (error) {
@@ -115,11 +127,14 @@ export const CreateLobby = (props) => {
       };
 
       const promiseLobby = lobbiesRef.doc(lobbyId).set(newLobby);
+      const promisesLobbyGameQuestions = gameQuestions.map(
+        question => firestore.collection(`lobbies/${lobbyId}/gameQuestions`).doc(question.id).set(question));
+
       const promiseLobbyBomboGames = lobbiesBomboGamesRef.doc(lobbyId).set(newLobby);
 
       const promiseCountPlays = firestore.doc(`games/${game.id}`).update({ countPlays: (game?.countPlays ?? 0) + 1 });
 
-      await Promise.all([promiseLobby, promiseLobbyBomboGames, promiseCountPlays]);
+      await Promise.all([promiseLobby, promiseLobbyBomboGames, promiseCountPlays, ...promisesLobbyGameQuestions]);
 
       if (!game.isLive) {
         const gameOptionsQuery = await firestore.collection("games").doc(gameId).collection("options").get();
