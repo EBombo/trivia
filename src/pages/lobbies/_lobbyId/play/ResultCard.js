@@ -38,3 +38,4 @@ export const ResultCard = (props) => (
     <div className="text-black">Puesto: 25/200</div>
   </div>
 );
+
