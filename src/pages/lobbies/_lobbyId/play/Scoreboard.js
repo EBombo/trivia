@@ -30,7 +30,11 @@ export const Scoreboard = (props) => {
       <div className="min-h-[calc(100vh-50px)] flex flex-col py-5 bg-opacity-50 px-4">
         {authUser.isAdmin && (
           <div className="mb-20 flex justify-end">
-            <ButtonAnt color="success" width="200px" className="font-bold text-xl px-8" onClick={props.onGoToNextQuestion?.()}>
+            <ButtonAnt
+              color="success"
+              width="200px"
+              className="font-bold text-xl px-8"
+              onClick={() => props.onGoToNextQuestion?.()}>
               Siguiente
             </ButtonAnt>
           </div>
