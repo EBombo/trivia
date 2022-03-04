@@ -61,7 +61,7 @@ export const Lobby = (props) => {
         }
 
         // If the game is closed logout user.
-        if (currentLobby?.isClosed) return logout();
+        if (currentLobby?.isClosed && !authUser.isAdmin) return logout();
 
         setAuthUserLs({ ...authUser, lobby: currentLobby });
         await setAuthUser({ ...authUser, lobby: currentLobby });
@@ -121,7 +121,7 @@ export const Lobby = (props) => {
   const lobbyIsClosed = lobby?.isClosed && authUser?.isAdmin;
 
   /** Game report. **/
-  if (lobbyIsClosed) return <LobbyClosed {...additionalProps} />;
+  if (lobbyIsClosed) return <LobbyClosed {...additionalProps} onLogout={() => logout()} />;
 
   /** The game is playing. **/
   if (lobby?.isPlaying) return <LobbyInPlay {...additionalProps} />;
