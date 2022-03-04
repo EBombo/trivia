@@ -1,4 +1,4 @@
-import React, { useGlobal } from "reactn";
+import React, { useGlobal, useMemo } from "reactn";
 import { config, hostName } from "../../../../firebase";
 import { Image } from "../../../../components/common/Image";
 import { ButtonAnt } from "../../../../components/form/Button";
@@ -7,6 +7,10 @@ export const Scoreboard = (props) => {
   const ranking = (props.ranking ?? [{}, {}, {}, {}, {}]).slice(0, 5);
 
   const [authUser] = useGlobal("user");
+
+  const isLastQuestion =  useMemo(() =>
+    (props.currentQuestionNumber >= props.questions.length),
+    [props.lobby.game]);
 
   const RankingItem = (user, i) => (
     <div
@@ -28,7 +32,7 @@ export const Scoreboard = (props) => {
   return (
     <div className="font-['Lato'] font-bold bg-secondary bg-center bg-contain bg-lobby-pattern w-screen overflow-auto text-center">
       <div className="min-h-[calc(100vh-50px)] flex flex-col py-5 bg-opacity-50 px-4">
-        {authUser.isAdmin && (
+        {authUser.isAdmin && !isLastQuestion && (
           <div className="mb-20 flex justify-end">
             <ButtonAnt
               color="success"
@@ -54,7 +58,11 @@ export const Scoreboard = (props) => {
 
         {authUser.isAdmin && (
           <div className="my-6 text-center flex justify-center">
-            <ButtonAnt color="danger" width="200px" className="inline-block font-bold text-lg px-8">
+            <ButtonAnt
+              color="danger"
+              width="200px"
+              className="inline-block font-bold text-lg px-8"
+              onClick={() => props.onCloseLobby?.()}>
               Finalizar
             </ButtonAnt>
           </div>

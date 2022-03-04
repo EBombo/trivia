@@ -10,7 +10,7 @@ import { darkTheme } from "../../../../theme";
 import defaultTo from "lodash/defaultTo";
 import isEmpty from "lodash/isEmpty";
 import { Image } from "../../../../components/common/Image";
-import { LobbyHeader } from "./LobbyHeader";
+import { InPlayHeader } from "./InPlayHeader";
 import { AnswerCard } from "./AnswerCard";
 import { TrueFalseAnswerCard } from "./TrueFalseAnswerCard";
 import { OpenAnswerCard } from "./OpenAnswerCard";
@@ -110,6 +110,12 @@ export const LobbyInPlay = (props) => {
     setShowImage(true);
   };
 
+  const closeLobby = async () => {
+    await firestore.doc(`lobbies/${lobbyId}`).update({
+      isClosed: true,
+    });
+  };
+
   if (!question)
     return (
       <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto text-center flex flex-col justify-center">
@@ -138,7 +144,12 @@ export const LobbyInPlay = (props) => {
 
   if (props.lobby.game?.state === RANKING) return (<>
     <UserLayout {...props} />
-    <Scoreboard onGoToNextQuestion={goToNextQuestion} />
+    <Scoreboard
+      onGoToNextQuestion={goToNextQuestion}
+      questions={questions}
+      currentQuestionNumber={currentQuestionNumber}
+      onCloseLobby={closeLobby}
+      {...props} />
     </>);
 
   if (props.lobby.game?.state === QUESTION_TIMEOUT && !authUser.isAdmin)
@@ -156,7 +167,7 @@ export const LobbyInPlay = (props) => {
     <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto">
       <UserLayout {...props} />
 
-      <LobbyHeader time={question?.time} {...props} question={question}>
+      <InPlayHeader time={question?.time} {...props} question={question}>
         {showImage ? (
           <div className="aspect-[4/1] w-full bg-secondaryDark"></div>
         ) : (
@@ -190,11 +201,11 @@ export const LobbyInPlay = (props) => {
             </span>
           </div>
         )}
-      </LobbyHeader>
+      </InPlayHeader>
 
       <div className="grid md:grid-cols-[1fr_3fr_1fr] mb-8 bg-secondaryDark bg-opacity-50 py-8">
         <div className="text-center self-end">
-          <span className="text-whiteLight text-lg cursor-pointer">Finalizar</span>
+          <span className="text-whiteLight text-lg cursor-pointer" onClick={() => closeLobby()}>Finalizar</span>
         </div>
         <div className="grid md:grid-cols-2 md:col-start-2 md:col-end-3">
           {question?.type === ALTERNATIVES_QUESTION_TYPE
