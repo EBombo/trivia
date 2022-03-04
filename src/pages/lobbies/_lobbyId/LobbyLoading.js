@@ -284,4 +284,3 @@ const LoadingGameContainer = styled.div`
     }
   }
 `;
-

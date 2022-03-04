@@ -8,9 +8,7 @@ export const Scoreboard = (props) => {
 
   const [authUser] = useGlobal("user");
 
-  const isLastQuestion =  useMemo(() =>
-    (props.currentQuestionNumber >= props.questions.length),
-    [props.lobby.game]);
+  const isLastQuestion = useMemo(() => props.currentQuestionNumber >= props.questions.length, [props.lobby.game]);
 
   const RankingItem = (user, i) => (
     <div
@@ -38,7 +36,8 @@ export const Scoreboard = (props) => {
               color="success"
               width="200px"
               className="font-bold text-xl px-8"
-              onClick={() => props.onGoToNextQuestion?.()}>
+              onClick={() => props.onGoToNextQuestion?.()}
+            >
               Siguiente
             </ButtonAnt>
           </div>
@@ -62,7 +61,8 @@ export const Scoreboard = (props) => {
               color="danger"
               width="200px"
               className="inline-block font-bold text-lg px-8"
-              onClick={() => props.onCloseLobby?.()}>
+              onClick={() => props.onCloseLobby?.()}
+            >
               Finalizar
             </ButtonAnt>
           </div>

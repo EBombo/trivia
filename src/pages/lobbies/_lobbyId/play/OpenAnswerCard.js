@@ -6,7 +6,6 @@ import { Input, ButtonAnt } from "../../../../components/form";
 import { Image } from "../../../../components/common/Image";
 
 export const OpenAnswerCard = (props) => {
-
   const schema = object().shape({
     answer: string().required(),
   });
@@ -24,13 +23,15 @@ export const OpenAnswerCard = (props) => {
     <div className="relative flex flex-col justify-center">
       <form onSubmit={handleSubmit(submitAnswer)}>
         <div className={`mx-5 py-5 relative`}>
-          <Input className="font-bold text-lg md:text-2xl"
+          <Input
+            className="font-bold text-lg md:text-2xl"
             fontSize="18px"
             fontSizeDesktop="24px"
             type="text"
             name="answer"
             ref={register}
-            height="56px" />
+            height="56px"
+          />
           {props.isAnswered && (
             <Image
               className="absolute top-0 right-2"

@@ -23,10 +23,16 @@ import { ResultCard } from "./ResultCard";
 import { Scoreboard } from "./Scoreboard";
 import { LobbyQuestionIntroduction } from "./LobbyQuestionIntroduction";
 import { getCurrentQuestion } from "../../../../business";
-import { ALTERNATIVES_QUESTION_TYPE, ANSWERING_QUESTION,
-  INTRODUCING_QUESTION, OPEN_QUESTION_TYPE, QUESTION_RESULTS,
-  QUESTION_TIMEOUT, RANKING,
-  TRUE_FALSE_QUESTION_TYPE } from "../../../../components/common/DataList";
+import {
+  ALTERNATIVES_QUESTION_TYPE,
+  ANSWERING_QUESTION,
+  INTRODUCING_QUESTION,
+  OPEN_QUESTION_TYPE,
+  QUESTION_RESULTS,
+  QUESTION_TIMEOUT,
+  RANKING,
+  TRUE_FALSE_QUESTION_TYPE,
+} from "../../../../components/common/DataList";
 
 export const LobbyInPlay = (props) => {
   const router = useRouter();
@@ -41,10 +47,7 @@ export const LobbyInPlay = (props) => {
 
   const [showImage, setShowImage] = useState(props.lobby.game.state === QUESTION_TIMEOUT ? false : true);
 
-  const currentQuestionNumber = useMemo(
-    () => props.lobby.game.currentQuestionNumber ?? 1,
-    [props.lobby.game]
-  );
+  const currentQuestionNumber = useMemo(() => props.lobby.game.currentQuestionNumber ?? 1, [props.lobby.game]);
 
   useEffect(() => {
     const question_ = getCurrentQuestion(questions, currentQuestionNumber);
@@ -52,7 +55,6 @@ export const LobbyInPlay = (props) => {
 
     if (authUser.isAdmin) {
     }
-
   }, []);
 
   useEffect(() => {
@@ -63,16 +65,14 @@ export const LobbyInPlay = (props) => {
       const gameQuestions = snapshotToArray(gameQuestionsSnapshot);
 
       setQuestions(gameQuestions);
-      setQuestion(gameQuestions.find(question => question.questionNumber === currentQuestionNumber));
+      setQuestion(gameQuestions.find((question) => question.questionNumber === currentQuestionNumber));
     };
 
     fetchQuestions();
   }, [questions]);
 
   useEffect(() => {
-    if (props.lobby.game.state === QUESTION_TIMEOUT)
-      setShowImage(false);
-
+    if (props.lobby.game.state === QUESTION_TIMEOUT) setShowImage(false);
   }, [props.lobby.game.state]);
 
   // creates user answer and update user score
@@ -87,9 +87,12 @@ export const LobbyInPlay = (props) => {
 
     const addAnswerPromise = firestore.collection(`lobbies/${lobbyId}/answers`).add(data);
 
-    const updateScorePromise = firestore.collection(`lobbies/${lobbyId}/users`).doc(authUser.id).update({
-      score: authfirebase.firestore.FieldValue.increment(20),
-    });
+    const updateScorePromise = firestore
+      .collection(`lobbies/${lobbyId}/users`)
+      .doc(authUser.id)
+      .update({
+        score: authfirebase.firestore.FieldValue.increment(20),
+      });
 
     await Promise.all([addAnswerPromise, updateScorePromise]);
   };
@@ -126,8 +129,8 @@ export const LobbyInPlay = (props) => {
       </div>
     );
 
-  if (props.lobby.game?.state === INTRODUCING_QUESTION) return (
-    <LobbyQuestionIntroduction question={question} {...props}/>);
+  if (props.lobby.game?.state === INTRODUCING_QUESTION)
+    return <LobbyQuestionIntroduction question={question} {...props} />;
 
   // if user has already answered
   // TODO  check variable if user has answered
@@ -142,15 +145,19 @@ export const LobbyInPlay = (props) => {
       </div>
     );
 
-  if (props.lobby.game?.state === RANKING) return (<>
-    <UserLayout {...props} />
-    <Scoreboard
-      onGoToNextQuestion={goToNextQuestion}
-      questions={questions}
-      currentQuestionNumber={currentQuestionNumber}
-      onCloseLobby={closeLobby}
-      {...props} />
-    </>);
+  if (props.lobby.game?.state === RANKING)
+    return (
+      <>
+        <UserLayout {...props} />
+        <Scoreboard
+          onGoToNextQuestion={goToNextQuestion}
+          questions={questions}
+          currentQuestionNumber={currentQuestionNumber}
+          onCloseLobby={closeLobby}
+          {...props}
+        />
+      </>
+    );
 
   if (props.lobby.game?.state === QUESTION_TIMEOUT && !authUser.isAdmin)
     return (
@@ -205,39 +212,28 @@ export const LobbyInPlay = (props) => {
 
       <div className="grid md:grid-cols-[1fr_3fr_1fr] mb-8 bg-secondaryDark bg-opacity-50 py-8">
         <div className="text-center self-end">
-          <span className="text-whiteLight text-lg cursor-pointer" onClick={() => closeLobby()}>Finalizar</span>
+          <span className="text-whiteLight text-lg cursor-pointer" onClick={() => closeLobby()}>
+            Finalizar
+          </span>
         </div>
         <div className="grid md:grid-cols-2 md:col-start-2 md:col-end-3">
-          {question?.type === ALTERNATIVES_QUESTION_TYPE
-            ? question?.options.map((option, i) => (
-                <AnswerCard
-                  key={`answer-option-${i}`}
-                  label={option}
-                  onClick={() => onAnswering(option)}
-                  color={i === 0
-                    ? "red"
-                    : i === 1
-                    ? "green"
-                    : i === 2
-                    ? "yellow"
-                    : i === 3
-                    ? "blue"
-                    : "primary"} />
-              ))
-            : question?.type === TRUE_FALSE_QUESTION_TYPE ? (
+          {question?.type === ALTERNATIVES_QUESTION_TYPE ? (
+            question?.options.map((option, i) => (
+              <AnswerCard
+                key={`answer-option-${i}`}
+                label={option}
+                onClick={() => onAnswering(option)}
+                color={i === 0 ? "red" : i === 1 ? "green" : i === 2 ? "yellow" : i === 3 ? "blue" : "primary"}
+              />
+            ))
+          ) : question?.type === TRUE_FALSE_QUESTION_TYPE ? (
             <>
-              <TrueFalseAnswerCard
-                color="red"
-                value={true}
-                onClick={() => onAnswering(true)} />
-              <TrueFalseAnswerCard
-                color="green"
-                value={false}
-                onClick={() => onAnswering(false)} />
+              <TrueFalseAnswerCard color="red" value={true} onClick={() => onAnswering(true)} />
+              <TrueFalseAnswerCard color="green" value={false} onClick={() => onAnswering(false)} />
             </>
           ) : question?.type === OPEN_QUESTION_TYPE ? (
             <div className="col-start-1 col-end-3">
-              <OpenAnswerCard color="red" onSubmit={(data) => onAnswering(data)}/>
+              <OpenAnswerCard color="red" onSubmit={(data) => onAnswering(data)} />
             </div>
           ) : null}
         </div>

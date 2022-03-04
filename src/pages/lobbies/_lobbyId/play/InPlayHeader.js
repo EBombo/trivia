@@ -15,13 +15,13 @@ export const InPlayHeader = (props) => {
 
   const updateGameState = async (newGame) => {
     await firestore.doc(`lobbies/${lobbyId}`).update({
-      game: { ...props.lobby.game, ...newGame},
+      game: { ...props.lobby.game, ...newGame },
     });
   };
 
   const goToRanking = async () => {
     await firestore.doc(`lobbies/${lobbyId}`).update({
-      game: { ...props.lobby.game, state: RANKING},
+      game: { ...props.lobby.game, state: RANKING },
     });
   };
 
@@ -30,9 +30,7 @@ export const InPlayHeader = (props) => {
       <div className="relative bg-whiteLight py-4 text-center text-2xl md:text-3xl font-bold flex">
         <QuestionStep />
 
-        <div className="relative self-center w-full text-secondaryDarken">
-          { props.question?.question }
-        </div>
+        <div className="relative self-center w-full text-secondaryDarken">{props.question?.question}</div>
       </div>
       <div className="grid grid-cols-[min-content_1fr] grid-rows-[auto auto] md:grid md:grid-cols-[1fr_3fr_1fr] md:grid-rows-1 text-whiteLight bg-secondaryDark bg-opacity-50 py-8">
         <div className={`text-center ${!props.lobby?.isAdmin && "self-center"}`}>
@@ -43,10 +41,7 @@ export const InPlayHeader = (props) => {
               </ButtonAnt>
             </div>
           )}
-          <Timer
-            label="Espera que acabe el tiempo..."
-            onUpdateGame={updateGameState}
-            {...props} />
+          <Timer label="Espera que acabe el tiempo..." onUpdateGame={updateGameState} {...props} />
         </div>
         <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:row-start-1 md:row-end-2 md:col-start-2 md:col-end-3 mx-4 text-center">
           {props.children}
@@ -58,11 +53,7 @@ export const InPlayHeader = (props) => {
         >
           {authUser.isAdmin && (
             <div className="inline-block md:mb-8">
-              <ButtonAnt
-                size="big"
-                color="success"
-                className="font-bold text-lg"
-                onClick={() => goToRanking()}>
+              <ButtonAnt size="big" color="success" className="font-bold text-lg" onClick={() => goToRanking()}>
                 Siguiente
               </ButtonAnt>
             </div>

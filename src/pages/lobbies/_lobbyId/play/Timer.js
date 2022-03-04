@@ -4,16 +4,13 @@ import { useInterval } from "../../../../hooks/useInterval";
 import { ANSWERING_QUESTION, QUESTION_TIMEOUT } from "../../../../components/common/DataList";
 
 export const Timer = (props) => {
-
   const [authUser] = useGlobal("user");
 
   const totalSeconds = useMemo(() => {
-    if (typeof props.time === "number")
-      return props.time;
-    else if (typeof props.time === "string")
-      return parseInt(props.time);
-    return null
-  }, [props.time])
+    if (typeof props.time === "number") return props.time;
+    else if (typeof props.time === "string") return parseInt(props.time);
+    return null;
+  }, [props.time]);
 
   const [secondsLeft, setSecondsLeft] = useState(props.lobby.game.secondsLeft ?? totalSeconds);
 

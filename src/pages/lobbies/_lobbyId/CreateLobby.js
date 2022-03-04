@@ -127,8 +127,9 @@ export const CreateLobby = (props) => {
       };
 
       const promiseLobby = lobbiesRef.doc(lobbyId).set(newLobby);
-      const promisesLobbyGameQuestions = gameQuestions.map(
-        question => firestore.collection(`lobbies/${lobbyId}/gameQuestions`).doc(question.id).set(question));
+      const promisesLobbyGameQuestions = gameQuestions.map((question) =>
+        firestore.collection(`lobbies/${lobbyId}/gameQuestions`).doc(question.id).set(question)
+      );
 
       const promiseLobbyBomboGames = lobbiesBomboGamesRef.doc(lobbyId).set(newLobby);
 
