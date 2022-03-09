@@ -1,29 +1,75 @@
-import React, { useGlobal, useMemo } from "reactn";
-import { config, hostName } from "../../../../firebase";
-import { Image } from "../../../../components/common/Image";
+import React, { useGlobal, useMemo, useEffect, useState } from "reactn";
+import { auth, config, firebase, firestore, hostName } from "../../../../firebase";
 import { ButtonAnt } from "../../../../components/form/Button";
+import { snapshotToArray } from "../../../../utils";
+import { useRouter } from "next/router";
+
+const DEFAULT_RANKING_LENGTH = 5;
 
 export const Scoreboard = (props) => {
-  const ranking = (props.ranking ?? [{}, {}, {}, {}, {}]).slice(0, 5);
+  const router = useRouter();
 
-  const [authUser] = useGlobal("user");
+  const { lobbyId } = router.query;
+
+  const [authUser, setAuthUser] = useGlobal("user");
 
   const isLastQuestion = useMemo(() => props.currentQuestionNumber >= props.questions.length, [props.lobby.game]);
+
+  const [rankingUsers, setRankingUsers] = useState([]);
+
+  const [userRank, setUserRank] = useState(0);
+
+  useEffect(() => {
+    const fetchRanking = () => 
+      firestore.collection(`lobbies/${lobbyId}/users`)
+        .orderBy("score", "desc")
+        .limit(DEFAULT_RANKING_LENGTH)
+        .onSnapshot((rankingUsersSnapshot) => {
+          const rankingUsers_ =  snapshotToArray(rankingUsersSnapshot);
+
+          setRankingUsers(rankingUsers_);
+      });
+
+    const fetchUserRank = async () => {
+      const totalRankingSnapshot = await firestore.collection(`lobbies/${lobbyId}/users`)
+        .orderBy("score", "desc").get();
+
+      let index = 0;
+
+      totalRankingSnapshot.forEach((docSnapshot) => {
+        const user = docSnapshot.data();
+
+        if (user.id === authUser.id) {
+          setAuthUser({ ...authUser, score: user.score });
+          setUserRank(index + 1);
+
+          return;
+        }
+
+        index++;
+      });
+    };
+
+    fetchUserRank();
+
+    const unSubRanking = fetchRanking();
+    return () => unSubRanking && unSubRanking();
+  }, []);
 
   const RankingItem = (user, i) => (
     <div
       key={`rankint-item-${i}`}
       className="grid grid-cols-[min-content_auto_min-content] bg-secondaryDark text-whiteLight py-4 w-full max-w-[1000px] md:mx-auto text-lg md:text-2xl my-4"
     >
-      <div className={`px-5 self-center ${props.authUser?.id === user.id ? "text-success" : "text-whiteLight"}`}>1</div>
+      <div className={`px-5 self-center ${props.authUser?.id === user.id ? "text-success" : "text-whiteLight"}`}>{i + 1}</div>
       <div
         className={`px-4 self-center justify-self-start ${
-          props.authUser?.id === user.id ? "text-success" : "text-whiteLight"
+          authUser?.id === user.id ? "text-success" : "text-whiteLight"
         }`}
       >
-        Santiago
+        { user.nickname }
       </div>
-      <div className="px-4 whitespace-nowrap">1000 pts</div>
+      <div className="px-4 whitespace-nowrap">{ user.score } pts</div>
     </div>
   );
 
@@ -43,17 +89,18 @@ export const Scoreboard = (props) => {
           </div>
         )}
 
-        <div className="mb-6">{ranking.map((_, i) => RankingItem(_, i))}</div>
+        <div className="mb-6">{rankingUsers.map((user, i) => RankingItem(user, i))}</div>
 
-        <div
-          className={`
-          w-full max-w-[1000px] md:mx-auto my-4 text-xl md:text-2xl text-whiteLight text-left
-          after:inline-block after:w-[82%] md:after:w-[86%] after:h-[2px] after:relative after:content-[''] after:bottom-1 after:left-6 after:ml-0.5 after:bg-whiteLight`}
-        >
-          Tu puesto
-        </div>
-
-        {RankingItem({}, 0)}
+        {!authUser.isAdmin && userRank > DEFAULT_RANKING_LENGTH && (<>
+          <div
+            className={`
+            w-full max-w-[1000px] md:mx-auto my-4 text-xl md:text-2xl text-whiteLight text-left
+            after:inline-block after:w-[82%] md:after:w-[86%] after:h-[2px] after:relative after:content-[''] after:bottom-1 after:left-6 after:ml-0.5 after:bg-whiteLight`}
+          >
+            Tu puesto
+          </div>
+          {RankingItem(authUser, userRank)}
+        </>)}
 
         {authUser.isAdmin && (
           <div className="my-6 text-center flex justify-center">
