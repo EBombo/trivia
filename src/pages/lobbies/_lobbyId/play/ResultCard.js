@@ -11,7 +11,7 @@ export const ResultCard = (props) => {
 
   const { lobbyId } = router.query;
 
-  const [authUser] = useGlobal("user");
+  const [authUser, setAuthUser] = useGlobal("user");
 
   const [userRank, setUserRank] = useState(0);
 
@@ -19,9 +19,18 @@ export const ResultCard = (props) => {
 
   const [isCorrect, setIsCorrect] = useState(null);
 
+  const [pointsEarned, setPointsEarned] = useState(0);
+
+  const [streakCount, setStreakCount] = useState(0);
+
   useEffect(() => {
-    const fetchUsersSize = async () => {
+    const fetchUsers = async () => {
       const usersSnapshot = await firestore.collection(`lobbies/${lobbyId}/users`).get();
+
+      usersSnapshot.forEach((userSnapshot) => {
+        const user = userSnapshot.data();
+        setStreakCount(user.streak); 
+      });
 
       setUsersSize(usersSnapshot.size);
     };
@@ -58,17 +67,18 @@ export const ResultCard = (props) => {
             }
           }
 
-          const currentAnswer = answers.find(answer => answer.questionId === question.id && answer.userId === authUser.id);
+          const currentAnswer = answers.find(answer => answer.questionId === props.question.id && answer.userId === authUser.id);
           if (currentAnswer) {
-            const isCorrect_ = checkIsCorrect(question, currentAnswer);
+            const isCorrect_ = checkIsCorrect(props.question, currentAnswer);
 
             setIsCorrect(isCorrect_);
+            setPointsEarned(currentAnswer.points);
           }
 
         });
     };
 
-    fetchUsersSize();
+    fetchUsers();
 
     const unSubRanking = fetchRanking();
     return () => unSubRanking && unSubRanking();
@@ -77,18 +87,17 @@ export const ResultCard = (props) => {
   return (<div className="relative my-4 mx-4 pt-8 pb-4 bg-whiteLight text-lg min-w-[300px] self-center rounded-lg">
       <div
         className={`absolute top-[-20px] left-1/2 translate-x-[-50%]
-          ${isCorrect ? "bg-success" : isCorrect === false ? "bg-danger" : "bg-grayDarken" } 
+          ${isCorrect ? "bg-success" : "bg-danger" } 
           ${isCorrect ? "text-secondaryDarken" : "text-whiteLight"}
           rounded max-w-[280px] whitespace-nowrap px-8`}
       >
         <span className="inline-block py-4 pr-4 align-middle">
-          {isCorrect ? (
-            <Image src={`${config.storageUrl}/resources/check-with-depth.svg`} width="16px" />
-          ) : isCorrect === false ? (
-            <Image src={`${config.storageUrl}/resources/cross-with-depth.svg`} width="16px" />
-          ) : null}
+          {isCorrect
+            ? (<Image src={`${config.storageUrl}/resources/check-with-depth.svg`} width="16px" />)
+            : (<Image src={`${config.storageUrl}/resources/cross-with-depth.svg`} width="16px" />)
+          }
         </span>
-        {isCorrect ? "Respuesta correcta" : isCorrect === false ? "Respuesta incorrecta" : "Respuesta sin responder"}
+        {isCorrect ? "Respuesta correcta" : "Respuesta incorrecta" }
       </div>
 
       {isCorrect ? (
@@ -97,15 +106,15 @@ export const ResultCard = (props) => {
             <span className="inline-block py-4 align-middle">
               <Image src={`${config.storageUrl}/resources/red-fire-streak.svg`} width="12px" />
             </span>
-            Racha de respuestas: 1
+            Racha de respuestas: {streakCount}
           </div>
-          <div className="text-black text-3xl py-8">+600 puntos</div>
+          <div className="text-black text-3xl py-8">+{pointsEarned} puntos</div>
         </>
       ) : (
         <div className="text-secondaryDarken">¡Hay que mantener la cabeza en el juego!</div>
       )}
 
-      <div className="text-black">Puntaje actual: { authUser.score } pts</div>
+      <div className="text-black">Puntaje actual: { authUser.score.toFixed(1) } pts</div>
       <div className="text-black">Puesto: { userRank }/{ usersSize }</div>
     </div>);
 };
