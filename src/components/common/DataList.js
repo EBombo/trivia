@@ -104,3 +104,5 @@ export const getIconUrl = (color) =>
     : color === "yellow"
     ? `${config.storageUrl}/resources/yellow-triangle.svg`
     : "";
+
+export const DEFAULT_POINTS = 100;
