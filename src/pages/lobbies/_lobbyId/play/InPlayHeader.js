@@ -13,6 +13,8 @@ export const InPlayHeader = (props) => {
 
   const [authUser] = useGlobal("user");
 
+  const [answersCount, setAnswersCount] = useState(0);
+
   const updateGameState = async (newGame) => {
     const updateGame = Object.entries(newGame).reduce((acc, entryGameMap) => {
       acc[`game.${entryGameMap[0]}`] = entryGameMap[1];
@@ -28,6 +30,20 @@ export const InPlayHeader = (props) => {
       "game.state": RANKING,
     });
   };
+
+  useEffect(() => {
+    const fetchAnswers = () => {
+      return firestore.collection(`lobbies/${lobbyId}/answers`)
+        .where("questionId", "==", props.question.id)
+        .onSnapshot((answersSnapshot) => {
+          setAnswersCount(answersSnapshot.size);
+        });
+    };
+
+    const unSubAnswersCount = fetchAnswers();
+    return () => unSubAnswersCount && unSubAnswersCount();
+  }, [props.question]);
+
 
   return (
     <div className="grid grid-rows-[minmax(160px,min-content)_auto]">
@@ -63,7 +79,7 @@ export const InPlayHeader = (props) => {
             </div>
           )}
           <div>
-            <div className="text-3xl md:text-5xl">5</div>
+            <div className="text-3xl md:text-5xl">{ answersCount }</div>
             <div className="text-base">respuestas</div>
           </div>
         </div>

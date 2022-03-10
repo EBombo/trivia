@@ -110,6 +110,7 @@ export const LobbyInPlay = (props) => {
       secondtLeft: props.lobby.game.secondsLeft,
       questionTime: question.time,
       questionId: question.id,
+      questionNumber: question.questionNumber,
       points: points,
       createAt: new Date(),
       updateAt: new Date(),
@@ -117,11 +118,14 @@ export const LobbyInPlay = (props) => {
 
     const addAnswerPromise = firestore.collection(`lobbies/${lobbyId}/answers`).add(data);
 
+    const newStreak = isCorrectAnswer ? firebase.firestore.FieldValue.increment(1) : 0;
+
     const updateScorePromise = firestore
       .collection(`lobbies/${lobbyId}/users`)
       .doc(authUser.id)
       .update({
         score: firebase.firestore.FieldValue.increment(points),
+        streak: newStreak,
       });
 
     setAuthUserLS({ ...authUserLS });
@@ -217,7 +221,11 @@ export const LobbyInPlay = (props) => {
 
       <InPlayHeader key={question} time={question?.time} question={question} onInvalidateQuestion={invalidateQuestion} {...props}>
         {showImage ? (
-          <div className="aspect-[4/1] w-full bg-secondaryDark"></div>
+          <div className="aspect-[4/1] w-full bg-secondaryDark">
+            { question.fileUrl && (
+              <Image src={question.fileUrl} width="100%" height="100%" />
+            )}
+          </div>
         ) : (
           <div className="aspect-[4/1] w-full">
             {question && (
