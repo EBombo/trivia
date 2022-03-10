@@ -81,6 +81,7 @@ const LoadingGameContainer = styled.div`
   position: relative;
   overflow: hidden;
   background-image: url("${(props) => `${props.config.storageUrl}/resources/coral-pattern-tablet.svg`}");
+  background-color: ${(props) => props.theme.basic.secondary};
   background-position: center;
   background-size: contain;
   
