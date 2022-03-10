@@ -11,7 +11,6 @@ import {
 import { timeoutPromise } from "../../../../utils/promised";
 
 export const LobbyQuestionIntroduction = (props) => {
-  // props.lobby?.game?.questionNumber;
   const currentQuestionNumber = props.lobby?.game?.currentQuestionNumber ?? 1;
   const [question, setQuestion] = useState(props.question);
 
@@ -34,16 +33,32 @@ export const LobbyQuestionIntroduction = (props) => {
     setQuestion(question_);
   }, [props.lobby]);
 
+  const questionLabel = (label) => (
+    <div className="text-white text-6xl text-center pt-6">{label}</div>
+  );
+
   // add animation for question
   return (
-    <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto">
-      {question.type === ALTERNATIVES_QUESTION_TYPE ? (
-        <Image src={`${config.storageUrl}/resources/alternative-question-logo.svg`} width="150px" />
-      ) : question.type === TRUE_FALSE_QUESTION_TYPE ? (
-        <Image src={`${config.storageUrl}/resources/true-false-question-logo.svg`} width="150px" />
-      ) : question.type === OPEN_QUESTION_TYPE ? (
-        <Image src={`${config.storageUrl}/resources/open-question-logo.svg`} width="150px" />
-      ) : null}
+    <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto flex justify-center items-center">
+      <div>
+        {question.type === ALTERNATIVES_QUESTION_TYPE ? (
+          <>
+            <Image src={`${config.storageUrl}/resources/alternative-question-logo.svg`} width="150px" height="150px" desktopWidth="250px" desktopHeight="250px" />
+            {questionLabel("Quiz")}
+          </>
+        ) : question.type === TRUE_FALSE_QUESTION_TYPE ? (
+          <>
+            <Image src={`${config.storageUrl}/resources/true-false-question-logo.svg`} width="150px" height="150px" desktopWidth="250px" desktopHeight="250px" />
+            {questionLabel("Verdadero o Falso")}
+          </>
+        ) : question.type === OPEN_QUESTION_TYPE ? (
+          <>
+            <Image src={`${config.storageUrl}/resources/open-question-logo.svg`} width="150px" height="150px" desktopWidth="250px" desktopHeight="250px" />
+            {questionLabel("Escribe tu respuesta")}
+          </>
+        ) : null}
+
+      </div>
     </div>
   );
 };

@@ -3,6 +3,8 @@ import { auth, config, firebase, firestore, hostName } from "../../../../firebas
 import { ButtonAnt } from "../../../../components/form/Button";
 import { snapshotToArray } from "../../../../utils";
 import { useRouter } from "next/router";
+import sortBy from "lodash/sortBy";
+import isEmpty from "lodash/isEmpty";
 
 const DEFAULT_RANKING_LENGTH = 5;
 
@@ -20,37 +22,59 @@ export const Scoreboard = (props) => {
   const [userRank, setUserRank] = useState(0);
 
   useEffect(() => {
-    const fetchRanking = () => 
-      firestore.collection(`lobbies/${lobbyId}/users`)
-        .orderBy("score", "desc")
-        .limit(DEFAULT_RANKING_LENGTH)
-        .onSnapshot((rankingUsersSnapshot) => {
-          const rankingUsers_ =  snapshotToArray(rankingUsersSnapshot);
+    // calculates ranking
+    const computeValidQuestions = async () => {
+      if (isEmpty(props.lobby.game.invalidQuestions)) return;
 
-          setRankingUsers(rankingUsers_);
-      });
+      const canceledAnswersSnapshot = await firestore.collection(`lobbies/${lobbyId}/answers`)
+        .where("questionId", "in", props.lobby.game.invalidQuestions ?? []).get();
 
-    const fetchUserRank = async () => {
-      const totalRankingSnapshot = await firestore.collection(`lobbies/${lobbyId}/users`)
-        .orderBy("score", "desc").get();
+      const updateAnswerPromise = canceledAnswersSnapshot.docs.map((answerSnapshot) =>
+        answerSnapshot.ref.update({
+          points: 0,
+        })
+      );
 
-      let index = 0;
-
-      totalRankingSnapshot.forEach((docSnapshot) => {
-        const user = docSnapshot.data();
-
-        if (user.id === authUser.id) {
-          setAuthUser({ ...authUser, score: user.score });
-          setUserRank(index + 1);
-
-          return;
-        }
-
-        index++;
-      });
+      await Promise.all(updateAnswerPromise);
     };
 
-    fetchUserRank();
+    const fetchRanking = () => {
+      return firestore.collection(`lobbies/${lobbyId}/answers`)
+        .onSnapshot((answersSnapshot) => {
+          const answers = snapshotToArray(answersSnapshot);
+
+          const usersPointsMap = answers.reduce((acc, answer) => {
+            if (!acc[answer.userId]) acc[answer.userId] = { score: 0 };
+
+            acc[answer.userId].score += answer.points;
+            if (!acc[answer.userId]?.nickname) acc[answer.userId].nickname = answer.user.nickname;
+            if (!acc[answer.userId]?.id) acc[answer.userId].id = answer.user.id;
+
+            return acc;
+          }, {});
+
+          const rankingUsers_ = sortBy(Object.entries(usersPointsMap).map((userPointMap) => ({
+            userId: userPointMap[0],
+            nickname: userPointMap[1].nickname,
+            score: userPointMap[1].score,
+          })), ["points"], ["desc"]);
+
+          for (let i = 0; i < rankingUsers_.length; i++) {
+            const rankingUser = rankingUsers_[i];
+
+            if (rankingUser.userId === authUser.id) {
+              setAuthUser({ ...authUser, score: rankingUser.score });
+              setUserRank(i + 1);
+
+              break;
+            }
+          }
+
+          setRankingUsers(rankingUsers_);
+        });
+    }
+
+    if (authUser.isAdmin) computeValidQuestions();
 
     const unSubRanking = fetchRanking();
     return () => unSubRanking && unSubRanking();
@@ -69,7 +93,7 @@ export const Scoreboard = (props) => {
       >
         { user.nickname }
       </div>
-      <div className="px-4 whitespace-nowrap">{ user.score } pts</div>
+      <div className="px-4 whitespace-nowrap">{ user.score.toFixed(1) } pts</div>
     </div>
   );
 
@@ -89,7 +113,7 @@ export const Scoreboard = (props) => {
           </div>
         )}
 
-        <div className="mb-6">{rankingUsers.map((user, i) => RankingItem(user, i))}</div>
+        <div className="mb-6">{rankingUsers.slice(0, DEFAULT_RANKING_LENGTH).map((user, i) => RankingItem(user, i))}</div>
 
         {!authUser.isAdmin && userRank > DEFAULT_RANKING_LENGTH && (<>
           <div

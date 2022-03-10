@@ -14,7 +14,15 @@ export const Timer = (props) => {
 
   const [secondsLeft, setSecondsLeft] = useState(props.lobby.game.secondsLeft ?? totalSeconds);
 
-  const [secondsLeftPercentage, setSecondsLeftPercentage] = useState(0);
+  const secondsLeftPercentage = useMemo(() => {
+    return Math.round(((props.lobby.game.secondsLeft ?? 0) / totalSeconds) * 100)
+  }, [props.lobby.game.secondsLeft, totalSeconds]);
+
+  useEffect(() => {
+    if (!authUser.isAdmin) return;
+
+    props.onUpdateGame?.({ secondsLeft: secondsLeft });
+  }, [secondsLeft]);
 
   useInterval(() => {
     if (secondsLeft === null) return null;
@@ -27,14 +35,8 @@ export const Timer = (props) => {
     if (secondsLeft <= 0 && props.lobby.game.state === ANSWERING_QUESTION)
       return props.onUpdateGame?.({ state: QUESTION_TIMEOUT });
 
-    // setSecondsLeft(secondsLeft - 1);
+    setSecondsLeft(secondsLeft - 1);
   }, 1000);
-
-  useEffect(() => {
-    setSecondsLeftPercentage(Math.round((secondsLeft / totalSeconds) * 100));
-
-    props.onUpdateGame?.({ secondsLeft: secondsLeft });
-  }, [secondsLeft]);
 
   return (
     <div>
@@ -94,7 +96,7 @@ export const Timer = (props) => {
           </Tablet>
 
           <div className="absolute text-whiteLight">
-            <span className="text-2xl md:text-4xl">{secondsLeft}</span>
+            <span className="text-2xl md:text-4xl">{ authUser.isAdmin ? secondsLeft : props.lobby.game.secondsLeft }</span>
             <div className="text-xs md:text-base hidden md:block">segundos</div>
           </div>
         </div>

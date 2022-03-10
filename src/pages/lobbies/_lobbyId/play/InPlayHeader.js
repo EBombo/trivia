@@ -14,14 +14,18 @@ export const InPlayHeader = (props) => {
   const [authUser] = useGlobal("user");
 
   const updateGameState = async (newGame) => {
-    await firestore.doc(`lobbies/${lobbyId}`).update({
-      game: { ...props.lobby.game, ...newGame },
-    });
+    const updateGame = Object.entries(newGame).reduce((acc, entryGameMap) => {
+      acc[`game.${entryGameMap[0]}`] = entryGameMap[1];
+
+      return acc;
+    }, {});
+
+    await firestore.doc(`lobbies/${lobbyId}`).update(updateGame);
   };
 
   const goToRanking = async () => {
     await firestore.doc(`lobbies/${lobbyId}`).update({
-      game: { ...props.lobby.game, state: RANKING },
+      "game.state": RANKING,
     });
   };
 
@@ -34,9 +38,9 @@ export const InPlayHeader = (props) => {
       </div>
       <div className="grid grid-cols-[min-content_1fr] grid-rows-[auto auto] md:grid md:grid-cols-[1fr_3fr_1fr] md:grid-rows-1 text-whiteLight bg-secondaryDark bg-opacity-50 py-8">
         <div className={`text-center ${!props.lobby?.isAdmin && "self-center"}`}>
-          {props.lobby?.isAdmin && (
+          {authUser?.isAdmin && (
             <div className="mb-8 hidden md:inline-block">
-              <ButtonAnt color="default" size="big" className="font-bold">
+              <ButtonAnt color="default" size="big" className="font-bold" onClick={() => props.onInvalidateQuestion?.()}>
                 Invalidar pregunta
               </ButtonAnt>
             </div>

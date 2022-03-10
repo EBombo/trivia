@@ -12,6 +12,7 @@ import { INITIALIZING } from "../../../components/common/DataList";
 
 export const Lobby = (props) => {
   const router = useRouter();
+
   const { lobbyId } = router.query;
 
   const [authUserLs, setAuthUserLs] = useUser();
@@ -50,6 +51,12 @@ export const Lobby = (props) => {
   useEffect(() => {
     if (!lobbyId) return;
 
+    const fetchQuestions = async () => {
+      const gameQuestionsSnapshot = await firestore.collection(`lobbies/${lobbyId}/gameQuestions`).get();
+
+      return snapshotToArray(gameQuestionsSnapshot);
+    };
+
     const fetchLobby = () =>
       firestore.doc(`lobbies/${lobbyId}`).onSnapshot(async (lobbyRef) => {
         const currentLobby = lobbyRef.data();
@@ -65,6 +72,10 @@ export const Lobby = (props) => {
 
         setAuthUserLs({ ...authUser, lobby: currentLobby });
         await setAuthUser({ ...authUser, lobby: currentLobby });
+
+        if (!lobby?.gameQuestions) {
+          currentLobby.gameQuestions = await fetchQuestions();
+        }
 
         setLobby(currentLobby);
       });

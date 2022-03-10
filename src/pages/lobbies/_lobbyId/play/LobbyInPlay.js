@@ -4,7 +4,7 @@ import { ButtonAnt } from "../../../../components/form";
 import dynamic from "next/dynamic";
 import find from "lodash/find";
 import { useRouter } from "next/router";
-import { config, firestore, hostName } from "../../../../firebase";
+import { config, firebase, firestore, hostName } from "../../../../firebase";
 import { snapshotToArray } from "../../../../utils";
 import { darkTheme } from "../../../../theme";
 import defaultTo from "lodash/defaultTo";
@@ -16,13 +16,11 @@ import { TrueFalseAnswerCard } from "./TrueFalseAnswerCard";
 import { OpenAnswerCard } from "./OpenAnswerCard";
 import { NextRoundLoader } from "./NextRoundLoader";
 import { Footer } from "./Footer";
-import { BarResult } from "./BarResult";
-import { TrueFalseBarResult } from "./TrueFalseBarResult";
-import { OpenAnswerCellResult } from "./OpenAnswerCellResult";
 import { ResultCard } from "./ResultCard";
 import { Scoreboard } from "./Scoreboard";
+import { AlternativeResults } from "./AlternativeResults";
 import { LobbyQuestionIntroduction } from "./LobbyQuestionIntroduction";
-import { getCurrentQuestion } from "../../../../business";
+import { getCurrentQuestion, computePointsEarned } from "../../../../business";
 import {
   ALTERNATIVES_QUESTION_TYPE,
   ANSWERING_QUESTION,
@@ -32,7 +30,9 @@ import {
   QUESTION_TIMEOUT,
   RANKING,
   TRUE_FALSE_QUESTION_TYPE,
+  DEFAULT_POINTS,
 } from "../../../../components/common/DataList";
+import { useUser } from "../../../../hooks";
 
 export const LobbyInPlay = (props) => {
   const router = useRouter();
@@ -41,35 +41,52 @@ export const LobbyInPlay = (props) => {
 
   const [authUser] = useGlobal("user");
 
-  const [questions, setQuestions] = useState(props.lobby.questions ?? []);
+  const [authUserLS, setAuthUserLS] = useUser();
 
-  const [question, setQuestion] = useState(null);
+  const [questions] = useState(props.lobby.gameQuestions ?? []);
 
   const [showImage, setShowImage] = useState(props.lobby.game.state === QUESTION_TIMEOUT ? false : true);
 
   const currentQuestionNumber = useMemo(() => props.lobby.game.currentQuestionNumber ?? 1, [props.lobby.game]);
 
+  const question = useMemo(() => {
+    if (isEmpty(questions)) return;
+
+    return getCurrentQuestion(questions, currentQuestionNumber);
+  }, [props.lobby.game, questions]);
+
+  const [userHasAnswered, setUserHasAnswered] = useState(null);
+
   useEffect(() => {
-    const question_ = getCurrentQuestion(questions, currentQuestionNumber);
-    if (question_) setQuestion(question_);
+    if (authUser.isAdmin) return;
 
-    if (authUser.isAdmin) {
-    }
-  }, []);
+    if (!question) return;
 
-  useEffect(() => {
-    if (!isEmpty(questions)) return;
+    const fetchUserHasAnswered = async () => {
+      const answersQuerySnapshot = await firestore.collection(`lobbies/${lobbyId}/answers`)
+        .where("userId", "==", authUser.id)
+        .where("questionId", "==", question.id).get();
 
-    const fetchQuestions = async () => {
-      const gameQuestionsSnapshot = await firestore.collection(`lobbies/${props.lobby.id}/gameQuestions`).get();
-      const gameQuestions = snapshotToArray(gameQuestionsSnapshot);
+      const hasAnswered = !answersQuerySnapshot.empty;
 
-      setQuestions(gameQuestions);
-      setQuestion(gameQuestions.find((question) => question.questionNumber === currentQuestionNumber));
+      setUserHasAnswered(hasAnswered);
+      setShowImage(true);
     };
+     
+    fetchUserHasAnswered();
+  }, [question]);
 
-    fetchQuestions();
-  }, [questions]);
+  const isCorrect = (question, answer) => {
+    if (question.type === ALTERNATIVES_QUESTION_TYPE) {
+      const answers = question.answer.map((answerIndex) => question.options[answerIndex]);
+
+      return answers.includes(answer);
+    }
+
+    if (question.type === TRUE_FALSE_QUESTION_TYPE) return answer == question.answer;
+
+    if (question.type === OPEN_QUESTION_TYPE) return question.answer.includes(answer);
+  }
 
   useEffect(() => {
     if (props.lobby.game.state === QUESTION_TIMEOUT) setShowImage(false);
@@ -77,10 +94,23 @@ export const LobbyInPlay = (props) => {
 
   // creates user answer and update user score
   const onAnswering = async (answer) => {
+    if (authUser.isAdmin) return;
+
+    const isCorrectAnswer = isCorrect(question, answer);
+
+    const points = computePointsEarned(props.lobby.game.secondsLeft, question.time, isCorrectAnswer ? DEFAULT_POINTS : 0); 
+
     const data = {
       userId: authUser.id,
+      user: {
+        id: authUser.id,
+        nickname: authUser.nickname,
+      },
       answer,
+      secondtLeft: props.lobby.game.secondsLeft,
+      questionTime: question.time,
       questionId: question.id,
+      points: points,
       createAt: new Date(),
       updateAt: new Date(),
     };
@@ -91,12 +121,24 @@ export const LobbyInPlay = (props) => {
       .collection(`lobbies/${lobbyId}/users`)
       .doc(authUser.id)
       .update({
-        score: authfirebase.firestore.FieldValue.increment(20),
+        score: firebase.firestore.FieldValue.increment(points),
       });
+
+    setAuthUserLS({ ...authUserLS });
+
+    setUserHasAnswered(true);
 
     await Promise.all([addAnswerPromise, updateScorePromise]);
   };
 
+  const invalidateQuestion = async () => {
+    await firestore.doc(`lobbies/${lobbyId}`)
+      .update({
+        "game.invalidQuestions": (props.lobby.game.invalidQuestions ?? []).concat([question.id]),
+      });
+  };
+
+  // only admin calls this function
   const goToNextQuestion = async () => {
     const newCurrentQuestionNumber = currentQuestionNumber + 1;
     const nextQuestion = getCurrentQuestion(questions, newCurrentQuestionNumber);
@@ -105,7 +147,7 @@ export const LobbyInPlay = (props) => {
       game: {
         ...props.lobby.game,
         currentQuestionNumber: newCurrentQuestionNumber,
-        state: ANSWERING_QUESTION,
+        state: INTRODUCING_QUESTION,
         secondsLeft: parseInt(nextQuestion.time),
       },
     });
@@ -133,8 +175,7 @@ export const LobbyInPlay = (props) => {
     return <LobbyQuestionIntroduction question={question} {...props} />;
 
   // if user has already answered
-  // TODO  check variable if user has answered
-  if (!authUser.isAdmin && props.lobby.game?.state === ANSWERING_QUESTION && false)
+  if (!authUser.isAdmin && props.lobby.game?.state === ANSWERING_QUESTION && userHasAnswered)
     return (
       <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto text-center flex flex-col justify-center">
         <UserLayout {...props} />
@@ -164,7 +205,7 @@ export const LobbyInPlay = (props) => {
       <div className="font-['Lato'] font-bold bg-secondary bg-center bg-contain bg-lobby-pattern w-screen overflow-auto text-center">
         <UserLayout {...props} />
         <div className="min-h-screen flex flex-col justify-center bg-secondaryDark bg-opacity-50">
-          <ResultCard />
+          <ResultCard question={question} invalidQuestions={props.lobby.game.invalidQuestions} {...props} />
         </div>
       </div>
     );
@@ -174,30 +215,14 @@ export const LobbyInPlay = (props) => {
     <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto">
       <UserLayout {...props} />
 
-      <InPlayHeader time={question?.time} {...props} question={question}>
+      <InPlayHeader key={question} time={question?.time} question={question} onInvalidateQuestion={invalidateQuestion} {...props}>
         {showImage ? (
           <div className="aspect-[4/1] w-full bg-secondaryDark"></div>
         ) : (
           <div className="aspect-[4/1] w-full">
-            {question?.type === ALTERNATIVES_QUESTION_TYPE ? (
-              <div>
-                <BarResult color="red" value={20} count={8} />
-                <BarResult color="green" value={50} count={12} />
-                <BarResult color="yellow" value={91} count={2} />
-                <BarResult color="blue" value={20} count={4} />
-              </div>
-            ) : question?.type === TRUE_FALSE_QUESTION_TYPE ? (
-              <div>
-                <TrueFalseBarResult option={true} value={91} count={2} />
-                <TrueFalseBarResult option={false} value={20} count={4} />
-              </div>
-            ) : question?.type === OPEN_QUESTION_TYPE ? (
-              <div className="grid grid-cols-4 gap-2">
-                {[{}].map((_, i) => (
-                  <OpenAnswerCellResult key={`open-answer-${i}`} count={0} isCorrect={false} answer={"A"} />
-                ))}
-              </div>
-            ) : null}
+            {question && (
+              <AlternativeResults question={question} />
+            )}
           </div>
         )}
 
@@ -224,16 +249,28 @@ export const LobbyInPlay = (props) => {
                 label={option}
                 onClick={() => onAnswering(option)}
                 color={i === 0 ? "red" : i === 1 ? "green" : i === 2 ? "yellow" : i === 3 ? "blue" : "primary"}
+                disabled={userHasAnswered}
               />
             ))
           ) : question?.type === TRUE_FALSE_QUESTION_TYPE ? (
             <>
-              <TrueFalseAnswerCard color="red" value={true} onClick={() => onAnswering(true)} />
-              <TrueFalseAnswerCard color="green" value={false} onClick={() => onAnswering(false)} />
+              <TrueFalseAnswerCard
+                color="red"
+                value={true}
+                disabled={userHasAnswered}
+                onClick={() => onAnswering(true)} />
+              <TrueFalseAnswerCard
+                color="green"
+                value={false}
+                disabled={userHasAnswered}
+                onClick={() => onAnswering(false)} />
             </>
-          ) : question?.type === OPEN_QUESTION_TYPE ? (
+          ) : (question?.type === OPEN_QUESTION_TYPE && !authUser.isAdmin) ? (
             <div className="col-start-1 col-end-3">
-              <OpenAnswerCard color="red" onSubmit={(data) => onAnswering(data)} />
+              <OpenAnswerCard
+                color="red"
+                disabled={userHasAnswered}
+                onSubmit={(data) => onAnswering(data)} />
             </div>
           ) : null}
         </div>
