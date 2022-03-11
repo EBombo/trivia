@@ -1,23 +1,44 @@
 import React, { useGlobal, useState, useEffect, useMemo } from "reactn";
-import { useRouter } from "next/router";
 import { Tablet, Desktop } from "../../../../constants";
+import { useInterval } from "../../../../hooks/useInterval";
+import { ANSWERING_QUESTION, QUESTION_TIMEOUT } from "../../../../components/common/DataList";
 
 export const Timer = (props) => {
-  const router = useRouter();
-
-  const { lobbyId } = router.query;
-
   const [authUser] = useGlobal("user");
 
-  const [totalSeconds, setTotalSeconds] = useState(props.totalSeconds ?? 40);
+  const totalSeconds = useMemo(() => {
+    if (typeof props.time === "number") return props.time;
 
-  const [secondsLeft, setSecondsLeft] = useState(props.secondsLeft ?? 20);
+    if (typeof props.time === "string") return parseInt(props.time);
 
-  const [secondsLeftPercentage, setSecondsLeftPercentage] = useState(0);
+    return null;
+  }, [props.time]);
+
+  const [secondsLeft, setSecondsLeft] = useState(props.lobby.game.secondsLeft ?? totalSeconds);
+
+  const secondsLeftPercentage = useMemo(() => {
+    return Math.round(((props.lobby.game.secondsLeft ?? 0) / totalSeconds) * 100);
+  }, [props.lobby.game.secondsLeft, totalSeconds]);
 
   useEffect(() => {
-    setSecondsLeftPercentage(Math.round((secondsLeft / totalSeconds) * 100));
+    if (!authUser.isAdmin) return;
+
+    props.onUpdateGame?.({ secondsLeft: secondsLeft });
   }, [secondsLeft]);
+
+  useInterval(() => {
+    if (secondsLeft === null) return null;
+
+    // only admin has control over timer
+    if (!authUser.isAdmin) return;
+
+    if (props.lobby.game.state === QUESTION_TIMEOUT) return null;
+
+    if (secondsLeft <= 0 && props.lobby.game.state === ANSWERING_QUESTION)
+      return props.onUpdateGame?.({ state: QUESTION_TIMEOUT });
+
+    setSecondsLeft(secondsLeft - 1);
+  }, 1000);
 
   return (
     <div>
@@ -77,7 +98,9 @@ export const Timer = (props) => {
           </Tablet>
 
           <div className="absolute text-whiteLight">
-            <span className="text-2xl md:text-4xl">{secondsLeft}</span>
+            <span className="text-2xl md:text-4xl">
+              {authUser.isAdmin ? secondsLeft : props.lobby.game.secondsLeft}
+            </span>
             <div className="text-xs md:text-base hidden md:block">segundos</div>
           </div>
         </div>

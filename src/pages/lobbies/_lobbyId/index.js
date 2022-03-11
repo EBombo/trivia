@@ -8,9 +8,11 @@ import { LobbyClosed } from "./closed/LobbyClosed";
 import { LobbyInPlay } from "./play/LobbyInPlay";
 import { useUser } from "../../../hooks";
 import { snapshotToArray } from "../../../utils";
+import { INITIALIZING } from "../../../components/common/DataList";
 
 export const Lobby = (props) => {
   const router = useRouter();
+
   const { lobbyId } = router.query;
 
   const [authUserLs, setAuthUserLs] = useUser();
@@ -49,6 +51,12 @@ export const Lobby = (props) => {
   useEffect(() => {
     if (!lobbyId) return;
 
+    const fetchQuestions = async () => {
+      const gameQuestionsSnapshot = await firestore.collection(`lobbies/${lobbyId}/gameQuestions`).get();
+
+      return snapshotToArray(gameQuestionsSnapshot);
+    };
+
     const fetchLobby = () =>
       firestore.doc(`lobbies/${lobbyId}`).onSnapshot(async (lobbyRef) => {
         const currentLobby = lobbyRef.data();
@@ -60,10 +68,14 @@ export const Lobby = (props) => {
         }
 
         // If the game is closed logout user.
-        if (currentLobby?.isClosed) return logout();
+        if (currentLobby?.isClosed && !authUser.isAdmin) return logout();
 
         setAuthUserLs({ ...authUser, lobby: currentLobby });
         await setAuthUser({ ...authUser, lobby: currentLobby });
+
+        if (!lobby?.gameQuestions) {
+          currentLobby.gameQuestions = await fetchQuestions();
+        }
 
         setLobby(currentLobby);
       });
@@ -74,7 +86,7 @@ export const Lobby = (props) => {
 
   // Fetch users.
   useEffect(() => {
-    if (!lobby || !game || !game?.isLive) return;
+    if (!lobby || !game) return;
 
     const fetchUsers = () =>
       firestore
@@ -120,13 +132,13 @@ export const Lobby = (props) => {
   const lobbyIsClosed = lobby?.isClosed && authUser?.isAdmin;
 
   /** Game report. **/
-  if (lobbyIsClosed) return <LobbyClosed {...additionalProps} />;
+  if (lobbyIsClosed) return <LobbyClosed {...additionalProps} onLogout={() => logout()} />;
 
   /** The game is playing. **/
   if (lobby?.isPlaying) return <LobbyInPlay {...additionalProps} />;
 
   /** Loading page. **/
-  if (lobby?.startAt) return <LobbyLoading {...additionalProps} />;
+  if (lobby?.game.state === INITIALIZING) return <LobbyLoading {...additionalProps} />;
 
   /** Before starting the game. **/
   return <LobbyUser {...additionalProps} />;

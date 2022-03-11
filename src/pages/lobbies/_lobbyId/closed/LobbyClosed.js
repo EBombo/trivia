@@ -1,5 +1,6 @@
 import React, { useEffect, useGlobal, useMemo, useState } from "reactn";
 import styled, { keyframes } from "styled-components";
+import { useRouter } from "next/router";
 import { timeoutPromise } from "../../../../utils/promised";
 import { Desktop, mediaQuery, Tablet } from "../../../../constants";
 import { Winner } from "./Winner";
@@ -12,10 +13,16 @@ import {
   fadeOutRightBig,
   fadeOutUpBig,
 } from "react-animations";
-import { config } from "../../../../firebase";
+import { config, firestore } from "../../../../firebase";
 import { Image } from "../../../../components/common/Image";
+import sortBy from "lodash/sortBy";
+import { snapshotToArray } from "../../../../utils";
 
 export const LobbyClosed = (props) => {
+  const router = useRouter();
+
+  const { lobbyId } = router.query;
+
   const [authUser] = useGlobal("user");
 
   const [isVisibleTitle, setIsVisibleTitle] = useState(true);
@@ -27,6 +34,10 @@ export const LobbyClosed = (props) => {
   const [showWinners, setShowWinners] = useState(false);
   const [showWinnersAnimation, setShowWinnersAnimation] = useState(false);
 
+  const [correctAnswersPercentage, setCorrectAnswersPercentage] = useState(0);
+
+  const [rankingUsers, setRankingUsers] = useState([]);
+
   useEffect(() => {
     const initializeAnimation = async () => {
       await timeoutPromise(2 * 1000);
@@ -35,7 +46,60 @@ export const LobbyClosed = (props) => {
       setIsVisibleTitle(false);
     };
 
+    const fetchCorrectAnswers = async () => {
+      const answersSnapshot = await firestore.collection(`lobbies/${lobbyId}/answers`).get();
+
+      const correctAnswersRatio = answersSnapshot.docs.reduce(
+        (acc, answerSnapshot) => {
+          const answer = answerSnapshot.data();
+
+          acc.total += 1;
+          if (answer.points !== 0) acc.correct += 1;
+
+          return acc;
+        },
+        { total: 0, correct: 0 }
+      );
+
+      const correctAnswersPercentage_ = Math.ceil((correctAnswersRatio.correct / correctAnswersRatio.total) * 100);
+
+      setCorrectAnswersPercentage(correctAnswersPercentage_);
+    };
+
+    const fetchRanking = () => {
+      return firestore.collection(`lobbies/${lobbyId}/answers`).onSnapshot((answersSnapshot) => {
+        const answers = snapshotToArray(answersSnapshot);
+
+        const usersPointsMap = answers.reduce((acc, answer) => {
+          if (!acc[answer.userId]) acc[answer.userId] = { score: 0 };
+
+          acc[answer.userId].score += answer.points;
+          if (!acc[answer.userId]?.nickname) acc[answer.userId].nickname = answer.user.nickname;
+          if (!acc[answer.userId]?.id) acc[answer.userId].id = answer.user.id;
+
+          return acc;
+        }, {});
+
+        const rankingUsers_ = sortBy(
+          Object.entries(usersPointsMap).map((userPointMap) => ({
+            userId: userPointMap[0],
+            nickname: userPointMap[1].nickname,
+            score: userPointMap[1].score,
+          })),
+          ["points"],
+          ["desc"]
+        );
+
+        setRankingUsers(rankingUsers_);
+      });
+    };
+
+    fetchCorrectAnswers();
+
     initializeAnimation();
+
+    const unSubRanking = fetchRanking();
+    return () => unSubRanking && unSubRanking();
   }, []);
 
   const initializeTransitionToResume = async () => {
@@ -65,13 +129,13 @@ export const LobbyClosed = (props) => {
         <div className="grid grid-cols-[1fr_2fr] w-full">
           <Image src={`${config.storageUrl}/resources/attendees.png`} width="55px" desktopWidth="75px" />
           <div className="self-center justify-self-start">
-            <div className="text-3xl md:text-4xl text-left">{Object.keys(props.lobby?.users ?? {})?.length ?? 0}</div>
+            <div className="text-3xl md:text-4xl text-left">{props.users.length}</div>
             <div className="text-xl md:text-3xl">Participantes</div>
           </div>
         </div>
       </div>
     ),
-    [props.lobby.users]
+    [props.users]
   );
 
   const itemPlayAgain = useMemo(
@@ -87,7 +151,7 @@ export const LobbyClosed = (props) => {
             size="big"
             onClick={() => {
               const userId = authUser.id;
-              const redirectUrl = `${window.location.origin}/bingo/lobbies/new?gameId=${props.lobby.game.id}&userId=${userId}`;
+              const redirectUrl = `${window.location.origin}/trivia/lobbies/new?gameId=${props.lobby.game.id}&userId=${userId}`;
               window.open(redirectUrl, "_blank");
             }}
           >
@@ -103,8 +167,8 @@ export const LobbyClosed = (props) => {
     () => (
       <div className="item flex">
         <div className="grid grid-cols-[1fr_2fr] w-full">
-          <div className="px-4 py-6 rounded-[50%] leading-normal self-center justify-self-center bg-success whitespace-nowrap text-xl md:text-4xl text-secondaryDark">
-            {props.lobby.totalMessages ?? 0} %
+          <div className=" w-[120px] h-[120px] rounded-[50%] md:leading-[7rem] self-center justify-self-center bg-success whitespace-nowrap text-xl md:text-4xl text-secondaryDark">
+            {correctAnswersPercentage} %
           </div>
           <div className="self-center justify-self-start">
             <div className="text-2xl md:text-4xl">Respuestas</div>
@@ -113,7 +177,7 @@ export const LobbyClosed = (props) => {
         </div>
       </div>
     ),
-    [props.lobby.totalMessages]
+    [correctAnswersPercentage]
   );
 
   const itemOptions = useMemo(
@@ -137,6 +201,15 @@ export const LobbyClosed = (props) => {
         >
           Volver al inicio
         </ButtonAnt>
+        <ButtonAnt
+          variant="contained"
+          color="primary"
+          margin="20px auto"
+          width="80%"
+          onClick={() => props.onLogout?.()}
+        >
+          Cerrar sesión
+        </ButtonAnt>
       </div>
     ),
     []
@@ -150,6 +223,9 @@ export const LobbyClosed = (props) => {
         </div>
         <div className="list">
           {props.lobby.winners.map((winner, index) => (
+            <Winner winner={winner} index={index} key={index} isList />
+          ))}
+          {rankingUsers.slice(props.lobby.winners.length).map((winner, index) => (
             <Winner winner={winner} index={index} key={index} isList />
           ))}
         </div>
@@ -213,7 +289,7 @@ export const LobbyClosed = (props) => {
         )}
       </div>
 
-      {isVisibleTitle && <div className="title">{props.lobby.game.title}</div>}
+      {isVisibleTitle && <div className="title">{props.lobby.game.name}</div>}
 
       {!isVisibleTitle && (
         <div className="winners">
@@ -354,6 +430,7 @@ const LobbyWinnersCss = styled.div`
   height: 100vh;
   display: grid;
   grid-template-rows: 1fr 6fr;
+  background: ${(props) => props.theme.basic.secondary};
 
   .list {
     width: 90%;

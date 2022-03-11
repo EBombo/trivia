@@ -8,6 +8,7 @@ import { Image } from "../../../components/common/Image";
 import { useSendError } from "../../../hooks";
 import { saveMembers } from "../../../constants/saveMembers";
 import { useRouter } from "next/router";
+import { INITIALIZING } from "../../../components/common/DataList";
 
 export const LobbyHeader = (props) => {
   const { sendError } = useSendError();
@@ -52,6 +53,7 @@ export const LobbyHeader = (props) => {
         isLocked,
         startAt: gameStarted,
         updateAt: new Date(),
+        game: { ...props.lobby.game, state: INITIALIZING },
       };
 
       // Add users to lobby.

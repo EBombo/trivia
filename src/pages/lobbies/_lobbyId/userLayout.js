@@ -170,15 +170,17 @@ export const UserLayout = (props) => {
         {props.lobby.game.name}
       </div>
       <div className="right-content">
-        <Desktop>
-          <ButtonAnt
-            onClick={() => {
-              props.setToggleChat((prevValue) => !prevValue);
-            }}
-          >
-            <MessageOutlined /> Chat
-          </ButtonAnt>
-        </Desktop>
+        {props.enableChat && (
+          <Desktop>
+            <ButtonAnt
+              onClick={() => {
+                props.setToggleChat((prevValue) => !prevValue);
+              }}
+            >
+              <MessageOutlined /> Chat
+            </ButtonAnt>
+          </Desktop>
+        )}
 
         {!authUser.isAdmin && (
           <Popover

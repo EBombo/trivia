@@ -28,6 +28,7 @@ export const AnswerCard = (props) => {
       grid grid-cols-[min-content_auto] overflow-hidden rounded
       cursor-pointer
       ${props.enableOpacity && "opacity-20"}`}
+      {...props}
     >
       <div className={`${colorClass} inline-block w-[70px] p-5`}>
         <Image src={iconUrl} />
