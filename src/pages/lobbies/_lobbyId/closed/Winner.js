@@ -20,11 +20,11 @@ export const Winner = (props) => {
           margin="auto"
         />
       )}
-      <div className="details">
-        <div className="tab" onClick={() => setAward(award ? null : props.winner.award?.name)}>
+      <div className="details font-bold">
+        <div className="tab text-3xl" onClick={() => setAward(award ? null : props.winner.award?.name)}>
           {props.winner.nickname} {props.winner.award?.name && (award ? <CaretUpOutlined /> : <CaretDownOutlined />)}
         </div>
-        {award && <div className="award">{award}</div>}
+        {award && <div className="award text-2xl">{award}</div>}
       </div>
     </WinnerCss>
   );
@@ -43,9 +43,8 @@ const WinnerCss = styled.div`
       z-index: 1;
       display: flex;
       cursor: pointer;
-      font-size: 1.5rem;
       height: fit-content;
-      padding: 10px 10px 10px 3rem;
+      padding: 10px 10px 10px 4rem;
       border-radius: 10px 10px 10px 10px;
       color: ${(props) => props.theme.basic.black};
       background: ${(props) => props.theme.basic.white};
@@ -58,10 +57,9 @@ const WinnerCss = styled.div`
     }
 
     .award {
-      font-size: 1rem;
       margin: -10px 0 auto ${(props) => (props.isList ? "0" : "-30px")};
       border-radius: 0 0 5px 5px;
-      padding: 15px 15px 15px 3rem;
+      padding: 24px 15px 15px 3rem;
       color: ${(props) => props.theme.basic.secondary};
       background: ${(props) => props.theme.basic.grayLighten};
     }

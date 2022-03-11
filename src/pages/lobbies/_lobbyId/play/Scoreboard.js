@@ -22,6 +22,30 @@ export const Scoreboard = (props) => {
   const [userRank, setUserRank] = useState(0);
 
   useEffect(() => {
+    if (isEmpty(rankingUsers)) return;
+
+    if (!isLastQuestion) return;
+
+    const saveTriviaWinners = async () => {
+
+      const winnersLength = props.lobby.settings.awards.length ?? 1;
+
+      const winners = rankingUsers
+        .slice(0, winnersLength)
+        .map((user, i) => ({...user, award: props.lobby.settings.awards[i]}));
+
+      await firestore.doc(`lobbies/${props.lobby.id}`).update({
+        finalStage: true,
+        winners,
+        updateAt: new Date(),
+      });
+    };
+
+    saveTriviaWinners();
+
+  }, [rankingUsers, isLastQuestion]);
+
+  useEffect(() => {
     // calculates ranking
     const computeValidQuestions = async () => {
       if (isEmpty(props.lobby.game.invalidQuestions)) return;
