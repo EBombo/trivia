@@ -222,7 +222,7 @@ export const LobbyClosed = (props) => {
         )}
       </div>
 
-      {isVisibleTitle && <div className="title">{props.lobby.game.title}</div>}
+      {isVisibleTitle && <div className="title">{props.lobby.game.name}</div>}
 
       {!isVisibleTitle && (
         <div className="winners">
