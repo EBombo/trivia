@@ -283,7 +283,7 @@ export const LobbyInPlay = (props) => {
           ) : null}
         </div>
       </div>
-      <Footer />
+      <Footer {...props}/>
     </div>
   );
 };
