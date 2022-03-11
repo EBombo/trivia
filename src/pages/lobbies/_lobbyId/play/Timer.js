@@ -8,7 +8,9 @@ export const Timer = (props) => {
 
   const totalSeconds = useMemo(() => {
     if (typeof props.time === "number") return props.time;
-    else if (typeof props.time === "string") return parseInt(props.time);
+
+    if (typeof props.time === "string") return parseInt(props.time);
+
     return null;
   }, [props.time]);
 
