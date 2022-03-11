@@ -5,6 +5,7 @@ import { snapshotToArray } from "../../../../utils";
 import { useRouter } from "next/router";
 import sortBy from "lodash/sortBy";
 import isEmpty from "lodash/isEmpty";
+import { get } from "lodash";
 
 const DEFAULT_RANKING_LENGTH = 5;
 
@@ -28,11 +29,11 @@ export const Scoreboard = (props) => {
 
     const saveTriviaWinners = async () => {
 
-      const winnersLength = props.lobby.settings.awards.length ?? 1;
+      const winnersLength = get(props.lobby, "settings.awards", []).length || 1;
 
       const winners = rankingUsers
         .slice(0, winnersLength)
-        .map((user, i) => ({...user, award: props.lobby.settings.awards[i]}));
+        .map((user, i) => ({...user, award: props.lobby.settings?.awards?.[i]}));
 
       await firestore.doc(`lobbies/${props.lobby.id}`).update({
         finalStage: true,
