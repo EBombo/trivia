@@ -15,7 +15,7 @@ import {
 } from "react-animations";
 import { config, firestore } from "../../../../firebase";
 import { Image } from "../../../../components/common/Image";
-import sortBy from "lodash/sortBy"
+import sortBy from "lodash/sortBy";
 import { snapshotToArray } from "../../../../utils";
 
 export const LobbyClosed = (props) => {
@@ -49,43 +49,49 @@ export const LobbyClosed = (props) => {
     const fetchCorrectAnswers = async () => {
       const answersSnapshot = await firestore.collection(`lobbies/${lobbyId}/answers`).get();
 
-      const correctAnswersRatio = answersSnapshot.docs.reduce((acc, answerSnapshot) => {
-        const answer = answerSnapshot.data();
+      const correctAnswersRatio = answersSnapshot.docs.reduce(
+        (acc, answerSnapshot) => {
+          const answer = answerSnapshot.data();
 
-        acc.total += 1;
-        if (answer.points !== 0) acc.correct += 1;
+          acc.total += 1;
+          if (answer.points !== 0) acc.correct += 1;
 
-        return acc;
-      }, { total: 0, correct: 0});
+          return acc;
+        },
+        { total: 0, correct: 0 }
+      );
 
-      const correctAnswersPercentage_ = Math.ceil(correctAnswersRatio.correct / correctAnswersRatio.total * 100);
+      const correctAnswersPercentage_ = Math.ceil((correctAnswersRatio.correct / correctAnswersRatio.total) * 100);
 
       setCorrectAnswersPercentage(correctAnswersPercentage_);
     };
 
     const fetchRanking = () => {
-      return firestore.collection(`lobbies/${lobbyId}/answers`)
-        .onSnapshot((answersSnapshot) => {
-          const answers = snapshotToArray(answersSnapshot);
+      return firestore.collection(`lobbies/${lobbyId}/answers`).onSnapshot((answersSnapshot) => {
+        const answers = snapshotToArray(answersSnapshot);
 
-          const usersPointsMap = answers.reduce((acc, answer) => {
-            if (!acc[answer.userId]) acc[answer.userId] = { score: 0 };
+        const usersPointsMap = answers.reduce((acc, answer) => {
+          if (!acc[answer.userId]) acc[answer.userId] = { score: 0 };
 
-            acc[answer.userId].score += answer.points;
-            if (!acc[answer.userId]?.nickname) acc[answer.userId].nickname = answer.user.nickname;
-            if (!acc[answer.userId]?.id) acc[answer.userId].id = answer.user.id;
+          acc[answer.userId].score += answer.points;
+          if (!acc[answer.userId]?.nickname) acc[answer.userId].nickname = answer.user.nickname;
+          if (!acc[answer.userId]?.id) acc[answer.userId].id = answer.user.id;
 
-            return acc;
-          }, {});
+          return acc;
+        }, {});
 
-          const rankingUsers_ = sortBy(Object.entries(usersPointsMap).map((userPointMap) => ({
+        const rankingUsers_ = sortBy(
+          Object.entries(usersPointsMap).map((userPointMap) => ({
             userId: userPointMap[0],
             nickname: userPointMap[1].nickname,
             score: userPointMap[1].score,
-          })), ["points"], ["desc"]);
+          })),
+          ["points"],
+          ["desc"]
+        );
 
-          setRankingUsers(rankingUsers_);
-        });
+        setRankingUsers(rankingUsers_);
+      });
     };
 
     fetchCorrectAnswers();

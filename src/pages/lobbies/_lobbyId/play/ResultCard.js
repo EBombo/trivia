@@ -29,53 +29,57 @@ export const ResultCard = (props) => {
 
       usersSnapshot.forEach((userSnapshot) => {
         const user = userSnapshot.data();
-        setStreakCount(user.streak); 
+        setStreakCount(user.streak);
       });
 
       setUsersSize(usersSnapshot.size);
     };
 
     const fetchRanking = () => {
-      return firestore.collection(`lobbies/${lobbyId}/answers`)
-        .onSnapshot((answersSnapshot) => {
-          const answers = snapshotToArray(answersSnapshot);
+      return firestore.collection(`lobbies/${lobbyId}/answers`).onSnapshot((answersSnapshot) => {
+        const answers = snapshotToArray(answersSnapshot);
 
-          const usersPointsMap = answers.reduce((acc, answer) => {
-            if (!acc[answer.userId]) acc[answer.userId] = { score: 0 };
+        const usersPointsMap = answers.reduce((acc, answer) => {
+          if (!acc[answer.userId]) acc[answer.userId] = { score: 0 };
 
-            acc[answer.userId].score += answer.points;
-            if (!acc[answer.userId]?.nickname) acc[answer.userId].nickname = answer.user.nickname;
-            if (!acc[answer.userId]?.id) acc[answer.userId].id = answer.user.id;
+          acc[answer.userId].score += answer.points;
+          if (!acc[answer.userId]?.nickname) acc[answer.userId].nickname = answer.user.nickname;
+          if (!acc[answer.userId]?.id) acc[answer.userId].id = answer.user.id;
 
-            return acc;
-          }, {});
+          return acc;
+        }, {});
 
-          const rankingUsers_ = sortBy(Object.entries(usersPointsMap).map((userPointMap) => ({
+        const rankingUsers_ = sortBy(
+          Object.entries(usersPointsMap).map((userPointMap) => ({
             userId: userPointMap[0],
             nickname: userPointMap[1].nickname,
             score: userPointMap[1].score,
-          })), ["points"], ["desc"]);
+          })),
+          ["points"],
+          ["desc"]
+        );
 
-          for (let i = 0; i < rankingUsers_.length; i++) {
-            const rankingUser = rankingUsers_[i];
+        for (let i = 0; i < rankingUsers_.length; i++) {
+          const rankingUser = rankingUsers_[i];
 
-            if (rankingUser.userId === authUser.id) {
-              setAuthUser({ ...authUser, score: rankingUser.score ?? 0 });
-              setUserRank(i + 1);
+          if (rankingUser.userId === authUser.id) {
+            setAuthUser({ ...authUser, score: rankingUser.score ?? 0 });
+            setUserRank(i + 1);
 
-              break;
-            }
+            break;
           }
+        }
 
-          const currentAnswer = answers.find(answer => answer.questionId === props.question.id && answer.userId === authUser.id);
-          if (currentAnswer) {
-            const isCorrect_ = checkIsCorrect(props.question, currentAnswer.answer);
+        const currentAnswer = answers.find(
+          (answer) => answer.questionId === props.question.id && answer.userId === authUser.id
+        );
+        if (currentAnswer) {
+          const isCorrect_ = checkIsCorrect(props.question, currentAnswer.answer);
 
-            setIsCorrect(isCorrect_);
-            setPointsEarned(currentAnswer.points);
-          }
-
-        });
+          setIsCorrect(isCorrect_);
+          setPointsEarned(currentAnswer.points);
+        }
+      });
     };
 
     fetchUsers();
@@ -84,20 +88,22 @@ export const ResultCard = (props) => {
     return () => unSubRanking && unSubRanking();
   }, []);
 
-  return (<div className="relative my-4 mx-4 pt-8 pb-4 bg-whiteLight text-lg min-w-[300px] self-center rounded-lg">
+  return (
+    <div className="relative my-4 mx-4 pt-8 pb-4 bg-whiteLight text-lg min-w-[300px] self-center rounded-lg">
       <div
         className={`absolute top-[-20px] left-1/2 translate-x-[-50%]
-          ${isCorrect ? "bg-success" : "bg-danger" } 
+          ${isCorrect ? "bg-success" : "bg-danger"} 
           ${isCorrect ? "text-secondaryDarken" : "text-whiteLight"}
           rounded max-w-[280px] whitespace-nowrap px-8`}
       >
         <span className="inline-block py-4 pr-4 align-middle">
-          {isCorrect
-            ? (<Image src={`${config.storageUrl}/resources/check-with-depth.svg`} width="16px" />)
-            : (<Image src={`${config.storageUrl}/resources/cross-with-depth.svg`} width="16px" />)
-          }
+          {isCorrect ? (
+            <Image src={`${config.storageUrl}/resources/check-with-depth.svg`} width="16px" />
+          ) : (
+            <Image src={`${config.storageUrl}/resources/cross-with-depth.svg`} width="16px" />
+          )}
         </span>
-        {isCorrect ? "Respuesta correcta" : "Respuesta incorrecta" }
+        {isCorrect ? "Respuesta correcta" : "Respuesta incorrecta"}
       </div>
 
       {isCorrect ? (
@@ -114,8 +120,10 @@ export const ResultCard = (props) => {
         <div className="text-secondaryDarken">¡Hay que mantener la cabeza en el juego!</div>
       )}
 
-      <div className="text-black">Puntaje actual: { authUser.score?.toFixed(1) } pts</div>
-      <div className="text-black">Puesto: { userRank }/{ usersSize }</div>
-    </div>);
+      <div className="text-black">Puntaje actual: {authUser.score?.toFixed(1)} pts</div>
+      <div className="text-black">
+        Puesto: {userRank}/{usersSize}
+      </div>
+    </div>
+  );
 };
-

@@ -33,7 +33,8 @@ export const InPlayHeader = (props) => {
 
   useEffect(() => {
     const fetchAnswers = () => {
-      return firestore.collection(`lobbies/${lobbyId}/answers`)
+      return firestore
+        .collection(`lobbies/${lobbyId}/answers`)
         .where("questionId", "==", props.question.id)
         .onSnapshot((answersSnapshot) => {
           setAnswersCount(answersSnapshot.size);
@@ -44,11 +45,10 @@ export const InPlayHeader = (props) => {
     return () => unSubAnswersCount && unSubAnswersCount();
   }, [props.question]);
 
-
   return (
     <div className="grid grid-rows-[minmax(160px,min-content)_auto]">
       <div className="relative bg-whiteLight py-4 text-center text-2xl md:text-3xl font-bold flex">
-        <QuestionStep {...props}/>
+        <QuestionStep {...props} />
 
         <div className="relative self-center w-full text-secondaryDarken">{props.question?.question}</div>
       </div>
@@ -56,7 +56,12 @@ export const InPlayHeader = (props) => {
         <div className={`text-center ${!props.lobby?.isAdmin && "self-center"}`}>
           {authUser?.isAdmin && (
             <div className="mb-8 hidden md:inline-block">
-              <ButtonAnt color="default" size="big" className="font-bold" onClick={() => props.onInvalidateQuestion?.()}>
+              <ButtonAnt
+                color="default"
+                size="big"
+                className="font-bold"
+                onClick={() => props.onInvalidateQuestion?.()}
+              >
                 Invalidar pregunta
               </ButtonAnt>
             </div>
@@ -79,7 +84,7 @@ export const InPlayHeader = (props) => {
             </div>
           )}
           <div>
-            <div className="text-3xl md:text-5xl">{ answersCount }</div>
+            <div className="text-3xl md:text-5xl">{answersCount}</div>
             <div className="text-base">respuestas</div>
           </div>
         </div>

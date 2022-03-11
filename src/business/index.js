@@ -1,5 +1,9 @@
 import find from "lodash/find";
-import { ALTERNATIVES_QUESTION_TYPE, OPEN_QUESTION_TYPE, TRUE_FALSE_QUESTION_TYPE } from "../components/common/DataList";
+import {
+  ALTERNATIVES_QUESTION_TYPE,
+  OPEN_QUESTION_TYPE,
+  TRUE_FALSE_QUESTION_TYPE,
+} from "../components/common/DataList";
 
 export const ANIMATION = {
   min: 4,
@@ -18,8 +22,7 @@ export const getCurrentQuestion = (questions, currentQuestionNumber) =>
 
 // kahoot scoring [1-(r/q/2)]p
 // r = time left, q = total time, p = points
-export const computePointsEarned = (timeLeft, totalTime, point) =>
-  (1 - ((totalTime - timeLeft) / totalTime / 2)) * point;
+export const computePointsEarned = (timeLeft, totalTime, point) => (1 - (totalTime - timeLeft) / totalTime / 2) * point;
 
 export const checkIsCorrect = (question, answer) => {
   if (question.type === ALTERNATIVES_QUESTION_TYPE) {

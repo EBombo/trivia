@@ -10,7 +10,7 @@ import {
 } from "../../../../components/common/DataList";
 import { timeoutPromise } from "../../../../utils/promised";
 import styled from "styled-components";
-import { animate } from "popmotion"
+import { animate } from "popmotion";
 import { QuestionStep } from "./QuestionStep";
 
 const TOTAL_ANIMATION_DURATION = 6000;
@@ -21,7 +21,7 @@ export const LobbyQuestionIntroduction = (props) => {
 
   const imgSizeRef = useRef(null);
 
-  const imgRef = useCallback(node => {
+  const imgRef = useCallback((node) => {
     if (!node) return;
 
     animate({
@@ -29,12 +29,12 @@ export const LobbyQuestionIntroduction = (props) => {
       to: 0.5,
       duration: 1000,
       elapsed: -2000,
-      onUpdate: tween => {
+      onUpdate: (tween) => {
         if (!imgSizeRef.current) imgSizeRef.current = node.offsetHeight;
 
         node.style.height = `${imgSizeRef.current * tween}px`;
         node.style.width = `${imgSizeRef.current * tween}px`;
-      }
+      },
     });
   }, []);
 
@@ -63,23 +63,35 @@ export const LobbyQuestionIntroduction = (props) => {
 
   const showQuestion = (label) => (
     <div className="relative opacity-0 question-anim">
-      <QuestionStep {...props}/>
+      <QuestionStep {...props} />
 
-      <div className={`absolute top-0 left-0
+      <div
+        className={`absolute top-0 left-0
         w-full text-black text-4xl text-center
         bg-white
         py-20
-      `}>{label}</div>
+      `}
+      >
+        {label}
+      </div>
     </div>
   );
 
   // add animation for question
   return (
     <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto flex justify-center items-center">
-      <LobbyQuestionIntroductionContent {...props} >
+      <LobbyQuestionIntroductionContent {...props}>
         {question.type === ALTERNATIVES_QUESTION_TYPE ? (
           <>
-            <Image innerRef={imgRef} className="img" src={`${config.storageUrl}/resources/alternative-question-logo.svg`} width="150px" height="150px" desktopWidth="250px" desktopHeight="250px" />
+            <Image
+              innerRef={imgRef}
+              className="img"
+              src={`${config.storageUrl}/resources/alternative-question-logo.svg`}
+              width="150px"
+              height="150px"
+              desktopWidth="250px"
+              desktopHeight="250px"
+            />
             <div className="relative min-h-[320px]">
               {questionLabel("Quiz")}
               {showQuestion(question.question)}
@@ -87,7 +99,15 @@ export const LobbyQuestionIntroduction = (props) => {
           </>
         ) : question.type === TRUE_FALSE_QUESTION_TYPE ? (
           <>
-            <Image innerRef={imgRef} className="img" src={`${config.storageUrl}/resources/true-false-question-logo.svg`} width="150px" height="150px" desktopWidth="250px" desktopHeight="250px" />
+            <Image
+              innerRef={imgRef}
+              className="img"
+              src={`${config.storageUrl}/resources/true-false-question-logo.svg`}
+              width="150px"
+              height="150px"
+              desktopWidth="250px"
+              desktopHeight="250px"
+            />
             <div className="relative min-h-[320px]">
               {questionLabel("Verdadero o Falso")}
               {showQuestion(question.question)}
@@ -95,7 +115,15 @@ export const LobbyQuestionIntroduction = (props) => {
           </>
         ) : question.type === OPEN_QUESTION_TYPE ? (
           <>
-            <Image innerRef={imgRef} className="img" src={`${config.storageUrl}/resources/open-question-logo.svg`} width="150px" height="150px" desktopWidth="250px" desktopHeight="250px" />
+            <Image
+              innerRef={imgRef}
+              className="img"
+              src={`${config.storageUrl}/resources/open-question-logo.svg`}
+              width="150px"
+              height="150px"
+              desktopWidth="250px"
+              desktopHeight="250px"
+            />
             <div className="relative min-h-[320px]">
               {questionLabel("Escribe tu respuesta")}
               {showQuestion(question.question)}
@@ -111,12 +139,12 @@ const LobbyQuestionIntroductionContent = styled.div`
   width: 100%;
 
   .question-type-anim {
-    animation: introducingQuestionType ${TOTAL_ANIMATION_DURATION/2}ms forwards;
+    animation: introducingQuestionType ${TOTAL_ANIMATION_DURATION / 2}ms forwards;
   }
 
   .question-anim {
-    animation: introducingQuestion ${TOTAL_ANIMATION_DURATION/2}ms forwards;
-    animation-delay: ${TOTAL_ANIMATION_DURATION/2}ms
+    animation: introducingQuestion ${TOTAL_ANIMATION_DURATION / 2}ms forwards;
+    animation-delay: ${TOTAL_ANIMATION_DURATION / 2}ms;
   }
 
   @keyframes introducingQuestionType {
@@ -134,12 +162,9 @@ const LobbyQuestionIntroductionContent = styled.div`
   @keyframes introducingQuestion {
     0% {
       opacity: 0;
-
     }
     100% {
       opacity: 1;
     }
   }
-
 `;
-

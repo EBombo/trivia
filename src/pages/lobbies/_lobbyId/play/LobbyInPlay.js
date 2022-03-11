@@ -63,16 +63,18 @@ export const LobbyInPlay = (props) => {
     if (!question) return;
 
     const fetchUserHasAnswered = async () => {
-      const answersQuerySnapshot = await firestore.collection(`lobbies/${lobbyId}/answers`)
+      const answersQuerySnapshot = await firestore
+        .collection(`lobbies/${lobbyId}/answers`)
         .where("userId", "==", authUser.id)
-        .where("questionId", "==", question.id).get();
+        .where("questionId", "==", question.id)
+        .get();
 
       const hasAnswered = !answersQuerySnapshot.empty;
 
       setUserHasAnswered(hasAnswered);
       setShowImage(true);
     };
-     
+
     fetchUserHasAnswered();
   }, [question]);
 
@@ -86,7 +88,7 @@ export const LobbyInPlay = (props) => {
     if (question.type === TRUE_FALSE_QUESTION_TYPE) return answer == question.answer;
 
     if (question.type === OPEN_QUESTION_TYPE) return question.answer.includes(answer);
-  }
+  };
 
   useEffect(() => {
     if (props.lobby.game.state === QUESTION_TIMEOUT) setShowImage(false);
@@ -98,7 +100,11 @@ export const LobbyInPlay = (props) => {
 
     const isCorrectAnswer = isCorrect(question, answer);
 
-    const points = computePointsEarned(props.lobby.game.secondsLeft, question.time, isCorrectAnswer ? DEFAULT_POINTS : 0); 
+    const points = computePointsEarned(
+      props.lobby.game.secondsLeft,
+      question.time,
+      isCorrectAnswer ? DEFAULT_POINTS : 0
+    );
 
     const data = {
       userId: authUser.id,
@@ -136,10 +142,9 @@ export const LobbyInPlay = (props) => {
   };
 
   const invalidateQuestion = async () => {
-    await firestore.doc(`lobbies/${lobbyId}`)
-      .update({
-        "game.invalidQuestions": (props.lobby.game.invalidQuestions ?? []).concat([question.id]),
-      });
+    await firestore.doc(`lobbies/${lobbyId}`).update({
+      "game.invalidQuestions": (props.lobby.game.invalidQuestions ?? []).concat([question.id]),
+    });
   };
 
   // only admin calls this function
@@ -219,19 +224,19 @@ export const LobbyInPlay = (props) => {
     <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto">
       <UserLayout {...props} />
 
-      <InPlayHeader key={question} time={question?.time} question={question} onInvalidateQuestion={invalidateQuestion} {...props}>
+      <InPlayHeader
+        key={question}
+        time={question?.time}
+        question={question}
+        onInvalidateQuestion={invalidateQuestion}
+        {...props}
+      >
         {showImage ? (
           <div className="aspect-[4/1] w-full bg-secondaryDark">
-            { question.fileUrl && (
-              <Image src={question.fileUrl} width="100%" height="100%" />
-            )}
+            {question.fileUrl && <Image src={question.fileUrl} width="100%" height="100%" />}
           </div>
         ) : (
-          <div className="aspect-[4/1] w-full">
-            {question && (
-              <AlternativeResults question={question} />
-            )}
-          </div>
+          <div className="aspect-[4/1] w-full">{question && <AlternativeResults question={question} />}</div>
         )}
 
         {props.lobby.game.state === QUESTION_TIMEOUT && (
@@ -266,24 +271,23 @@ export const LobbyInPlay = (props) => {
                 color="red"
                 value={true}
                 disabled={userHasAnswered}
-                onClick={() => onAnswering(true)} />
+                onClick={() => onAnswering(true)}
+              />
               <TrueFalseAnswerCard
                 color="green"
                 value={false}
                 disabled={userHasAnswered}
-                onClick={() => onAnswering(false)} />
+                onClick={() => onAnswering(false)}
+              />
             </>
-          ) : (question?.type === OPEN_QUESTION_TYPE && !authUser.isAdmin) ? (
+          ) : question?.type === OPEN_QUESTION_TYPE && !authUser.isAdmin ? (
             <div className="col-start-1 col-end-3">
-              <OpenAnswerCard
-                color="red"
-                disabled={userHasAnswered}
-                onSubmit={(data) => onAnswering(data)} />
+              <OpenAnswerCard color="red" disabled={userHasAnswered} onSubmit={(data) => onAnswering(data)} />
             </div>
           ) : null}
         </div>
       </div>
-      <Footer {...props}/>
+      <Footer {...props} />
     </div>
   );
 };

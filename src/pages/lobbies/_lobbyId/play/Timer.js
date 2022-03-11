@@ -17,7 +17,7 @@ export const Timer = (props) => {
   const [secondsLeft, setSecondsLeft] = useState(props.lobby.game.secondsLeft ?? totalSeconds);
 
   const secondsLeftPercentage = useMemo(() => {
-    return Math.round(((props.lobby.game.secondsLeft ?? 0) / totalSeconds) * 100)
+    return Math.round(((props.lobby.game.secondsLeft ?? 0) / totalSeconds) * 100);
   }, [props.lobby.game.secondsLeft, totalSeconds]);
 
   useEffect(() => {
@@ -98,7 +98,9 @@ export const Timer = (props) => {
           </Tablet>
 
           <div className="absolute text-whiteLight">
-            <span className="text-2xl md:text-4xl">{ authUser.isAdmin ? secondsLeft : props.lobby.game.secondsLeft }</span>
+            <span className="text-2xl md:text-4xl">
+              {authUser.isAdmin ? secondsLeft : props.lobby.game.secondsLeft}
+            </span>
             <div className="text-xs md:text-base hidden md:block">segundos</div>
           </div>
         </div>
