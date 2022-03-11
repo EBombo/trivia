@@ -69,7 +69,7 @@ export const ResultCard = (props) => {
 
           const currentAnswer = answers.find(answer => answer.questionId === props.question.id && answer.userId === authUser.id);
           if (currentAnswer) {
-            const isCorrect_ = checkIsCorrect(props.question, currentAnswer);
+            const isCorrect_ = checkIsCorrect(props.question, currentAnswer.answer);
 
             setIsCorrect(isCorrect_);
             setPointsEarned(currentAnswer.points);
