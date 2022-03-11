@@ -86,7 +86,7 @@ export const Lobby = (props) => {
 
   // Fetch users.
   useEffect(() => {
-    if (!lobby || !game || !game?.isLive) return;
+    if (!lobby || !game) return;
 
     const fetchUsers = () =>
       firestore
