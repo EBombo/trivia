@@ -130,8 +130,6 @@ const LoadingGameContainer = styled.div`
       position: relative;
       animation-delay: 2s;
       animation: move-right 3s forwards;
-      -webkit-animation-delay: 2s;
-      -o-animation-delay: 2s;
     }
   }
 
@@ -156,7 +154,6 @@ const LoadingGameContainer = styled.div`
       font-size: 30px;
       line-height: 59px;
       animation: 6s ease 0s normal forwards 1 fadein;
-      -webkit-animation: 6s ease 0s normal forwards 1 fadein;
       opacity: 0;
     }
   }
