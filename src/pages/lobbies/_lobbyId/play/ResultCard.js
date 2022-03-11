@@ -114,7 +114,7 @@ export const ResultCard = (props) => {
         <div className="text-secondaryDarken">¡Hay que mantener la cabeza en el juego!</div>
       )}
 
-      <div className="text-black">Puntaje actual: { authUser.score.toFixed(1) } pts</div>
+      <div className="text-black">Puntaje actual: { authUser.score?.toFixed(1) } pts</div>
       <div className="text-black">Puesto: { userRank }/{ usersSize }</div>
     </div>);
 };
