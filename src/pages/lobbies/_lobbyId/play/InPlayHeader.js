@@ -61,7 +61,7 @@ export const InPlayHeader = (props) => {
               </ButtonAnt>
             </div>
           )}
-          <Timer label="Espera que acabe el tiempo..." onUpdateGame={updateGameState} {...props} />
+          <Timer onUpdateGame={updateGameState} {...props} />
         </div>
         <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:row-start-1 md:row-end-2 md:col-start-2 md:col-end-3 mx-4 text-center">
           {props.children}
