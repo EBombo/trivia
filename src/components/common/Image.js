@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { mediaQuery } from "../../constants";
 
 export const Image = (props) => (
-  <ImageCss {...props}>
+  <ImageCss {...props} ref={props.innerRef}>
     <img src={props.src} alt={props.src} />
   </ImageCss>
 );
