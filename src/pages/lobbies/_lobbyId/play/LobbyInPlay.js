@@ -47,6 +47,8 @@ export const LobbyInPlay = (props) => {
 
   const [showImage, setShowImage] = useState(props.lobby.game.state === QUESTION_TIMEOUT ? false : true);
 
+  const [userHasAnswered, setUserHasAnswered] = useState(null);
+
   const currentQuestionNumber = useMemo(() => props.lobby.game.currentQuestionNumber ?? 1, [props.lobby.game]);
 
   const question = useMemo(() => {
@@ -54,8 +56,6 @@ export const LobbyInPlay = (props) => {
 
     return getCurrentQuestion(questions, currentQuestionNumber);
   }, [props.lobby.game, questions]);
-
-  const [userHasAnswered, setUserHasAnswered] = useState(null);
 
   useEffect(() => {
     if (authUser.isAdmin) return;
