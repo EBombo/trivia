@@ -11,6 +11,7 @@ import {
 import { timeoutPromise } from "../../../../utils/promised";
 import styled from "styled-components";
 import { animate } from "popmotion"
+import { QuestionStep } from "./QuestionStep";
 
 const TOTAL_ANIMATION_DURATION = 6000;
 
@@ -61,11 +62,15 @@ export const LobbyQuestionIntroduction = (props) => {
   );
 
   const showQuestion = (label) => (
-    <div className={`absolute top-0 left-0
-      w-full text-black text-4xl text-center opacity-0 question-anim
-      bg-white
-      py-20
-    `}>{label}</div>
+    <div className="relative opacity-0 question-anim">
+      <QuestionStep {...props}/>
+
+      <div className={`absolute top-0 left-0
+        w-full text-black text-4xl text-center
+        bg-white
+        py-20
+      `}>{label}</div>
+    </div>
   );
 
   // add animation for question
