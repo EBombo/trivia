@@ -48,7 +48,7 @@ export const InPlayHeader = (props) => {
   return (
     <div className="grid grid-rows-[minmax(160px,min-content)_auto]">
       <div className="relative bg-whiteLight py-4 text-center text-2xl md:text-3xl font-bold flex">
-        <QuestionStep />
+        <QuestionStep {...props}/>
 
         <div className="relative self-center w-full text-secondaryDarken">{props.question?.question}</div>
       </div>
