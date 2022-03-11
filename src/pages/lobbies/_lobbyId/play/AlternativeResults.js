@@ -54,9 +54,7 @@ export const AlternativeResults = (props) => {
 
   }, [props.question]);
 
-  if (!props.question) return (<div>
-    {spinLoaderMin()}
-  </div>);
+  if (!props.question) return (spinLoaderMin());
 
   if (props.question?.type === ALTERNATIVES_QUESTION_TYPE) return (
     <div>
@@ -98,9 +96,5 @@ export const AlternativeResults = (props) => {
     </div>
   );
 
-  return (
-    <div>
-      {spinLoaderMin()}
-    </div>
-  );
+  return (spinLoaderMin());
 };
