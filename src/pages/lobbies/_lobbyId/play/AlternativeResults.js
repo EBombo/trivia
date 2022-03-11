@@ -76,13 +76,13 @@ export const AlternativeResults = (props) => {
       <TrueFalseBarResult
         isCorrect={props.question?.answer}
         option={true}
-        value={Math.ceil(answerCountMap[true]/totalCount * 100)}
-        count={answerCountMap[true]} />
+        value={Math.ceil((answerCountMap?.[true]?.count ?? 0)/totalCount * 100)}
+        count={answerCountMap?.[true]?.count ?? 0} />
       <TrueFalseBarResult
         isCorrect={!props.question?.answer}
         option={false}
-        value={Math.ceil(answerCountMap[false]/totalCount * 100)}
-        count={answerCountMap[false]} />
+        value={Math.ceil((answerCountMap?.[false]?.count ?? 0)/totalCount * 100)}
+        count={answerCountMap?.[false]?.count ?? 0} />
     </div>
   );
 
