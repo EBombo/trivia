@@ -15,6 +15,8 @@ import {
 } from "react-animations";
 import { config, firestore } from "../../../../firebase";
 import { Image } from "../../../../components/common/Image";
+import sortBy from "lodash/sortBy"
+import { snapshotToArray } from "../../../../utils";
 
 export const LobbyClosed = (props) => {
   const router = useRouter();
@@ -33,6 +35,8 @@ export const LobbyClosed = (props) => {
   const [showWinnersAnimation, setShowWinnersAnimation] = useState(false);
 
   const [correctAnswersPercentage, setCorrectAnswersPercentage] = useState(0);
+
+  const [rankingUsers, setRankingUsers] = useState([]);
 
   useEffect(() => {
     const initializeAnimation = async () => {
@@ -59,9 +63,37 @@ export const LobbyClosed = (props) => {
       setCorrectAnswersPercentage(correctAnswersPercentage_);
     };
 
+    const fetchRanking = () => {
+      return firestore.collection(`lobbies/${lobbyId}/answers`)
+        .onSnapshot((answersSnapshot) => {
+          const answers = snapshotToArray(answersSnapshot);
+
+          const usersPointsMap = answers.reduce((acc, answer) => {
+            if (!acc[answer.userId]) acc[answer.userId] = { score: 0 };
+
+            acc[answer.userId].score += answer.points;
+            if (!acc[answer.userId]?.nickname) acc[answer.userId].nickname = answer.user.nickname;
+            if (!acc[answer.userId]?.id) acc[answer.userId].id = answer.user.id;
+
+            return acc;
+          }, {});
+
+          const rankingUsers_ = sortBy(Object.entries(usersPointsMap).map((userPointMap) => ({
+            userId: userPointMap[0],
+            nickname: userPointMap[1].nickname,
+            score: userPointMap[1].score,
+          })), ["points"], ["desc"]);
+
+          setRankingUsers(rankingUsers_);
+        });
+    };
+
     fetchCorrectAnswers();
 
     initializeAnimation();
+
+    const unSubRanking = fetchRanking();
+    return () => unSubRanking && unSubRanking();
   }, []);
 
   const initializeTransitionToResume = async () => {
@@ -185,6 +217,9 @@ export const LobbyClosed = (props) => {
         </div>
         <div className="list">
           {props.lobby.winners.map((winner, index) => (
+            <Winner winner={winner} index={index} key={index} isList />
+          ))}
+          {rankingUsers.slice(props.lobby.winners.length).map((winner, index) => (
             <Winner winner={winner} index={index} key={index} isList />
           ))}
         </div>
