@@ -233,7 +233,10 @@ export const LobbyInPlay = (props) => {
       >
         {showImage ? (
           <div className="aspect-[4/1] w-full bg-secondaryDark">
-            {question.fileUrl && <Image src={question.fileUrl} width="100%" height="100%" />}
+            {question.fileUrl
+              ? (<Image src={question.fileUrl} width="100%" height="100%" />)
+              : (<Image src={`${config.storageUrl}/resources/trivia-brand-logo.svg`} width="100%" height="100%" />)
+            }
           </div>
         ) : (
           <div className="aspect-[4/1] w-full">{question && <AlternativeResults question={question} />}</div>
