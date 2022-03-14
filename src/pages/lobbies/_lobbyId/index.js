@@ -36,9 +36,9 @@ export const Lobby = (props) => {
 
     const userMapped = {
       id: userId,
-      email: authUserLs.email,
-      avatar: authUserLs.avatar,
-      nickname: authUserLs.nickname,
+      email: authUserLs?.email,
+      avatar: authUserLs?.avatar,
+      nickname: authUserLs?.nickname,
     };
 
     await setAuthUser(userMapped);
