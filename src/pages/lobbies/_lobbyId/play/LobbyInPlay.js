@@ -186,12 +186,14 @@ export const LobbyInPlay = (props) => {
   // if user has already answered
   if (!authUser.isAdmin && props.lobby.game?.state === ANSWERING_QUESTION && userHasAnswered)
     return (
-      <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto text-center flex flex-col justify-center">
+      <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto text-center grid grid-rows-[50px-auto]">
         <UserLayout {...props} />
-        <div className="my-4">
-          <NextRoundLoader />
+        <div className="">
+          <div className="my-4">
+            <NextRoundLoader />
+          </div>
+          <div className="font-bold text-whiteLight text-xl">¿Te sientes confiado?</div>
         </div>
-        <div className="font-bold text-whiteLight text-xl">¿Te sientes confiado?</div>
       </div>
     );
 
