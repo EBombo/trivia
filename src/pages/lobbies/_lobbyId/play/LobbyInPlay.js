@@ -253,9 +253,11 @@ export const LobbyInPlay = (props) => {
 
       <div className="grid md:grid-cols-[1fr_3fr_1fr] mb-8 bg-secondaryDark bg-opacity-50 py-8">
         <div className="text-center self-end">
-          <span className="text-whiteLight text-lg cursor-pointer" onClick={() => closeLobby()}>
-            Finalizar
-          </span>
+          {props.lobby.game.state === QUESTION_TIMEOUT && (
+            <span className="text-whiteLight text-lg cursor-pointer" onClick={() => closeLobby()}>
+              Finalizar
+            </span>
+          )}
         </div>
         <div className="grid md:grid-cols-2 md:col-start-2 md:col-end-3">
           {question?.type === ALTERNATIVES_QUESTION_TYPE ? (
