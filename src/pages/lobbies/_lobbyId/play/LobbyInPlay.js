@@ -241,7 +241,7 @@ export const LobbyInPlay = (props) => {
             }
           </div>
         ) : (
-          <div className="aspect-[4/1] w-full">{question && <AlternativeResults question={question} />}</div>
+          <div className="aspect-[4/1] w-full">{question && <AlternativeResults question={question} {...props} />}</div>
         )}
 
         {props.lobby.game.state === QUESTION_TIMEOUT && (
@@ -270,6 +270,8 @@ export const LobbyInPlay = (props) => {
                 onClick={() => onAnswering(option)}
                 color={i === 0 ? "red" : i === 1 ? "green" : i === 2 ? "yellow" : i === 3 ? "blue" : "primary"}
                 disabled={userHasAnswered}
+                enableOpacity={(props.lobby.game.state === QUESTION_TIMEOUT &&
+                  !question.answer.map(answerIndex => question?.options[answerIndex])?.includes(option))}
               />
             ))
           ) : question?.type === TRUE_FALSE_QUESTION_TYPE ? (
@@ -278,12 +280,14 @@ export const LobbyInPlay = (props) => {
                 color="red"
                 value={true}
                 disabled={userHasAnswered}
+                enableOpacity={(props.lobby.game.state === QUESTION_TIMEOUT && question.answer)}
                 onClick={() => onAnswering(true)}
               />
               <TrueFalseAnswerCard
                 color="green"
                 value={false}
                 disabled={userHasAnswered}
+                enableOpacity={(props.lobby.game.state === QUESTION_TIMEOUT && !question.answer)}
                 onClick={() => onAnswering(false)}
               />
             </>
