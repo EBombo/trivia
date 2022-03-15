@@ -43,30 +43,30 @@ export const Timer = (props) => {
   return (
     <div>
       <div className="text-center font-bold flex flex-row md:flex-col items-center">
-        <div className="inline-flex items-center justify-center overflow-hidden rounded-full">
+        <div className="relative inline-flex items-center justify-center overflow-hidden rounded-full">
           <Desktop>
-            <svg className="w-40 h-40">
+            <svg className="w-[120px] h-[120px]">
               <circle
                 className="text-secondaryDarken"
-                strokeWidth="10"
+                strokeWidth="6"
                 stroke="currentColor"
                 fill="transparent"
-                r="60"
-                cx="80"
-                cy="80"
+                r="45"
+                cx="60"
+                cy="60"
               />
               <circle
                 className="text-success origin-center scale-x-[-1] rotate-90 transition-all ease-out duration-500"
-                strokeWidth="12"
+                strokeWidth="8"
                 strokeDasharray={totalSeconds}
                 strokeDashoffset={totalSeconds - (secondsLeftPercentage / 100) * totalSeconds}
                 strokeLinecap="round"
                 stroke="currentColor"
                 fill="transparent"
                 pathLength={totalSeconds}
-                r="60"
-                cx="80"
-                cy="80"
+                r="45"
+                cx="60"
+                cy="60"
               />
             </svg>
           </Desktop>
@@ -98,10 +98,10 @@ export const Timer = (props) => {
           </Tablet>
 
           <div className="absolute text-whiteLight">
-            <span className="text-2xl md:text-4xl">
+            <span className="text-2xl md:text-3xl">
               {authUser.isAdmin ? secondsLeft : props.lobby.game.secondsLeft}
             </span>
-            <div className="text-xs md:text-base hidden md:block">segundos</div>
+            <div className="text-xs md:text-sm hidden md:block">segundos</div>
           </div>
         </div>
         <div className="text-left hidden md:block">{props.label ?? ""}</div>
