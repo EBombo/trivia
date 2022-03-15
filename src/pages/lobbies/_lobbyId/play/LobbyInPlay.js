@@ -1,15 +1,10 @@
 import React, { useEffect, useGlobal, useState, useMemo } from "reactn";
 import { UserLayout } from "../userLayout";
-import { ButtonAnt } from "../../../../components/form";
-import dynamic from "next/dynamic";
-import find from "lodash/find";
 import { useRouter } from "next/router";
 import { config, firebase, firestore, hostName } from "../../../../firebase";
-import { snapshotToArray } from "../../../../utils";
-import { darkTheme } from "../../../../theme";
-import defaultTo from "lodash/defaultTo";
 import isEmpty from "lodash/isEmpty";
 import { Image } from "../../../../components/common/Image";
+import { ButtonAnt } from "../../../../components/form/Button";
 import { InPlayHeader } from "./InPlayHeader";
 import { AnswerCard } from "./AnswerCard";
 import { TrueFalseAnswerCard } from "./TrueFalseAnswerCard";
@@ -223,7 +218,7 @@ export const LobbyInPlay = (props) => {
 
   // ANSWERING_QUESTION state
   return (
-    <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto">
+    <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto grid grid-rows-[50px_min-content_auto_60px] 2xl:grid-rows-[50px_auto_auto_75px]">
       <UserLayout {...props} />
 
       <InPlayHeader
@@ -234,10 +229,10 @@ export const LobbyInPlay = (props) => {
         {...props}
       >
         {showImage ? (
-          <div className="aspect-[4/1] w-full bg-secondaryDark mb-2">
+          <div className="aspect-[4/1] w-full h-full bg-secondaryDark mb-2">
             {question.fileUrl
-              ? (<Image src={question.fileUrl} width="100%" height="100%" size="contain" />)
-              : (<Image src={`${config.storageUrl}/resources/trivia-brand-logo.svg`} width="100%" height="100%" size="contain" />)
+              ? (<Image src={question.fileUrl} width="100%" size="contain" noImgTag />)
+              : (<Image src={`${config.storageUrl}/resources/trivia-brand-logo.svg`} width="100%" size="contain" noImgTag />)
             }
           </div>
         ) : (
@@ -253,8 +248,8 @@ export const LobbyInPlay = (props) => {
         )}
       </InPlayHeader>
 
-      <div className="grid md:grid-cols-[1fr_3fr_1fr] mb-8 bg-secondaryDark bg-opacity-50 py-8">
-        <div className="text-center self-end">
+      <div className="grid md:grid-cols-[1fr_3fr_1fr] bg-secondaryDark bg-opacity-50 pb-2">
+        <div className="text-center self-end py-4">
           {props.lobby.game.state === QUESTION_TIMEOUT && (
             <span className="text-whiteLight text-lg cursor-pointer" onClick={() => closeLobby()}>
               Finalizar
@@ -296,6 +291,20 @@ export const LobbyInPlay = (props) => {
               <OpenAnswerCard color="red" disabled={userHasAnswered} onSubmit={(data) => onAnswering(data)} />
             </div>
           ) : null}
+
+          {authUser?.isAdmin && (
+            <div className="mt-4 mb-8 md:hidden md:inline-block mx-4">
+              <ButtonAnt
+                color="default"
+                size="big"
+                className="font-bold text-base"
+                width="100%"
+                onClick={() => invalidateQuestion()}
+              >
+                Invalidar pregunta
+              </ButtonAnt>
+            </div>
+          )}
         </div>
       </div>
       <Footer {...props} />
