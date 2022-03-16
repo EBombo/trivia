@@ -52,6 +52,10 @@ export const LobbyInPlay = (props) => {
   }, [props.lobby.game, questions]);
 
   useEffect(() => {
+    if (props.lobby.game.state === QUESTION_TIMEOUT) setShowImage(false);
+  }, [props.lobby.game.state]);
+
+  useEffect(() => {
     if (authUser.isAdmin) return;
 
     if (!question) return;
@@ -83,10 +87,6 @@ export const LobbyInPlay = (props) => {
 
     if (question.type === OPEN_QUESTION_TYPE) return question.answer.includes(answer);
   };
-
-  useEffect(() => {
-    if (props.lobby.game.state === QUESTION_TIMEOUT) setShowImage(false);
-  }, [props.lobby.game.state]);
 
   // creates user answer and update user score
   const onAnswering = async (answer) => {
