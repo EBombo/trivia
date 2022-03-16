@@ -26,7 +26,6 @@ import {
   TRUE_FALSE_QUESTION_TYPE,
   DEFAULT_POINTS,
 } from "../../../../components/common/DataList";
-import { useUser } from "../../../../hooks";
 
 export const LobbyInPlay = (props) => {
   const router = useRouter();
@@ -34,8 +33,6 @@ export const LobbyInPlay = (props) => {
   const { lobbyId } = router.query;
 
   const [authUser] = useGlobal("user");
-
-  const [authUserLS, setAuthUserLS] = useUser();
 
   const [questions] = useState(props.lobby.gameQuestions ?? []);
 
@@ -133,8 +130,6 @@ export const LobbyInPlay = (props) => {
       .update({
         answersCount: firebase.firestore.FieldValue.increment(1),
       });
-
-    setAuthUserLS({ ...authUserLS });
 
     setUserHasAnswered(true);
 
