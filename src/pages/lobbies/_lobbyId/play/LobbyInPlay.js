@@ -229,10 +229,16 @@ export const LobbyInPlay = (props) => {
       >
         {showImage ? (
           <div className="aspect-[4/1] w-full h-full bg-secondaryDark mb-2">
-            {question.fileUrl
-              ? (<Image src={question.fileUrl} width="100%" size="contain" noImgTag />)
-              : (<Image src={`${config.storageUrl}/resources/trivia-brand-logo.svg`} width="100%" size="contain" noImgTag />)
-            }
+            {question.fileUrl ? (
+              <Image src={question.fileUrl} width="100%" size="contain" noImgTag />
+            ) : (
+              <Image
+                src={`${config.storageUrl}/resources/trivia-brand-logo.svg`}
+                width="100%"
+                size="contain"
+                noImgTag
+              />
+            )}
           </div>
         ) : (
           <div className="aspect-[4/1] w-full">{question && <AlternativeResults question={question} {...props} />}</div>
@@ -264,8 +270,10 @@ export const LobbyInPlay = (props) => {
                 onClick={() => onAnswering(option)}
                 color={i === 0 ? "red" : i === 1 ? "green" : i === 2 ? "yellow" : i === 3 ? "blue" : "primary"}
                 disabled={userHasAnswered}
-                enableOpacity={(props.lobby.game.state === QUESTION_TIMEOUT &&
-                  !question.answer.map(answerIndex => question?.options[answerIndex])?.includes(option))}
+                enableOpacity={
+                  props.lobby.game.state === QUESTION_TIMEOUT &&
+                  !question.answer.map((answerIndex) => question?.options[answerIndex])?.includes(option)
+                }
               />
             ))
           ) : question?.type === TRUE_FALSE_QUESTION_TYPE ? (
@@ -274,14 +282,14 @@ export const LobbyInPlay = (props) => {
                 color="red"
                 value={true}
                 disabled={userHasAnswered}
-                enableOpacity={(props.lobby.game.state === QUESTION_TIMEOUT && question.answer)}
+                enableOpacity={props.lobby.game.state === QUESTION_TIMEOUT && question.answer}
                 onClick={() => onAnswering(true)}
               />
               <TrueFalseAnswerCard
                 color="green"
                 value={false}
                 disabled={userHasAnswered}
-                enableOpacity={(props.lobby.game.state === QUESTION_TIMEOUT && !question.answer)}
+                enableOpacity={props.lobby.game.state === QUESTION_TIMEOUT && !question.answer}
                 onClick={() => onAnswering(false)}
               />
             </>

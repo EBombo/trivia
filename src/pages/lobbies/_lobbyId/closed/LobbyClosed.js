@@ -294,7 +294,7 @@ export const LobbyClosed = (props) => {
       {!isVisibleTitle && (
         <div className="winners">
           {props.lobby?.winners?.slice(0, 3)?.map((winner, index) => (
-            <Winner winner={winner} index={index} key={index} enableAnimation/>
+            <Winner winner={winner} index={index} key={index} enableAnimation />
           ))}
         </div>
       )}
