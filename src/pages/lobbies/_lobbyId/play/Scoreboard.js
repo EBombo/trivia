@@ -1,5 +1,5 @@
 import React, { useGlobal, useMemo, useEffect, useState } from "reactn";
-import { auth, config, firebase, firestore, hostName } from "../../../../firebase";
+import { firestore } from "../../../../firebase";
 import { ButtonAnt } from "../../../../components/form/Button";
 import { snapshotToArray } from "../../../../utils";
 import { useRouter } from "next/router";

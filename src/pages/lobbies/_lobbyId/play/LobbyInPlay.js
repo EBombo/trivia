@@ -1,7 +1,7 @@
 import React, { useEffect, useGlobal, useState, useMemo } from "reactn";
 import { UserLayout } from "../userLayout";
 import { useRouter } from "next/router";
-import { config, firebase, firestore, hostName } from "../../../../firebase";
+import { config, firebase, firestore } from "../../../../firebase";
 import isEmpty from "lodash/isEmpty";
 import { Image } from "../../../../components/common/Image";
 import { ButtonAnt } from "../../../../components/form/Button";
@@ -21,7 +21,6 @@ import {
   ANSWERING_QUESTION,
   INTRODUCING_QUESTION,
   OPEN_QUESTION_TYPE,
-  QUESTION_RESULTS,
   QUESTION_TIMEOUT,
   RANKING,
   TRUE_FALSE_QUESTION_TYPE,

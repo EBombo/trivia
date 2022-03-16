@@ -1,5 +1,4 @@
-import React, { useGlobal, useState, useMemo } from "reactn";
-import { config } from "../../../../firebase";
+import React, { useMemo } from "reactn";
 import { Image } from "../../../../components/common/Image";
 import { getIconUrl } from "../../../../components/common/DataList";
 

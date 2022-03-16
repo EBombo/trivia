@@ -1,4 +1,4 @@
-import React, { useGlobal, useEffect, useState, useMemo } from "reactn";
+import React, { useGlobal, useEffect, useState } from "reactn";
 import { useRouter } from "next/router";
 import { Timer } from "./Timer";
 import { QuestionStep } from "./QuestionStep";

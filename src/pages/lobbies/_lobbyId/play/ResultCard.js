@@ -1,5 +1,5 @@
 import React, { useGlobal, useEffect, useState } from "reactn";
-import { auth, config, firebase, firestore, hostName } from "../../../../firebase";
+import { config, firestore } from "../../../../firebase";
 import { useRouter } from "next/router";
 import { Image } from "../../../../components/common/Image";
 import { snapshotToArray } from "../../../../utils";

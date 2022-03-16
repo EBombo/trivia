@@ -1,21 +1,15 @@
-import React, { useGlobal, useMemo, useEffect, useState } from "reactn";
+import React, { useMemo, useEffect, useState } from "reactn";
 import { useRouter } from "next/router";
-import { auth, config, firebase, firestore, hostName } from "../../../../firebase";
+import { firestore } from "../../../../firebase";
 import { spinLoaderMin } from "../../../../components/common/loader";
-import entries from "lodash/entries";
 import { BarResult } from "./BarResult";
 import { TrueFalseBarResult } from "./TrueFalseBarResult";
 import { OpenAnswerCellResult } from "./OpenAnswerCellResult";
 import {
   ALTERNATIVES_QUESTION_TYPE,
-  ANSWERING_QUESTION,
-  INTRODUCING_QUESTION,
   OPEN_QUESTION_TYPE,
-  QUESTION_RESULTS,
   QUESTION_TIMEOUT,
-  RANKING,
   TRUE_FALSE_QUESTION_TYPE,
-  DEFAULT_POINTS,
 } from "../../../../components/common/DataList";
 
 export const AlternativeResults = (props) => {
@@ -39,7 +33,7 @@ export const AlternativeResults = (props) => {
         .where("questionId", "==", props.question?.id)
         .get();
 
-      const answerCountMap_ = answersSnapshot.docs.reduce((acc, answerSnapshot, i) => {
+      const answerCountMap_ = answersSnapshot.docs.reduce((acc, answerSnapshot) => {
         const answer = answerSnapshot.data();
 
         if (!(answer.answer in acc)) acc[answer.answer] = { count: 0 };
