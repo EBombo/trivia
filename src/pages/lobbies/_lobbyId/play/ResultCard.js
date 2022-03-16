@@ -114,7 +114,7 @@ export const ResultCard = (props) => {
             </span>
             Racha de respuestas: {streakCount}
           </div>
-          <div className="text-black text-3xl py-8">+{pointsEarned} puntos</div>
+          <div className="text-black text-3xl py-8">+{pointsEarned?.toFixed(1)} puntos</div>
         </>
       ) : (
         <div className="text-secondaryDarken">¡Hay que mantener la cabeza en el juego!</div>
