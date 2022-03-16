@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "reactn";
+import React, { useState, useEffect, useRef } from "reactn";
 import styled from "styled-components";
 import { Image } from "../../../../components/common/Image";
 import { config } from "../../../../firebase";
