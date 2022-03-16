@@ -279,7 +279,7 @@ export const LobbyClosed = (props) => {
       isVisibleTitleAnimation={isVisibleTitleAnimation}
       showResumeAnimation={showResumeAnimation}
       showWinnersAnimation={showWinnersAnimation}
-      className="bg-secondary"
+      className="bg-secondary bg-lobby-pattern"
     >
       <div className="header">
         {!isVisibleTitle && (
@@ -294,7 +294,7 @@ export const LobbyClosed = (props) => {
       {!isVisibleTitle && (
         <div className="winners">
           {props.lobby?.winners?.slice(0, 3)?.map((winner, index) => (
-            <Winner winner={winner} index={index} key={index} />
+            <Winner winner={winner} index={index} key={index} enableAnimation/>
           ))}
         </div>
       )}
@@ -339,7 +339,6 @@ const LobbyClosedCss = styled.div`
   .winners {
     width: 90%;
     margin: auto;
-    animation: 2s ${(props) => (props.showResumeAnimation ? fadeOutLeftBigAnimation : fadeInLeftBigAnimation)};
 
     ${mediaQuery.afterTablet} {
       width: 70vw;

@@ -1,15 +1,10 @@
 import React, { useEffect, useGlobal, useState, useMemo } from "reactn";
 import { UserLayout } from "../userLayout";
-import { ButtonAnt } from "../../../../components/form";
-import dynamic from "next/dynamic";
-import find from "lodash/find";
 import { useRouter } from "next/router";
 import { config, firebase, firestore, hostName } from "../../../../firebase";
-import { snapshotToArray } from "../../../../utils";
-import { darkTheme } from "../../../../theme";
-import defaultTo from "lodash/defaultTo";
 import isEmpty from "lodash/isEmpty";
 import { Image } from "../../../../components/common/Image";
+import { ButtonAnt } from "../../../../components/form/Button";
 import { InPlayHeader } from "./InPlayHeader";
 import { AnswerCard } from "./AnswerCard";
 import { TrueFalseAnswerCard } from "./TrueFalseAnswerCard";
@@ -186,12 +181,14 @@ export const LobbyInPlay = (props) => {
   // if user has already answered
   if (!authUser.isAdmin && props.lobby.game?.state === ANSWERING_QUESTION && userHasAnswered)
     return (
-      <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto text-center flex flex-col justify-center">
+      <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto text-center grid grid-rows-[50px-auto]">
         <UserLayout {...props} />
-        <div className="my-4">
-          <NextRoundLoader />
+        <div className="">
+          <div className="my-4">
+            <NextRoundLoader />
+          </div>
+          <div className="font-bold text-whiteLight text-xl">¿Te sientes confiado?</div>
         </div>
-        <div className="font-bold text-whiteLight text-xl">¿Te sientes confiado?</div>
       </div>
     );
 
@@ -221,7 +218,7 @@ export const LobbyInPlay = (props) => {
 
   // ANSWERING_QUESTION state
   return (
-    <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto">
+    <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto grid grid-rows-[50px_min-content_auto_60px] 2xl:grid-rows-[50px_auto_auto_75px]">
       <UserLayout {...props} />
 
       <InPlayHeader
@@ -232,14 +229,14 @@ export const LobbyInPlay = (props) => {
         {...props}
       >
         {showImage ? (
-          <div className="aspect-[4/1] w-full bg-secondaryDark">
+          <div className="aspect-[4/1] w-full h-full bg-secondaryDark mb-2">
             {question.fileUrl
-              ? (<Image src={question.fileUrl} width="100%" height="100%" />)
-              : (<Image src={`${config.storageUrl}/resources/trivia-brand-logo.svg`} width="100%" height="100%" />)
+              ? (<Image src={question.fileUrl} width="100%" size="contain" noImgTag />)
+              : (<Image src={`${config.storageUrl}/resources/trivia-brand-logo.svg`} width="100%" size="contain" noImgTag />)
             }
           </div>
         ) : (
-          <div className="aspect-[4/1] w-full">{question && <AlternativeResults question={question} />}</div>
+          <div className="aspect-[4/1] w-full">{question && <AlternativeResults question={question} {...props} />}</div>
         )}
 
         {props.lobby.game.state === QUESTION_TIMEOUT && (
@@ -251,11 +248,13 @@ export const LobbyInPlay = (props) => {
         )}
       </InPlayHeader>
 
-      <div className="grid md:grid-cols-[1fr_3fr_1fr] mb-8 bg-secondaryDark bg-opacity-50 py-8">
-        <div className="text-center self-end">
-          <span className="text-whiteLight text-lg cursor-pointer" onClick={() => closeLobby()}>
-            Finalizar
-          </span>
+      <div className="grid md:grid-cols-[1fr_3fr_1fr] bg-secondaryDark bg-opacity-50 pb-2">
+        <div className="text-center self-end py-4">
+          {props.lobby.game.state === QUESTION_TIMEOUT && (
+            <span className="text-whiteLight text-lg cursor-pointer" onClick={() => closeLobby()}>
+              Finalizar
+            </span>
+          )}
         </div>
         <div className="grid md:grid-cols-2 md:col-start-2 md:col-end-3">
           {question?.type === ALTERNATIVES_QUESTION_TYPE ? (
@@ -266,6 +265,8 @@ export const LobbyInPlay = (props) => {
                 onClick={() => onAnswering(option)}
                 color={i === 0 ? "red" : i === 1 ? "green" : i === 2 ? "yellow" : i === 3 ? "blue" : "primary"}
                 disabled={userHasAnswered}
+                enableOpacity={(props.lobby.game.state === QUESTION_TIMEOUT &&
+                  !question.answer.map(answerIndex => question?.options[answerIndex])?.includes(option))}
               />
             ))
           ) : question?.type === TRUE_FALSE_QUESTION_TYPE ? (
@@ -274,12 +275,14 @@ export const LobbyInPlay = (props) => {
                 color="red"
                 value={true}
                 disabled={userHasAnswered}
+                enableOpacity={(props.lobby.game.state === QUESTION_TIMEOUT && question.answer)}
                 onClick={() => onAnswering(true)}
               />
               <TrueFalseAnswerCard
                 color="green"
                 value={false}
                 disabled={userHasAnswered}
+                enableOpacity={(props.lobby.game.state === QUESTION_TIMEOUT && !question.answer)}
                 onClick={() => onAnswering(false)}
               />
             </>
@@ -288,6 +291,20 @@ export const LobbyInPlay = (props) => {
               <OpenAnswerCard color="red" disabled={userHasAnswered} onSubmit={(data) => onAnswering(data)} />
             </div>
           ) : null}
+
+          {authUser?.isAdmin && (
+            <div className="mt-4 mb-8 md:hidden md:inline-block mx-4">
+              <ButtonAnt
+                color="default"
+                size="big"
+                className="font-bold text-base"
+                width="100%"
+                onClick={() => invalidateQuestion()}
+              >
+                Invalidar pregunta
+              </ButtonAnt>
+            </div>
+          )}
         </div>
       </div>
       <Footer {...props} />

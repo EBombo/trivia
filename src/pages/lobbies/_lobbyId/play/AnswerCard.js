@@ -24,7 +24,7 @@ export const AnswerCard = (props) => {
     <div
       className={`relative
       mx-4 my-2
-      min-h-[70px] md:min-h-[100px]
+      min-h-[70px] md:min-h-[80px]
       grid grid-cols-[min-content_auto] overflow-hidden rounded
       cursor-pointer
       ${props.enableOpacity && "opacity-20"}`}

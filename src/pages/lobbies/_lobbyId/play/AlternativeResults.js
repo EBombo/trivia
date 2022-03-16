@@ -67,6 +67,8 @@ export const AlternativeResults = (props) => {
             color={i === 0 ? "red" : i === 1 ? "green" : i === 2 ? "yellow" : i === 3 ? "blue" : "primary"}
             value={Math.ceil(((answerCountMap[option]?.count ?? 0) / totalCount) * 100)}
             count={answerCountMap[option]?.count ?? 0}
+            enableOpacity={(props.lobby.game.state === QUESTION_TIMEOUT &&
+                  !props.question.answer.map(answerIndex => props.question?.options[answerIndex])?.includes(option))}
           />
         ))}
       </div>
@@ -80,12 +82,14 @@ export const AlternativeResults = (props) => {
           option={true}
           value={Math.ceil(((answerCountMap?.[true]?.count ?? 0) / totalCount) * 100)}
           count={answerCountMap?.[true]?.count ?? 0}
+          enableOpacity={props.lobby.game.state === QUESTION_TIMEOUT && props.question.answer}
         />
         <TrueFalseBarResult
           isCorrect={!props.question?.answer}
           option={false}
           value={Math.ceil(((answerCountMap?.[false]?.count ?? 0) / totalCount) * 100)}
           count={answerCountMap?.[false]?.count ?? 0}
+          enableOpacity={props.lobby.game.state === QUESTION_TIMEOUT && !props.question.answer}
         />
       </div>
     );
