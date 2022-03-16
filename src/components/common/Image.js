@@ -5,7 +5,7 @@ import { mediaQuery } from "../../constants";
 export const Image = (props) => (
   <ImageCss {...props} ref={props.innerRef}>
     {!props.noImgTag && (
-      <img src={props.src} alt={props.src} />
+      <img src={props.src} alt={props.alt || props.src} />
     )}
   </ImageCss>
 );
