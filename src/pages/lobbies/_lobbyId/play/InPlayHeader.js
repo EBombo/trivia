@@ -1,4 +1,4 @@
-import React, { useGlobal, useEffect, useState } from "reactn";
+import React, { useGlobal, useMemo } from "reactn";
 import { useRouter } from "next/router";
 import { Timer } from "./Timer";
 import { QuestionStep } from "./QuestionStep";
@@ -13,7 +13,7 @@ export const InPlayHeader = (props) => {
 
   const [authUser] = useGlobal("user");
 
-  const [answersCount, setAnswersCount] = useState(0);
+  const answersCount = useMemo(() => props.lobby.answersCount ?? 0, [props.lobby.answersCount]);
 
   const updateGameState = async (newGame) => {
     const updateGame = Object.entries(newGame).reduce((acc, entryGameMap) => {
@@ -30,20 +30,6 @@ export const InPlayHeader = (props) => {
       "game.state": RANKING,
     });
   };
-
-  useEffect(() => {
-    const fetchAnswers = () => {
-      return firestore
-        .collection(`lobbies/${lobbyId}/answers`)
-        .where("questionId", "==", props.question.id)
-        .onSnapshot((answersSnapshot) => {
-          setAnswersCount(answersSnapshot.size);
-        });
-    };
-
-    const unSubAnswersCount = fetchAnswers();
-    return () => unSubAnswersCount && unSubAnswersCount();
-  }, [props.question]);
 
   return (
     <div className="grid grid-rows-[minmax(160px,min-content)_auto]">

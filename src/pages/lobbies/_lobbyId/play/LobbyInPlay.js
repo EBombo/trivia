@@ -128,11 +128,17 @@ export const LobbyInPlay = (props) => {
         streak: newStreak,
       });
 
+    const updateAnswersCount = firestore
+      .doc(`lobbies/${lobbyId}`)
+      .update({
+        answersCount: firebase.firestore.FieldValue.increment(1),
+      });
+
     setAuthUserLS({ ...authUserLS });
 
     setUserHasAnswered(true);
 
-    await Promise.all([addAnswerPromise, updateScorePromise]);
+    await Promise.all([addAnswerPromise, updateScorePromise, updateAnswersCount]);
   };
 
   const invalidateQuestion = async () => {
@@ -147,6 +153,7 @@ export const LobbyInPlay = (props) => {
     const nextQuestion = getCurrentQuestion(questions, newCurrentQuestionNumber);
 
     await firestore.doc(`lobbies/${lobbyId}`).update({
+      answersCount: 0,
       game: {
         ...props.lobby.game,
         currentQuestionNumber: newCurrentQuestionNumber,
