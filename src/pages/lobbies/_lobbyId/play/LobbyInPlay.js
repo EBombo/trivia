@@ -125,11 +125,9 @@ export const LobbyInPlay = (props) => {
         streak: newStreak,
       });
 
-    const updateAnswersCount = firestore
-      .doc(`lobbies/${lobbyId}`)
-      .update({
-        answersCount: firebase.firestore.FieldValue.increment(1),
-      });
+    const updateAnswersCount = firestore.doc(`lobbies/${lobbyId}`).update({
+      answersCount: firebase.firestore.FieldValue.increment(1),
+    });
 
     setUserHasAnswered(true);
 
