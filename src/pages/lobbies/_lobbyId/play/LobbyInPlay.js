@@ -1,30 +1,24 @@
 import React, { useEffect, useGlobal, useState, useMemo } from "reactn";
 import { UserLayout } from "../userLayout";
 import { useRouter } from "next/router";
-import { config, firebase, firestore } from "../../../../firebase";
+import { config, firestore } from "../../../../firebase";
 import isEmpty from "lodash/isEmpty";
 import { Image } from "../../../../components/common/Image";
 import { ButtonAnt } from "../../../../components/form/Button";
 import { InPlayHeader } from "./InPlayHeader";
-import { AlternativeAnswerCard } from "./AlternativeAnswerCard";
-import { TrueFalseAnswerCard } from "./TrueFalseAnswerCard";
-import { OpenAnswerCard } from "./OpenAnswerCard";
+import { AnsweringSection } from "./AnsweringSection";
 import { InPlaySpinLoader } from "./InPlaySpinLoader";
 import { Footer } from "./Footer";
 import { ResultCard } from "./ResultCard";
 import { Scoreboard } from "./Scoreboard";
-import { AlternativeResults } from "./AlternativeResults";
+import { QuestionResults } from "./QuestionResults";
 import { LobbyQuestionIntroduction } from "./LobbyQuestionIntroduction";
-import { getCurrentQuestion, computePointsEarned } from "../../../../business";
+import { getCurrentQuestion } from "../../../../business";
 import {
-  ALTERNATIVES_QUESTION_TYPE,
   ANSWERING_QUESTION,
   INTRODUCING_QUESTION,
-  OPEN_QUESTION_TYPE,
   QUESTION_TIMEOUT,
   RANKING,
-  TRUE_FALSE_QUESTION_TYPE,
-  DEFAULT_POINTS,
 } from "../../../../components/common/DataList";
 import { useSendError } from "../../../../hooks";
 
@@ -77,67 +71,6 @@ export const LobbyInPlay = (props) => {
 
     fetchUserHasAnswered();
   }, [question]);
-
-  const isCorrect = (question, answer) => {
-    if (question.type === ALTERNATIVES_QUESTION_TYPE) {
-      const answers = question.answer.map((answerIndex) => question.options[answerIndex]);
-
-      return answers.includes(answer);
-    }
-
-    if (question.type === TRUE_FALSE_QUESTION_TYPE) return answer == question.answer;
-
-    if (question.type === OPEN_QUESTION_TYPE) return question.answer.includes(answer);
-  };
-
-  // creates user answer and update user score
-  const onAnswering = async (answer) => {
-    if (authUser.isAdmin) return;
-
-    const isCorrectAnswer = isCorrect(question, answer);
-
-    const points = computePointsEarned(
-      props.lobby.game.secondsLeft,
-      question.time,
-      isCorrectAnswer ? DEFAULT_POINTS : 0
-    );
-
-    const data = {
-      userId: authUser.id,
-      user: {
-        id: authUser.id,
-        nickname: authUser.nickname,
-      },
-      answer,
-      secondtLeft: props.lobby.game.secondsLeft,
-      questionTime: question.time,
-      questionId: question.id,
-      questionNumber: question.questionNumber,
-      points: points,
-      createAt: new Date(),
-      updateAt: new Date(),
-    };
-
-    const addAnswerPromise = firestore.collection(`lobbies/${lobbyId}/answers`).add(data);
-
-    const newStreak = isCorrectAnswer ? firebase.firestore.FieldValue.increment(1) : 0;
-
-    const updateScorePromise = firestore
-      .collection(`lobbies/${lobbyId}/users`)
-      .doc(authUser.id)
-      .update({
-        score: firebase.firestore.FieldValue.increment(points),
-        streak: newStreak,
-      });
-
-    const updateAnswersCount = firestore.doc(`lobbies/${lobbyId}`).update({
-      answersCount: firebase.firestore.FieldValue.increment(1),
-    });
-
-    setUserHasAnswered(true);
-
-    await Promise.all([addAnswerPromise, updateScorePromise, updateAnswersCount]);
-  };
 
   const invalidateQuestion = async () => {
     setIsGameLoading(true);
@@ -271,7 +204,7 @@ export const LobbyInPlay = (props) => {
             )}
           </div>
         ) : (
-          <div className="aspect-[4/1] w-full">{question && <AlternativeResults question={question} {...props} />}</div>
+          <div className="aspect-[4/1] w-full">{question && <QuestionResults question={question} {...props} />}</div>
         )}
 
         {props.lobby.game.state === QUESTION_TIMEOUT && (
@@ -292,42 +225,12 @@ export const LobbyInPlay = (props) => {
           )}
         </div>
         <div className="grid md:grid-cols-2 md:col-start-2 md:col-end-3">
-          {question?.type === ALTERNATIVES_QUESTION_TYPE ? (
-            question?.options.map((option, i) => (
-              <AlternativeAnswerCard
-                key={`answer-option-${i}`}
-                label={option}
-                onClick={() => onAnswering(option)}
-                color={i === 0 ? "red" : i === 1 ? "green" : i === 2 ? "yellow" : i === 3 ? "blue" : "primary"}
-                disabled={userHasAnswered}
-                enableOpacity={
-                  props.lobby.game.state === QUESTION_TIMEOUT &&
-                  !question.answer.map((answerIndex) => question?.options[answerIndex])?.includes(option)
-                }
-              />
-            ))
-          ) : question?.type === TRUE_FALSE_QUESTION_TYPE ? (
-            <>
-              <TrueFalseAnswerCard
-                color="red"
-                value={true}
-                disabled={userHasAnswered}
-                enableOpacity={props.lobby.game.state === QUESTION_TIMEOUT && question.answer}
-                onClick={() => onAnswering(true)}
-              />
-              <TrueFalseAnswerCard
-                color="green"
-                value={false}
-                disabled={userHasAnswered}
-                enableOpacity={props.lobby.game.state === QUESTION_TIMEOUT && !question.answer}
-                onClick={() => onAnswering(false)}
-              />
-            </>
-          ) : question?.type === OPEN_QUESTION_TYPE && !authUser.isAdmin ? (
-            <div className="col-start-1 col-end-3">
-              <OpenAnswerCard color="red" disabled={userHasAnswered} onSubmit={(data) => onAnswering(data)} />
-            </div>
-          ) : null}
+          <AnsweringSection
+            setUserHasAnswered={setUserHasAnswered}
+            userHasAnswered={userHasAnswered}
+            question={question}
+            {...props}
+          />
 
           {authUser?.isAdmin && (
             <div className="mt-4 mb-8 md:hidden md:inline-block mx-4">

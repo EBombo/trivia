@@ -12,7 +12,7 @@ import {
   TRUE_FALSE_QUESTION_TYPE,
 } from "../../../../components/common/DataList";
 
-export const AlternativeResults = (props) => {
+export const QuestionResults = (props) => {
   const router = useRouter();
 
   const { lobbyId } = router.query;
