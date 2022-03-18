@@ -41,7 +41,7 @@ export const LobbyInPlay = (props) => {
 
   const [isGameLoading, setIsGameLoading] = useState(false);
 
-  const [showImage, setShowImage] = useState(props.lobby.game.state === QUESTION_TIMEOUT ? false : true);
+  const [showImage, setShowImage] = useState(!(props.lobby.game.state === QUESTION_TIMEOUT));
 
   const [userHasAnswered, setUserHasAnswered] = useState(null);
 
