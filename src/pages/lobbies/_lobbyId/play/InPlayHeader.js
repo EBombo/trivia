@@ -30,7 +30,6 @@ export const InPlayHeader = (props) => {
   const answersCount = useMemo(() => props.lobby.answersCount ?? 0, [props.lobby.answersCount]);
 
   const updateGameState = async (newGame) => {
-
     try {
       if (newGame.state === QUESTION_TIMEOUT) {
         props.setIsGameLoading(true);
@@ -98,7 +97,13 @@ export const InPlayHeader = (props) => {
         <div className={`text-center flex flex-row-reverse md:flex-col justify-around items-center`}>
           {authUser.isAdmin && (
             <div className="inline-block md:mb-8">
-              <ButtonAnt size="big" color="success" className="font-bold text-base" loading={props.isGameLoading} onClick={() => goToRanking()}>
+              <ButtonAnt
+                size="big"
+                color="success"
+                className="font-bold text-base"
+                loading={props.isGameLoading}
+                onClick={() => goToRanking()}
+              >
                 Siguiente
               </ButtonAnt>
             </div>

@@ -170,7 +170,7 @@ export const LobbyInPlay = (props) => {
           secondsLeft: parseInt(nextQuestion.time),
         },
       });
-    } catch(e) {
+    } catch (e) {
       sendError(e, "goToNextQuestion");
     }
 

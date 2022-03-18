@@ -28,9 +28,8 @@ type RankUser = {
   rank: number;
 };
 
-const computeRanking = (answers : Answer[], invalidQuestions : string[] = []) : RankUser[] => {
+const computeRanking = (answers: Answer[], invalidQuestions: string[] = []): RankUser[] => {
   const usersPointsMap = answers.reduce((acc, answer) => {
-
     if (!acc[answer.userId]) acc[answer.userId] = { score: 0 };
 
     if (!invalidQuestions.includes(answer.questionId)) acc[answer.userId].score += answer.points;
@@ -41,7 +40,7 @@ const computeRanking = (answers : Answer[], invalidQuestions : string[] = []) : 
     return acc;
   }, {} as { [key: string]: any });
 
-  const rankingUsers_ : RankUser[] = sortBy(
+  const rankingUsers_: RankUser[] = sortBy(
     Object.entries(usersPointsMap).map((userPointMap) => ({
       userId: userPointMap[0],
       nickname: userPointMap[1].nickname,
@@ -50,7 +49,7 @@ const computeRanking = (answers : Answer[], invalidQuestions : string[] = []) : 
     })),
     ["score"],
     ["desc"]
-  ).map((userRank, i) => ({...userRank, rank: i + 1 }));
+  ).map((userRank, i) => ({ ...userRank, rank: i + 1 }));
 
   return rankingUsers_;
 };
@@ -70,9 +69,16 @@ const putRanking = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const usersRanking = computeRanking(answers, invalidQuestions);
 
-    const updateRankingListPromise = usersRanking.map((rankingUser) => firestore.collection(`lobbies/${lobbyId}/ranking`).doc(rankingUser.userId).set(rankingUser, { merge: true }));
+    const updateRankingListPromise = usersRanking.map((rankingUser) =>
+      firestore.collection(`lobbies/${lobbyId}/ranking`).doc(rankingUser.userId).set(rankingUser, { merge: true })
+    );
 
-    const updateUserScoringListPromise = usersRanking.map((rankingUser) => firestore.collection(`lobbies/${lobbyId}/users`).doc(rankingUser.userId).update({ rank: rankingUser.rank, score: rankingUser.score }));
+    const updateUserScoringListPromise = usersRanking.map((rankingUser) =>
+      firestore
+        .collection(`lobbies/${lobbyId}/users`)
+        .doc(rankingUser.userId)
+        .update({ rank: rankingUser.rank, score: rankingUser.score })
+    );
 
     await Promise.all([...updateRankingListPromise, ...updateUserScoringListPromise]);
 
@@ -84,4 +90,3 @@ const putRanking = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 export default putRanking;
-

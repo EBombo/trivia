@@ -44,7 +44,11 @@ export const Scoreboard = (props) => {
 
   useEffect(() => {
     const fetchRanking = async () => {
-      const rankingSnapshot = await firestore.collection(`lobbies/${lobbyId}/ranking`).orderBy("rank", "asc").limit(DEFAULT_RANKING_LENGTH).get();
+      const rankingSnapshot = await firestore
+        .collection(`lobbies/${lobbyId}/ranking`)
+        .orderBy("rank", "asc")
+        .limit(DEFAULT_RANKING_LENGTH)
+        .get();
 
       const ranking = snapshotToArray(rankingSnapshot);
 
@@ -58,7 +62,6 @@ export const Scoreboard = (props) => {
     if (authUser.isAdmin) return;
 
     const fetchUserStats = async () => {
-
       const userSnapshot = await firestore.doc(`lobbies/${lobbyId}/users/${authUser.id}`).get();
 
       const user_ = userSnapshot.data();
@@ -104,9 +107,7 @@ export const Scoreboard = (props) => {
           </div>
         )}
 
-        <div className="mb-6">
-          {rankingUsers.slice(0, DEFAULT_RANKING_LENGTH).map((user) => RankingItem(user))}
-        </div>
+        <div className="mb-6">{rankingUsers.slice(0, DEFAULT_RANKING_LENGTH).map((user) => RankingItem(user))}</div>
 
         {!authUser.isAdmin && authUser.rank > DEFAULT_RANKING_LENGTH && (
           <>

@@ -24,5 +24,3 @@ const apiRankingLobby = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 export default apiRankingLobby;
-
-
