@@ -6,6 +6,7 @@ import { ButtonAnt } from "../../../../components/form";
 import { firestore, config } from "../../../../firebase";
 import { QUESTION_TIMEOUT, RANKING } from "../../../../components/common/DataList";
 import { useFetch } from "../../../../hooks/useFetch";
+import { useSendError } from "../../../../hooks";
 
 const putRankingUsers = async (lobbyId) => {
   const { Fetch } = useFetch();
@@ -23,6 +24,8 @@ const putRankingUsers = async (lobbyId) => {
 export const InPlayHeader = (props) => {
   const router = useRouter();
 
+  const { sendError } = useSendError();
+
   const { lobbyId } = router.query;
 
   const [authUser] = useGlobal("user");
@@ -30,22 +33,23 @@ export const InPlayHeader = (props) => {
   const answersCount = useMemo(() => props.lobby.answersCount ?? 0, [props.lobby.answersCount]);
 
   const updateGameState = async (newGame) => {
-    try {
-      if (newGame.state === QUESTION_TIMEOUT) {
-        props.setIsGameLoading(true);
+
+    if (newGame.state === QUESTION_TIMEOUT) {
+      props.setIsGameLoading(true);
+      try {
         await putRankingUsers(lobbyId);
+      } catch (e) {
+        sendError(e, "updateGameState");
       }
-
-      const updateGame = Object.entries(newGame).reduce((acc, entryGameMap) => {
-        acc[`game.${entryGameMap[0]}`] = entryGameMap[1];
-
-        return acc;
-      }, {});
-
-      await firestore.doc(`lobbies/${lobbyId}`).update(updateGame);
-    } catch (e) {
-      sendError(e, "invalidateQuestion");
     }
+
+    const updateGame = Object.entries(newGame).reduce((acc, entryGameMap) => {
+      acc[`game.${entryGameMap[0]}`] = entryGameMap[1];
+
+      return acc;
+    }, {});
+
+    await firestore.doc(`lobbies/${lobbyId}`).update(updateGame);
 
     props.setIsGameLoading(false);
   };
@@ -60,7 +64,7 @@ export const InPlayHeader = (props) => {
         "game.state": RANKING,
       });
     } catch (e) {
-      sendError(e, "invalidateQuestion");
+      sendError(e, "goToRanking");
     }
 
     props.setIsGameLoading(false);

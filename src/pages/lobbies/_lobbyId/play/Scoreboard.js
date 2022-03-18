@@ -21,6 +21,8 @@ export const Scoreboard = (props) => {
 
   // if last question then saves winners for LobbyClosed
   useEffect(() => {
+    if (!authUser.isAdmin) return;
+
     if (isEmpty(rankingUsers)) return;
 
     if (!isLastQuestion) return;
@@ -72,7 +74,7 @@ export const Scoreboard = (props) => {
     fetchUserStats();
   }, []);
 
-  const RankingItem = (user) => (
+  const RankingItem = ({ user }) => (
     <div
       key={`rankint-item-${user.rank}`}
       className="grid grid-cols-[min-content_auto_min-content] bg-secondaryDark text-whiteLight py-4 w-full max-w-[1000px] md:mx-auto text-lg md:text-2xl my-4"
@@ -107,7 +109,7 @@ export const Scoreboard = (props) => {
           </div>
         )}
 
-        <div className="mb-6">{rankingUsers.slice(0, DEFAULT_RANKING_LENGTH).map((user) => RankingItem(user))}</div>
+        <div className="mb-6">{rankingUsers.map((user) => <RankingItem user={user}/>)}</div>
 
         {!authUser.isAdmin && authUser.rank > DEFAULT_RANKING_LENGTH && (
           <>
@@ -118,7 +120,7 @@ export const Scoreboard = (props) => {
             >
               Tu puesto
             </div>
-            {RankingItem(authUser)}
+            <RankingItem user={authUser}/>
           </>
         )}
 

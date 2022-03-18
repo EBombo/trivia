@@ -1,4 +1,5 @@
 import React, { useGlobal } from "reactn";
+import { useRouter } from "next/router";
 import { checkIsCorrect, computePointsEarned } from "../../../../business";
 import { firebase, firestore } from "../../../../firebase";
 import {
@@ -14,6 +15,10 @@ import { OpenAnswerCard } from "./OpenAnswerCard";
 
 export const AnsweringSection = (props) => {
   const { question, userHasAnswered, setUserHasAnswered } = props;
+
+  const router = useRouter();
+
+  const { lobbyId } = router.query;
 
   const [authUser] = useGlobal("user");
 
