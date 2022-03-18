@@ -28,8 +28,10 @@ export const Winner = (props) => {
 
     const winnerLabelNode = winnerLabelRef.current;
 
+    let prizeIconCloned;
+
     const playAnimation = () => {
-      const prizeIconCloned = prizeIconNode.cloneNode();
+      prizeIconCloned = prizeIconNode.cloneNode();
 
       prizeIconCloned.style.opacity = 1;
       prizeIconCloned.style.zIndex = 10;
@@ -63,12 +65,15 @@ export const Winner = (props) => {
 
       document.body.appendChild(prizeIconCloned);
 
+
       _animate({
         from: clonePositionStart,
         to: clonePositionMid,
         duration: 1000,
         elapsed: -3000 * (2 - props.index),
         onUpdate: (tween) => {
+          if (!prizeIconCloned) return;
+
           updatePrizeIconCloned(tween);
         },
       })
@@ -79,11 +84,16 @@ export const Winner = (props) => {
             elapsed: -1000,
             duration: 1000,
             onUpdate: (tween) => {
+              if (!prizeIconCloned) return;
+
               updatePrizeIconCloned(tween);
             },
           })
         )
         .then(() => {
+          if (!winnerLabelNode) return;
+          if (!prizeIconNode) return;
+
           winnerLabelNode.style.maxWidth = `1000px`;
           winnerLabelNode.style.opacity = 1;
 
@@ -94,6 +104,10 @@ export const Winner = (props) => {
     };
 
     if (props.enableAnimation) playAnimation();
+
+    return () => {
+      prizeIconCloned.remove();
+    };
   }, [prizeIconRef]);
 
   // animation for 1st place only
@@ -106,8 +120,11 @@ export const Winner = (props) => {
 
     const winnerLabelNode = winnerLabelRef.current;
 
+    let delayId;
+    let prizeIconCloned; 
+
     const playAnimation = () => {
-      const prizeIconCloned = prizeIconNode.cloneNode();
+      prizeIconCloned = prizeIconNode.cloneNode();
 
       prizeIconCloned.style.opacity = 1;
       prizeIconCloned.style.zIndex = 10;
@@ -157,7 +174,7 @@ export const Winner = (props) => {
       const { width: firstPlaceNameNodeWidth, height: firstPlaceNameNodeHeight } =
         firstPlaceNameNode.getBoundingClientRect();
 
-      delay(() => {
+      delayId = delay(() => {
         _animate({
           from: 1,
           to: 0.5,
@@ -180,111 +197,143 @@ export const Winner = (props) => {
           duration: 1000,
           elapsed: -ANIMATION_NORMAL_DURATION * (2 - props.index) - 1000,
           onUpdate: (tween) => {
+            if (!prizeIconCloned) return;
+
             updatePrizeIconCloned(tween);
           },
         })
-          // shows winner name animation
-          .then(() =>
-            _animate({
-              from: { y: 0, opacity: 0 },
-              to: { y: 130 + 20, opacity: 1 },
-              duration: 1000,
-              onPlay: () => {
-                firstPlaceNameNode.style.opacity = "0";
-                firstPlaceNameNode.style.position = "absolute";
-                firstPlaceNameNode.style.top = `${window.innerHeight / 2 - firstPlaceNameNodeHeight / 2}px`;
-                firstPlaceNameNode.style.left = `${window.innerWidth / 2 - firstPlaceNameNodeWidth / 2}px`;
-              },
-              onUpdate: (tween) => {
-                const prizeIconRefY = window.innerHeight / 2 - nodeHeight / 2;
+        // shows winner name animation
+        .then(() =>
+          _animate({
+            from: { y: 0, opacity: 0 },
+            to: { y: 130 + 20, opacity: 1 },
+            duration: 1000,
+            onPlay: () => {
+              if (!firstPlaceNameNode) return;
 
-                prizeIconCloned.style.top = `${prizeIconRefY - tween.y}px`;
+              firstPlaceNameNode.style.opacity = "0";
+              firstPlaceNameNode.style.position = "absolute";
+              firstPlaceNameNode.style.top = `${window.innerHeight / 2 - firstPlaceNameNodeHeight / 2}px`;
+              firstPlaceNameNode.style.left = `${window.innerWidth / 2 - firstPlaceNameNodeWidth / 2}px`;
+            },
+            onUpdate: (tween) => {
+              if (!firstPlaceNameNode) return;
+              if (!prizeIconCloned) return;
 
-                firstPlaceNameNode.style.opacity = tween.opacity;
-              },
-            })
-          )
-          // first bounce winner's name animation
-          .then(() => {
-            const firstPlaceNameNodeX0 = parseInt(firstPlaceNameNode.style.left);
+              const prizeIconRefY = window.innerHeight / 2 - nodeHeight / 2;
 
-            return _animate({
-              from: { x: 0, rotate: "0deg", opacity: 0 },
-              to: { x: firstPlaceNameNodeWidth / 2, rotate: "-15deg", opacity: 1 },
-              duration: 1000,
-              onUpdate: (tween) => {
-                firstPlaceNameNode.style.left = `${firstPlaceNameNodeX0 - tween.x}px`;
-                firstPlaceNameNode.style.transform = `rotate(${tween.rotate})`;
-              },
-            });
+              prizeIconCloned.style.top = `${prizeIconRefY - tween.y}px`;
+
+              firstPlaceNameNode.style.opacity = tween.opacity;
+            },
           })
-          // repetitive bounce winner's name animation
-          .then(() => {
-            const firstPlaceNameNodeX0 = parseInt(firstPlaceNameNode.style.left);
+        )
+        // first bounce winner's name animation
+        .then(() => {
+          if (!firstPlaceNameNode) return;
 
-            return _animate({
-              from: { x: 0, rotate: "-15deg" },
-              to: { x: firstPlaceNameNodeWidth, rotate: "15deg" },
-              repeat: 3,
-              repeatType: "reverse",
-              duration: 1000,
-              onUpdate: (tween) => {
-                firstPlaceNameNode.style.left = `${firstPlaceNameNodeX0 + tween.x}px`;
-                firstPlaceNameNode.style.transform = `rotate(${tween.rotate})`;
-              },
-            });
+          const firstPlaceNameNodeX0 = parseInt(firstPlaceNameNode.style.left);
+
+          return _animate({
+            from: { x: 0, rotate: "0deg", opacity: 0 },
+            to: { x: firstPlaceNameNodeWidth / 2, rotate: "-15deg", opacity: 1 },
+            duration: 1000,
+            onUpdate: (tween) => {
+              if (!firstPlaceNameNode) return;
+
+              firstPlaceNameNode.style.left = `${firstPlaceNameNodeX0 - tween.x}px`;
+              firstPlaceNameNode.style.transform = `rotate(${tween.rotate})`;
+            },
+          });
+        })
+        // repetitive bounce winner's name animation
+        .then(() => {
+          if (!firstPlaceNameNode) return;
+
+          const firstPlaceNameNodeX0 = parseInt(firstPlaceNameNode.style.left);
+
+          return _animate({
+            from: { x: 0, rotate: "-15deg" },
+            to: { x: firstPlaceNameNodeWidth, rotate: "15deg" },
+            repeat: 3,
+            repeatType: "reverse",
+            duration: 1000,
+            onUpdate: (tween) => {
+              if (!firstPlaceNameNode) return;
+
+              firstPlaceNameNode.style.left = `${firstPlaceNameNodeX0 + tween.x}px`;
+              firstPlaceNameNode.style.transform = `rotate(${tween.rotate})`;
+            },
+          });
+        })
+        // back original position winner's name animation
+        .then(() => {
+          if (!firstPlaceNameNode) return;
+
+          const firstPlaceNameNodeX0 = parseInt(firstPlaceNameNode.style.left);
+
+          _animate({
+            from: { x: 0, rotate: "-15deg" },
+            to: { x: firstPlaceNameNodeWidth / 2, rotate: "0deg" },
+            duration: 1000,
+            onUpdate: (tween) => {
+              if (!firstPlaceNameNode) return;
+
+              firstPlaceNameNode.style.left = `${firstPlaceNameNodeX0 + tween.x}px`;
+              firstPlaceNameNode.style.transform = `rotate(${tween.rotate})`;
+            },
+          });
+        })
+        // close up animation
+        .then(() =>
+          _animate({
+            from: { x: 0, opacity: 1, bgScaleX: 0.5 },
+            to: { x: firstPlaceNameNodeWidth / 2, opacity: 0, bgScaleX: 0 },
+            duration: 1000,
+            onUpdate: (tween) => {
+              if (!firstPlaceNameNode) return;
+              if (!firstPlaceBgNode) return;
+              // bg vanishes
+              firstPlaceBgNode.style.transform = `scaleX(${tween.bgScaleX})`;
+
+              firstPlaceNameNode.style.opacity = tween.opacity;
+            },
           })
-          // back original position winner's name animation
-          .then(() => {
-            const firstPlaceNameNodeX0 = parseInt(firstPlaceNameNode.style.left);
+        )
+        // icon goes back original position
+        .then(() =>
+          _animate({
+            from: clonePositionStep2,
+            to: clonePositionEnd,
+            elapsed: -1000,
+            duration: 1000,
+            onUpdate: (tween) => {
+              if (!prizeIconCloned) return;
 
-            _animate({
-              from: { x: 0, rotate: "-15deg" },
-              to: { x: firstPlaceNameNodeWidth / 2, rotate: "0deg" },
-              duration: 1000,
-              onUpdate: (tween) => {
-                firstPlaceNameNode.style.left = `${firstPlaceNameNodeX0 + tween.x}px`;
-                firstPlaceNameNode.style.transform = `rotate(${tween.rotate})`;
-              },
-            });
+              updatePrizeIconCloned(tween);
+            },
           })
-          // close up animation
-          .then(() =>
-            _animate({
-              from: { x: 0, opacity: 1, bgScaleX: 0.5 },
-              to: { x: firstPlaceNameNodeWidth / 2, opacity: 0, bgScaleX: 0 },
-              duration: 1000,
-              onUpdate: (tween) => {
-                // bg vanishes
-                firstPlaceBgNode.style.transform = `scaleX(${tween.bgScaleX})`;
+        )
+        .then(() => {
+          if (!winnerLabelNode) return;
+          if (!prizeIconNode) return;
 
-                firstPlaceNameNode.style.opacity = tween.opacity;
-              },
-            })
-          )
-          // icon goes back original position
-          .then(() =>
-            _animate({
-              from: clonePositionStep2,
-              to: clonePositionEnd,
-              elapsed: -1000,
-              duration: 1000,
-              onUpdate: (tween) => {
-                updatePrizeIconCloned(tween);
-              },
-            })
-          )
-          .then(() => {
-            winnerLabelNode.style.maxWidth = `1000px`;
-            winnerLabelNode.style.opacity = 1;
+          winnerLabelNode.style.maxWidth = `1000px`;
+          winnerLabelNode.style.opacity = 1;
 
-            prizeIconNode.style.opacity = 1;
-            prizeIconCloned.remove();
-          })
+          prizeIconNode.style.opacity = 1;
+          prizeIconCloned.remove();
+        })
       );
     };
 
     if (props.enableAnimation) playAnimation();
+
+    return () => {
+      if (delayId) clearTimeout(delayId);
+
+      prizeIconCloned.remove();
+    };
   }, [prizeIconRef, firstPlaceBgRef]);
 
   return (
