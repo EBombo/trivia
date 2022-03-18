@@ -3,8 +3,22 @@ import { useRouter } from "next/router";
 import { Timer } from "./Timer";
 import { QuestionStep } from "./QuestionStep";
 import { ButtonAnt } from "../../../../components/form";
-import { firestore } from "../../../../firebase";
-import { RANKING } from "../../../../components/common/DataList";
+import { firestore, config } from "../../../../firebase";
+import { QUESTION_TIMEOUT, RANKING } from "../../../../components/common/DataList";
+import { useFetch } from "../../../../hooks/useFetch";
+
+const putRankingUsers = async (lobbyId) => {
+  const { Fetch } = useFetch();
+
+  const fetchProps = {
+    url: `${config.serverUrl}/lobbies/${lobbyId}/ranking`,
+    method: "PUT",
+  };
+
+  const { error } = await Fetch(fetchProps.url, fetchProps.method);
+
+  if (error) throw new Error(error);
+};
 
 export const InPlayHeader = (props) => {
   const router = useRouter();
@@ -16,19 +30,41 @@ export const InPlayHeader = (props) => {
   const answersCount = useMemo(() => props.lobby.answersCount ?? 0, [props.lobby.answersCount]);
 
   const updateGameState = async (newGame) => {
-    const updateGame = Object.entries(newGame).reduce((acc, entryGameMap) => {
-      acc[`game.${entryGameMap[0]}`] = entryGameMap[1];
 
-      return acc;
-    }, {});
+    try {
+      if (newGame.state === QUESTION_TIMEOUT) {
+        props.setIsGameLoading(true);
+        await putRankingUsers(lobbyId);
+      }
 
-    await firestore.doc(`lobbies/${lobbyId}`).update(updateGame);
+      const updateGame = Object.entries(newGame).reduce((acc, entryGameMap) => {
+        acc[`game.${entryGameMap[0]}`] = entryGameMap[1];
+
+        return acc;
+      }, {});
+
+      await firestore.doc(`lobbies/${lobbyId}`).update(updateGame);
+    } catch (e) {
+      sendError(e, "invalidateQuestion");
+    }
+
+    props.setIsGameLoading(false);
   };
 
   const goToRanking = async () => {
-    await firestore.doc(`lobbies/${lobbyId}`).update({
-      "game.state": RANKING,
-    });
+    props.setIsGameLoading(true);
+
+    try {
+      await putRankingUsers(lobbyId);
+
+      await firestore.doc(`lobbies/${lobbyId}`).update({
+        "game.state": RANKING,
+      });
+    } catch (e) {
+      sendError(e, "invalidateQuestion");
+    }
+
+    props.setIsGameLoading(false);
   };
 
   return (
@@ -47,6 +83,8 @@ export const InPlayHeader = (props) => {
                 size="big"
                 className="font-bold text-base"
                 onClick={() => props.onInvalidateQuestion?.()}
+                loading={props.isGameLoading}
+                disabled={props.lobby.game.state === QUESTION_TIMEOUT}
               >
                 Invalidar pregunta
               </ButtonAnt>
@@ -60,7 +98,7 @@ export const InPlayHeader = (props) => {
         <div className={`text-center flex flex-row-reverse md:flex-col justify-around items-center`}>
           {authUser.isAdmin && (
             <div className="inline-block md:mb-8">
-              <ButtonAnt size="big" color="success" className="font-bold text-base" onClick={() => goToRanking()}>
+              <ButtonAnt size="big" color="success" className="font-bold text-base" loading={props.isGameLoading} onClick={() => goToRanking()}>
                 Siguiente
               </ButtonAnt>
             </div>

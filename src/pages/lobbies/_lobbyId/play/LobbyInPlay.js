@@ -26,6 +26,7 @@ import {
   TRUE_FALSE_QUESTION_TYPE,
   DEFAULT_POINTS,
 } from "../../../../components/common/DataList";
+import { useSendError } from "../../../../hooks";
 
 export const LobbyInPlay = (props) => {
   const router = useRouter();
@@ -34,7 +35,11 @@ export const LobbyInPlay = (props) => {
 
   const [authUser] = useGlobal("user");
 
+  const { sendError } = useSendError();
+
   const [questions] = useState(props.lobby.gameQuestions ?? []);
+
+  const [isGameLoading, setIsGameLoading] = useState(false);
 
   const [showImage, setShowImage] = useState(props.lobby.game.state === QUESTION_TIMEOUT ? false : true);
 
@@ -135,33 +140,56 @@ export const LobbyInPlay = (props) => {
   };
 
   const invalidateQuestion = async () => {
-    await firestore.doc(`lobbies/${lobbyId}`).update({
-      "game.invalidQuestions": (props.lobby.game.invalidQuestions ?? []).concat([question.id]),
-    });
+    setIsGameLoading(true);
+
+    try {
+      await firestore.doc(`lobbies/${lobbyId}`).update({
+        "game.invalidQuestions": (props.lobby.game.invalidQuestions ?? []).concat([question.id]),
+      });
+    } catch (e) {
+      sendError(e, "invalidateQuestion");
+    }
+
+    setIsGameLoading(false);
   };
 
   // only admin calls this function
   const goToNextQuestion = async () => {
-    const newCurrentQuestionNumber = currentQuestionNumber + 1;
-    const nextQuestion = getCurrentQuestion(questions, newCurrentQuestionNumber);
+    setIsGameLoading(true);
 
-    await firestore.doc(`lobbies/${lobbyId}`).update({
-      answersCount: 0,
-      game: {
-        ...props.lobby.game,
-        currentQuestionNumber: newCurrentQuestionNumber,
-        state: INTRODUCING_QUESTION,
-        secondsLeft: parseInt(nextQuestion.time),
-      },
-    });
+    try {
+      const newCurrentQuestionNumber = currentQuestionNumber + 1;
+      const nextQuestion = getCurrentQuestion(questions, newCurrentQuestionNumber);
+
+      await firestore.doc(`lobbies/${lobbyId}`).update({
+        answersCount: 0,
+        game: {
+          ...props.lobby.game,
+          currentQuestionNumber: newCurrentQuestionNumber,
+          state: INTRODUCING_QUESTION,
+          secondsLeft: parseInt(nextQuestion.time),
+        },
+      });
+    } catch(e) {
+      sendError(e, "goToNextQuestion");
+    }
 
     setShowImage(true);
+
+    setIsGameLoading(false);
   };
 
   const closeLobby = async () => {
-    await firestore.doc(`lobbies/${lobbyId}`).update({
-      isClosed: true,
-    });
+    setIsGameLoading(true);
+
+    try {
+      await firestore.doc(`lobbies/${lobbyId}`).update({
+        isClosed: true,
+      });
+    } catch (e) {
+      sendError(e, "closeLobby");
+    }
+    setIsGameLoading(false);
   };
 
   if (!question)
@@ -225,6 +253,8 @@ export const LobbyInPlay = (props) => {
         time={question?.time}
         question={question}
         onInvalidateQuestion={invalidateQuestion}
+        isGameLoading={isGameLoading}
+        setIsGameLoading={setIsGameLoading}
         {...props}
       >
         {showImage ? (
@@ -256,7 +286,7 @@ export const LobbyInPlay = (props) => {
       <div className="grid md:grid-cols-[1fr_3fr_1fr] bg-secondaryDark bg-opacity-50 pb-2">
         <div className="text-center self-end py-4">
           {props.lobby.game.state === QUESTION_TIMEOUT && (
-            <span className="text-whiteLight text-lg cursor-pointer" onClick={() => closeLobby()}>
+            <span className="text-whiteLight text-lg cursor-pointer" onClick={() => !isGameLoading && closeLobby()}>
               Finalizar
             </span>
           )}
@@ -306,7 +336,9 @@ export const LobbyInPlay = (props) => {
                 size="big"
                 className="font-bold text-base"
                 width="100%"
-                onClick={() => invalidateQuestion()}
+                loading={isGameLoading}
+                disabled={props.lobby.game.state === QUESTION_TIMEOUT}
+                onClick={() => !isGameLoading && invalidateQuestion()}
               >
                 Invalidar pregunta
               </ButtonAnt>
