@@ -6,10 +6,10 @@ import isEmpty from "lodash/isEmpty";
 import { Image } from "../../../../components/common/Image";
 import { ButtonAnt } from "../../../../components/form/Button";
 import { InPlayHeader } from "./InPlayHeader";
-import { AnswerCard } from "./AnswerCard";
+import { AlternativeAnswerCard } from "./AlternativeAnswerCard";
 import { TrueFalseAnswerCard } from "./TrueFalseAnswerCard";
 import { OpenAnswerCard } from "./OpenAnswerCard";
-import { NextRoundLoader } from "./NextRoundLoader";
+import { InPlaySpinLoader } from "./InPlaySpinLoader";
 import { Footer } from "./Footer";
 import { ResultCard } from "./ResultCard";
 import { Scoreboard } from "./Scoreboard";
@@ -197,7 +197,7 @@ export const LobbyInPlay = (props) => {
       <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto text-center flex flex-col justify-center">
         <UserLayout {...props} />
         <div className="my-4">
-          <NextRoundLoader />
+          <InPlaySpinLoader />
         </div>
       </div>
     );
@@ -212,7 +212,7 @@ export const LobbyInPlay = (props) => {
         <UserLayout {...props} />
         <div className="">
           <div className="my-4">
-            <NextRoundLoader />
+            <InPlaySpinLoader />
           </div>
           <div className="font-bold text-whiteLight text-xl">¿Te sientes confiado?</div>
         </div>
@@ -294,7 +294,7 @@ export const LobbyInPlay = (props) => {
         <div className="grid md:grid-cols-2 md:col-start-2 md:col-end-3">
           {question?.type === ALTERNATIVES_QUESTION_TYPE ? (
             question?.options.map((option, i) => (
-              <AnswerCard
+              <AlternativeAnswerCard
                 key={`answer-option-${i}`}
                 label={option}
                 onClick={() => onAnswering(option)}

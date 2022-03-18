@@ -15,7 +15,6 @@ import {
 } from "react-animations";
 import { config, firestore } from "../../../../firebase";
 import { Image } from "../../../../components/common/Image";
-import sortBy from "lodash/sortBy";
 import { snapshotToArray } from "../../../../utils";
 
 export const LobbyClosed = (props) => {
@@ -66,40 +65,21 @@ export const LobbyClosed = (props) => {
       setCorrectAnswersPercentage(correctAnswersPercentage_);
     };
 
-    const fetchRanking = () => {
-      return firestore.collection(`lobbies/${lobbyId}/answers`).onSnapshot((answersSnapshot) => {
-        const answers = snapshotToArray(answersSnapshot);
-
-        const usersPointsMap = answers.reduce((acc, answer) => {
-          if (!acc[answer.userId]) acc[answer.userId] = { score: 0 };
-
-          acc[answer.userId].score += answer.points;
-          if (!acc[answer.userId]?.nickname) acc[answer.userId].nickname = answer.user.nickname;
-          if (!acc[answer.userId]?.id) acc[answer.userId].id = answer.user.id;
-
-          return acc;
-        }, {});
-
-        const rankingUsers_ = sortBy(
-          Object.entries(usersPointsMap).map((userPointMap) => ({
-            userId: userPointMap[0],
-            nickname: userPointMap[1].nickname,
-            score: userPointMap[1].score,
-          })),
-          ["points"],
-          ["desc"]
-        );
-
-        setRankingUsers(rankingUsers_);
-      });
-    };
-
     fetchCorrectAnswers();
 
     initializeAnimation();
+  }, []);
 
-    const unSubRanking = fetchRanking();
-    return () => unSubRanking && unSubRanking();
+  useEffect(() => {
+    const fetchRanking = async () => {
+      const rankingSnapshot = await firestore.collection(`lobbies/${lobbyId}/ranking`).orderBy("rank", "asc").get();
+
+      const ranking = snapshotToArray(rankingSnapshot);
+
+      setRankingUsers(ranking);
+    };
+
+    fetchRanking();
   }, []);
 
   const initializeTransitionToResume = async () => {

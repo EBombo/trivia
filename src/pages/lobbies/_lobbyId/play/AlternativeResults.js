@@ -2,7 +2,7 @@ import React, { useMemo, useEffect, useState } from "reactn";
 import { useRouter } from "next/router";
 import { firestore } from "../../../../firebase";
 import { spinLoaderMin } from "../../../../components/common/loader";
-import { BarResult } from "./BarResult";
+import { AlternativeBarResult } from "./AlternativeBarResult";
 import { TrueFalseBarResult } from "./TrueFalseBarResult";
 import { OpenAnswerCellResult } from "./OpenAnswerCellResult";
 import {
@@ -55,7 +55,7 @@ export const AlternativeResults = (props) => {
     return (
       <div>
         {props.question.options.map((option, i) => (
-          <BarResult
+          <AlternativeBarResult
             key={`result-option-${i}`}
             isCorrect={props.question?.answer.includes(i)}
             color={i === 0 ? "red" : i === 1 ? "green" : i === 2 ? "yellow" : i === 3 ? "blue" : "primary"}

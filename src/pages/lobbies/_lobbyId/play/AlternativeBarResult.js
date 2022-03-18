@@ -3,7 +3,7 @@ import { getIconUrl } from "../../../../components/common/DataList";
 import { Image } from "../../../../components/common/Image";
 import { config } from "../../../../firebase";
 
-export const BarResult = (props) => {
+export const AlternativeBarResult = (props) => {
   const colorClass = useMemo(
     () =>
       props.color === "red"
