@@ -37,6 +37,26 @@ export const LobbyClosed = (props) => {
 
   const [rankingUsers, setRankingUsers] = useState([]);
 
+  const [users, setUsers] = useState([]);
+
+  // Fetch users.
+  useEffect(() => {
+    if (!props.lobby || !props.game) return;
+
+    const fetchUsers = () =>
+      firestore
+        .collection("lobbies")
+        .doc(lobbyId)
+        .collection("users")
+        .onSnapshot((usersRef) => {
+          const users_ = snapshotToArray(usersRef);
+          setUsers(users_);
+        });
+
+    const unSubUsers = fetchUsers();
+    return () => unSubUsers && unSubUsers();
+  }, []);
+
   useEffect(() => {
     const initializeAnimation = async () => {
       await timeoutPromise(2 * 1000);
@@ -109,13 +129,13 @@ export const LobbyClosed = (props) => {
         <div className="grid grid-cols-[1fr_2fr] w-full">
           <Image src={`${config.storageUrl}/resources/attendees.png`} width="55px" desktopWidth="75px" />
           <div className="self-center justify-self-start">
-            <div className="text-3xl md:text-4xl text-left">{props.users.length}</div>
+            <div className="text-3xl md:text-4xl text-left">{users.length}</div>
             <div className="text-xl md:text-3xl">Participantes</div>
           </div>
         </div>
       </div>
     ),
-    [props.users]
+    [users]
   );
 
   const itemPlayAgain = useMemo(

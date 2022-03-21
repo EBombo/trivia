@@ -20,7 +20,6 @@ export const Lobby = (props) => {
   const [authUser, setAuthUser] = useGlobal("user");
 
   const [lobby, setLobby] = useState(null);
-  const [users, setUsers] = useState([]);
   const [isLoading, setLoading] = useState(true);
   const [game, setGame] = useState(null);
 
@@ -84,23 +83,6 @@ export const Lobby = (props) => {
     return () => unSubLobby && unSubLobby();
   }, [lobbyId]);
 
-  // Fetch users.
-  useEffect(() => {
-    if (!lobby || !game) return;
-
-    const fetchUsers = () =>
-      firestore
-        .collection("lobbies")
-        .doc(lobbyId)
-        .collection("users")
-        .onSnapshot((usersRef) => {
-          const users_ = snapshotToArray(usersRef);
-          setUsers(users_);
-        });
-
-    const unSubUsers = fetchUsers();
-    return () => unSubUsers && unSubUsers();
-  }, [lobby, game]);
 
   // Fetch Game
   useEffect(() => {
@@ -122,7 +104,6 @@ export const Lobby = (props) => {
 
   const additionalProps = {
     lobby,
-    users,
     audioRef: audioRef,
     logout: logout,
     game,
