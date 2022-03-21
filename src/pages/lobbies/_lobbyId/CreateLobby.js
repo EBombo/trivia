@@ -2,12 +2,10 @@ import { spinLoaderMin } from "../../../components/common/loader";
 import React, { useEffect, useGlobal, useState } from "reactn";
 import { config, firestore, firestoreBomboGames } from "../../../firebase";
 import { useFetch } from "../../../hooks/useFetch";
-import defaultTo from "lodash/defaultTo";
 import { useRouter } from "next/router";
 import { useSendError, useUser } from "../../../hooks";
 import { GameMenu } from "../../../components/GameMenu";
 import { snapshotToArray } from "../../../utils";
-import { INITIALIZING } from "../../../components/common/DataList";
 
 export const CreateLobby = (props) => {
   const { Fetch } = useFetch();

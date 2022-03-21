@@ -1,9 +1,8 @@
-import React, { useGlobal, useState, useMemo } from "reactn";
-import { config } from "../../../../firebase";
+import React, { useMemo } from "reactn";
 import { Image } from "../../../../components/common/Image";
 import { getIconUrl } from "../../../../components/common/DataList";
 
-export const AnswerCard = (props) => {
+export const AlternativeAnswerCard = (props) => {
   const iconUrl = useMemo(() => getIconUrl(props.color), [props.color]);
 
   const colorClass = useMemo(

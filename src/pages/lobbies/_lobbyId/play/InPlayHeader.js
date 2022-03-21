@@ -1,21 +1,48 @@
-import React, { useGlobal, useEffect, useState, useMemo } from "reactn";
+import React, { useGlobal, useMemo } from "reactn";
 import { useRouter } from "next/router";
 import { Timer } from "./Timer";
 import { QuestionStep } from "./QuestionStep";
 import { ButtonAnt } from "../../../../components/form";
-import { firestore } from "../../../../firebase";
-import { RANKING } from "../../../../components/common/DataList";
+import { firestore, config } from "../../../../firebase";
+import { QUESTION_TIMEOUT, RANKING } from "../../../../components/common/DataList";
+import { useFetch } from "../../../../hooks/useFetch";
+import { useSendError } from "../../../../hooks";
+
+const putRankingUsers = async (lobbyId) => {
+  const { Fetch } = useFetch();
+
+  const fetchProps = {
+    url: `${config.serverUrl}/lobbies/${lobbyId}/ranking`,
+    method: "PUT",
+  };
+
+  const { error } = await Fetch(fetchProps.url, fetchProps.method);
+
+  if (error) throw new Error(error);
+};
 
 export const InPlayHeader = (props) => {
   const router = useRouter();
+
+  const { sendError } = useSendError();
 
   const { lobbyId } = router.query;
 
   const [authUser] = useGlobal("user");
 
-  const [answersCount, setAnswersCount] = useState(0);
+  const answersCount = useMemo(() => props.lobby.answersCount ?? 0, [props.lobby.answersCount]);
 
   const updateGameState = async (newGame) => {
+
+    if (newGame.state === QUESTION_TIMEOUT) {
+      props.setIsGameLoading(true);
+      try {
+        await putRankingUsers(lobbyId);
+      } catch (e) {
+        sendError(e, "updateGameState");
+      }
+    }
+
     const updateGame = Object.entries(newGame).reduce((acc, entryGameMap) => {
       acc[`game.${entryGameMap[0]}`] = entryGameMap[1];
 
@@ -23,27 +50,25 @@ export const InPlayHeader = (props) => {
     }, {});
 
     await firestore.doc(`lobbies/${lobbyId}`).update(updateGame);
+
+    props.setIsGameLoading(false);
   };
 
   const goToRanking = async () => {
-    await firestore.doc(`lobbies/${lobbyId}`).update({
-      "game.state": RANKING,
-    });
+    props.setIsGameLoading(true);
+
+    try {
+      await putRankingUsers(lobbyId);
+
+      await firestore.doc(`lobbies/${lobbyId}`).update({
+        "game.state": RANKING,
+      });
+    } catch (e) {
+      sendError(e, "goToRanking");
+    }
+
+    props.setIsGameLoading(false);
   };
-
-  useEffect(() => {
-    const fetchAnswers = () => {
-      return firestore
-        .collection(`lobbies/${lobbyId}/answers`)
-        .where("questionId", "==", props.question.id)
-        .onSnapshot((answersSnapshot) => {
-          setAnswersCount(answersSnapshot.size);
-        });
-    };
-
-    const unSubAnswersCount = fetchAnswers();
-    return () => unSubAnswersCount && unSubAnswersCount();
-  }, [props.question]);
 
   return (
     <div className="grid grid-rows-[minmax(160px,min-content)_auto]">
@@ -61,6 +86,8 @@ export const InPlayHeader = (props) => {
                 size="big"
                 className="font-bold text-base"
                 onClick={() => props.onInvalidateQuestion?.()}
+                loading={props.isGameLoading}
+                disabled={props.lobby.game.state === QUESTION_TIMEOUT}
               >
                 Invalidar pregunta
               </ButtonAnt>
@@ -74,7 +101,13 @@ export const InPlayHeader = (props) => {
         <div className={`text-center flex flex-row-reverse md:flex-col justify-around items-center`}>
           {authUser.isAdmin && (
             <div className="inline-block md:mb-8">
-              <ButtonAnt size="big" color="success" className="font-bold text-base" onClick={() => goToRanking()}>
+              <ButtonAnt
+                size="big"
+                color="success"
+                className="font-bold text-base"
+                loading={props.isGameLoading}
+                onClick={() => goToRanking()}
+              >
                 Siguiente
               </ButtonAnt>
             </div>

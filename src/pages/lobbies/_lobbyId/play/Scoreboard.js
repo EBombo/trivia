@@ -1,9 +1,8 @@
 import React, { useGlobal, useMemo, useEffect, useState } from "reactn";
-import { auth, config, firebase, firestore, hostName } from "../../../../firebase";
+import { firestore } from "../../../../firebase";
 import { ButtonAnt } from "../../../../components/form/Button";
 import { snapshotToArray } from "../../../../utils";
 import { useRouter } from "next/router";
-import sortBy from "lodash/sortBy";
 import isEmpty from "lodash/isEmpty";
 import { get } from "lodash";
 
@@ -20,9 +19,10 @@ export const Scoreboard = (props) => {
 
   const [rankingUsers, setRankingUsers] = useState([]);
 
-  const [userRank, setUserRank] = useState(0);
-
+  // if last question then saves winners for LobbyClosed
   useEffect(() => {
+    if (!authUser.isAdmin) return;
+
     if (isEmpty(rankingUsers)) return;
 
     if (!isLastQuestion) return;
@@ -45,80 +45,46 @@ export const Scoreboard = (props) => {
   }, [rankingUsers, isLastQuestion]);
 
   useEffect(() => {
-    // calculates ranking
-    const computeValidQuestions = async () => {
-      if (isEmpty(props.lobby.game.invalidQuestions)) return;
-
-      const canceledAnswersSnapshot = await firestore
-        .collection(`lobbies/${lobbyId}/answers`)
-        .where("questionId", "in", props.lobby.game.invalidQuestions ?? [])
+    const fetchRanking = async () => {
+      const rankingSnapshot = await firestore
+        .collection(`lobbies/${lobbyId}/ranking`)
+        .orderBy("rank", "asc")
+        .limit(DEFAULT_RANKING_LENGTH)
         .get();
 
-      const updateAnswerPromise = canceledAnswersSnapshot.docs.map((answerSnapshot) =>
-        answerSnapshot.ref.update({
-          points: 0,
-        })
-      );
+      const ranking = snapshotToArray(rankingSnapshot);
 
-      await Promise.all(updateAnswerPromise);
+      setRankingUsers(ranking);
     };
 
-    const fetchRanking = () => {
-      return firestore.collection(`lobbies/${lobbyId}/answers`).onSnapshot((answersSnapshot) => {
-        const answers = snapshotToArray(answersSnapshot);
-
-        const usersPointsMap = answers.reduce((acc, answer) => {
-          if (!acc[answer.userId]) acc[answer.userId] = { score: 0 };
-
-          acc[answer.userId].score += answer.points;
-          if (!acc[answer.userId]?.nickname) acc[answer.userId].nickname = answer.user.nickname;
-          if (!acc[answer.userId]?.id) acc[answer.userId].id = answer.user.id;
-
-          return acc;
-        }, {});
-
-        const rankingUsers_ = sortBy(
-          Object.entries(usersPointsMap).map((userPointMap) => ({
-            userId: userPointMap[0],
-            nickname: userPointMap[1].nickname,
-            score: userPointMap[1].score,
-          })),
-          ["points"],
-          ["desc"]
-        );
-
-        for (let i = 0; i < rankingUsers_.length; i++) {
-          const rankingUser = rankingUsers_[i];
-
-          if (rankingUser.userId === authUser.id) {
-            setAuthUser({ ...authUser, score: rankingUser.score });
-            setUserRank(i + 1);
-
-            break;
-          }
-        }
-
-        setRankingUsers(rankingUsers_);
-      });
-    };
-
-    if (authUser.isAdmin) computeValidQuestions();
-
-    const unSubRanking = fetchRanking();
-    return () => unSubRanking && unSubRanking();
+    fetchRanking();
   }, []);
 
-  const RankingItem = (user, i) => (
+  useEffect(() => {
+    if (authUser.isAdmin) return;
+
+    const fetchUserStats = async () => {
+      const userSnapshot = await firestore.doc(`lobbies/${lobbyId}/users/${authUser.id}`).get();
+
+      const user_ = userSnapshot.data();
+
+      setAuthUser({ ...authUser, rank: user_.rank, score: user_.score });
+    };
+
+    fetchUserStats();
+  }, []);
+
+  const RankingItem = ({ user }) => (
     <div
-      key={`rankint-item-${i}`}
+      key={`rankint-item-${user.rank}`}
       className="grid grid-cols-[min-content_auto_min-content] bg-secondaryDark text-whiteLight py-4 w-full max-w-[1000px] md:mx-auto text-lg md:text-2xl my-4"
     >
-      <div className={`px-5 self-center ${props.authUser?.id === user.id ? "text-success" : "text-whiteLight"}`}>
-        {i + 1}
+      <div className={`px-5 self-center ${authUser?.id === user.userId ? "text-success" : "text-whiteLight"}`}>
+        {user.rank}
       </div>
       <div
         className={`px-4 self-center justify-self-start ${
-          authUser?.id === user.id ? "text-success" : "text-whiteLight"
+          authUser?.id === user.userId ? "text-success" : "text-whiteLight"
         }`}
       >
         {user.nickname}
@@ -143,11 +109,9 @@ export const Scoreboard = (props) => {
           </div>
         )}
 
-        <div className="mb-6">
-          {rankingUsers.slice(0, DEFAULT_RANKING_LENGTH).map((user, i) => RankingItem(user, i))}
-        </div>
+        <div className="mb-6">{rankingUsers.map((user) => <RankingItem user={user}/>)}</div>
 
-        {!authUser.isAdmin && userRank > DEFAULT_RANKING_LENGTH && (
+        {!authUser.isAdmin && authUser.rank > DEFAULT_RANKING_LENGTH && (
           <>
             <div
               className={`
@@ -156,7 +120,7 @@ export const Scoreboard = (props) => {
             >
               Tu puesto
             </div>
-            {RankingItem(authUser, userRank)}
+            <RankingItem user={authUser}/>
           </>
         )}
 

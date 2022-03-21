@@ -1,6 +1,6 @@
 import React from "reactn";
 
-export const NextRoundLoader = (props) => (
+export const InPlaySpinLoader = (props) => (
   <svg
     className="animate-spin inline-block"
     width="124"

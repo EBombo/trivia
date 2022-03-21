@@ -1,24 +1,18 @@
-import React, { useGlobal, useMemo, useEffect, useState } from "reactn";
+import React, { useMemo, useEffect, useState } from "reactn";
 import { useRouter } from "next/router";
-import { auth, config, firebase, firestore, hostName } from "../../../../firebase";
+import { firestore } from "../../../../firebase";
 import { spinLoaderMin } from "../../../../components/common/loader";
-import entries from "lodash/entries";
-import { BarResult } from "./BarResult";
+import { AlternativeBarResult } from "./AlternativeBarResult";
 import { TrueFalseBarResult } from "./TrueFalseBarResult";
 import { OpenAnswerCellResult } from "./OpenAnswerCellResult";
 import {
   ALTERNATIVES_QUESTION_TYPE,
-  ANSWERING_QUESTION,
-  INTRODUCING_QUESTION,
   OPEN_QUESTION_TYPE,
-  QUESTION_RESULTS,
   QUESTION_TIMEOUT,
-  RANKING,
   TRUE_FALSE_QUESTION_TYPE,
-  DEFAULT_POINTS,
 } from "../../../../components/common/DataList";
 
-export const AlternativeResults = (props) => {
+export const QuestionResults = (props) => {
   const router = useRouter();
 
   const { lobbyId } = router.query;
@@ -39,7 +33,7 @@ export const AlternativeResults = (props) => {
         .where("questionId", "==", props.question?.id)
         .get();
 
-      const answerCountMap_ = answersSnapshot.docs.reduce((acc, answerSnapshot, i) => {
+      const answerCountMap_ = answersSnapshot.docs.reduce((acc, answerSnapshot) => {
         const answer = answerSnapshot.data();
 
         if (!(answer.answer in acc)) acc[answer.answer] = { count: 0 };
@@ -61,14 +55,16 @@ export const AlternativeResults = (props) => {
     return (
       <div>
         {props.question.options.map((option, i) => (
-          <BarResult
+          <AlternativeBarResult
             key={`result-option-${i}`}
             isCorrect={props.question?.answer.includes(i)}
             color={i === 0 ? "red" : i === 1 ? "green" : i === 2 ? "yellow" : i === 3 ? "blue" : "primary"}
             value={Math.ceil(((answerCountMap[option]?.count ?? 0) / totalCount) * 100)}
             count={answerCountMap[option]?.count ?? 0}
-            enableOpacity={(props.lobby.game.state === QUESTION_TIMEOUT &&
-                  !props.question.answer.map(answerIndex => props.question?.options[answerIndex])?.includes(option))}
+            enableOpacity={
+              props.lobby.game.state === QUESTION_TIMEOUT &&
+              !props.question.answer.map((answerIndex) => props.question?.options[answerIndex])?.includes(option)
+            }
           />
         ))}
       </div>
