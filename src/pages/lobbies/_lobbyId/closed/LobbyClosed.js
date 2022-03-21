@@ -222,10 +222,10 @@ export const LobbyClosed = (props) => {
           Volver al podio
         </div>
         <div className="list">
-          {props.lobby.winners.map((winner, index) => (
+          {props.lobby.winners?.map((winner, index) => (
             <Winner winner={winner} index={index} key={index} isList />
           ))}
-          {rankingUsers.slice(props.lobby.winners.length).map((winner, index) => (
+          {rankingUsers.slice(props.lobby.winners.length)?.map((winner, index) => (
             <Winner winner={winner} index={index} key={index} isList />
           ))}
         </div>
