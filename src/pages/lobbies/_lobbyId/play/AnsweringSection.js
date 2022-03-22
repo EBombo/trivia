@@ -58,8 +58,9 @@ export const AnsweringSection = (props) => {
       .collection(`lobbies/${lobbyId}/users`)
       .doc(authUser.id)
       .update({
-        score: firebase.firestore.FieldValue.increment(points),
+        lastPointsEarned: points,
         streak: newStreak,
+        isLastAnswerCorrect: isCorrectAnswer,
       });
 
     const updateAnswersCount = firestore.doc(`lobbies/${lobbyId}`).update({

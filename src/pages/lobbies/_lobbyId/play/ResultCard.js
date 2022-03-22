@@ -1,95 +1,52 @@
-import React, { useGlobal, useEffect, useState } from "reactn";
-import { config, firestore } from "../../../../firebase";
+import React, { useGlobal, useEffect, useState, useMemo } from "reactn";
 import { useRouter } from "next/router";
+import { config, firestore } from "../../../../firebase";
+import { InPlaySpinLoader } from "./InPlaySpinLoader";
 import { Image } from "../../../../components/common/Image";
-import { snapshotToArray } from "../../../../utils";
-import { checkIsCorrect } from "../../../../business";
-import sortBy from "lodash/sortBy";
 
 export const ResultCard = (props) => {
   const router = useRouter();
 
   const { lobbyId } = router.query;
 
-  const [authUser, setAuthUser] = useGlobal("user");
+  const [authUser] = useGlobal("user");
 
   const [userRank, setUserRank] = useState(0);
 
-  const [usersSize, setUsersSize] = useState(0);
-
-  const [isCorrect, setIsCorrect] = useState(null);
-
-  const [pointsEarned, setPointsEarned] = useState(0);
+  const [userScore, setUserScore] = useState(0);
 
   const [streakCount, setStreakCount] = useState(0);
 
+  const [pointsEarned, setPointsEarned] = useState(0);
+
+  const [isCorrect, setIsCorrect] = useState(null);
+
+  const usersSize = useMemo(() => props.lobby?.playersCount ?? 0, [props.lobby]);
+
   useEffect(() => {
     const fetchUsers = async () => {
-      const usersSnapshot = await firestore.collection(`lobbies/${lobbyId}/users`).get();
+      const userSnapshot = await firestore.doc(`lobbies/${lobbyId}/users/${authUser.id}`).get();
+      const user = userSnapshot.data();
 
-      usersSnapshot.forEach((userSnapshot) => {
-        const user = userSnapshot.data();
-        setStreakCount(user.streak);
-      });
+      setPointsEarned(user.lastPointsEarned);
+      setStreakCount(user.streak);
+      setUserScore(user.score);
+      setUserRank(user.rank);
 
-      setUsersSize(usersSnapshot.size);
-    };
-
-    const fetchRanking = () => {
-      return firestore.collection(`lobbies/${lobbyId}/answers`).onSnapshot((answersSnapshot) => {
-        const answers = snapshotToArray(answersSnapshot);
-
-        const usersPointsMap = answers.reduce((acc, answer) => {
-          if (!acc[answer.userId]) acc[answer.userId] = { score: 0 };
-
-          acc[answer.userId].score += answer.points;
-          if (!acc[answer.userId]?.nickname) acc[answer.userId].nickname = answer.user.nickname;
-          if (!acc[answer.userId]?.id) acc[answer.userId].id = answer.user.id;
-
-          return acc;
-        }, {});
-
-        const rankingUsers_ = sortBy(
-          Object.entries(usersPointsMap).map((userPointMap) => ({
-            userId: userPointMap[0],
-            nickname: userPointMap[1].nickname,
-            score: userPointMap[1].score,
-          })),
-          ["points"],
-          ["desc"]
-        );
-
-        for (let i = 0; i < rankingUsers_.length; i++) {
-          const rankingUser = rankingUsers_[i];
-
-          if (rankingUser.userId === authUser.id) {
-            setAuthUser({ ...authUser, score: rankingUser.score ?? 0 });
-            setUserRank(i + 1);
-
-            break;
-          }
-        }
-
-        const currentAnswer = answers.find(
-          (answer) => answer.questionId === props.question.id && answer.userId === authUser.id
-        );
-        if (currentAnswer) {
-          const isCorrect_ = checkIsCorrect(props.question, currentAnswer.answer);
-
-          setIsCorrect(isCorrect_);
-          setPointsEarned(currentAnswer.points);
-        }
-      });
+      setIsCorrect(user.isLastAnswerCorrect);
     };
 
     fetchUsers();
-
-    const unSubRanking = fetchRanking();
-    return () => unSubRanking && unSubRanking();
   }, []);
 
+  if (isCorrect === null) return (
+    <div className="relative my-4 mx-4 pt-8 pb-4 px-4 bg-whiteLight text-lg min-w-[300px] self-center rounded-lg">
+      <InPlaySpinLoader/>
+    </div>
+  );
+
   return (
-    <div className="relative my-4 mx-4 pt-8 pb-4 bg-whiteLight text-lg min-w-[300px] self-center rounded-lg">
+    <div className="relative my-4 mx-4 pt-8 pb-4 px-4 bg-whiteLight text-lg min-w-[300px] self-center rounded-lg">
       <div
         className={`absolute top-[-20px] left-1/2 translate-x-[-50%]
           ${isCorrect ? "bg-success" : "bg-danger"} 
@@ -110,7 +67,7 @@ export const ResultCard = (props) => {
         <>
           <div className="text-secondaryDarken">
             <span className="inline-block py-4 align-middle">
-              <Image src={`${config.storageUrl}/resources/red-fire-streak.svg`} width="12px" />
+              <Image src={`${config.storageUrl}/resources/red-fire-streak.svg`} size="contain" width="12px" />
             </span>
             Racha de respuestas: {streakCount}
           </div>
@@ -120,9 +77,9 @@ export const ResultCard = (props) => {
         <div className="text-secondaryDarken">¡Hay que mantener la cabeza en el juego!</div>
       )}
 
-      <div className="text-black">Puntaje actual: {authUser.score?.toFixed(1)} pts</div>
+      <div className="text-black">Puntaje actual: {userScore.toFixed(1)} pts</div>
       <div className="text-black">
-        Puesto: {userRank}/{usersSize}
+        Puesto: {userRank}/{usersSize !== 0 ? usersSize : "--"}
       </div>
     </div>
   );
