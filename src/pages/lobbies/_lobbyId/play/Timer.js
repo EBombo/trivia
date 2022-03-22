@@ -82,7 +82,7 @@ export const Timer = (props) => {
                 cy="50%"
               />
               <circle
-                className="text-success origin-center  transition-all ease-out duration-500"
+                className="text-success origin-center scale-x-[-1] rotate-90 transition-all ease-out duration-500"
                 strokeWidth="8"
                 strokeDasharray={totalSeconds}
                 strokeDashoffset={totalSeconds - (secondsLeftPercentage / 100) * totalSeconds}
