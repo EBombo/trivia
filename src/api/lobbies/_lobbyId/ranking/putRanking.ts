@@ -1,6 +1,6 @@
 import { firestore } from "../../../../firebase";
 import { snapshotToArray } from "../../../../utils";
-import sortBy from "lodash/sortBy";
+import orderBy from "lodash/orderBy";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type AnswerUser = {
@@ -33,7 +33,7 @@ type User = {
   nickname: string;
 };
 
-const computeRanking = (users: User[], answers: Answer[], invalidQuestions: string[] = []): RankUser[] => {
+export const computeRanking = (users: User[], answers: Answer[], invalidQuestions: string[] = []): RankUser[] => {
   // initialize all users for ranking
   let usersPointsMap = users.reduce((acc, user) => {
     acc[user.id] = { id: user.id, nickname: user.nickname, score: 0 };
@@ -49,7 +49,7 @@ const computeRanking = (users: User[], answers: Answer[], invalidQuestions: stri
   }, usersPointsMap);
 
   // sort
-  const rankingUsers_: RankUser[] = sortBy(
+  const rankingUsers_: RankUser[] = orderBy(
     Object.entries(usersPointsMap).map((userPointMap) => ({
       userId: userPointMap[0],
       nickname: userPointMap[1].nickname,
