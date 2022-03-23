@@ -28,18 +28,27 @@ type RankUser = {
   rank: number;
 };
 
-const computeRanking = (answers: Answer[], invalidQuestions: string[] = []): RankUser[] => {
-  const usersPointsMap = answers.reduce((acc, answer) => {
-    if (!acc[answer.userId]) acc[answer.userId] = { score: 0 };
+type User = {
+  id: string;
+  nickname: string;
+};
 
-    if (!invalidQuestions.includes(answer.questionId)) acc[answer.userId].score += answer.points;
-
-    if (!acc[answer.userId]?.nickname) acc[answer.userId].nickname = answer.user.nickname;
-    if (!acc[answer.userId]?.id) acc[answer.userId].id = answer.user.id;
+const computeRanking = (users: User[], answers: Answer[], invalidQuestions: string[] = []): RankUser[] => {
+  // initialize all users for ranking
+  let usersPointsMap = users.reduce((acc, user) => {
+    acc[user.id] = { id: user.id, nickname: user.nickname, score: 0 };
 
     return acc;
   }, {} as { [key: string]: any });
 
+  // calculates score from valid answers
+  usersPointsMap = answers.reduce((acc, answer) => {
+    if (!invalidQuestions.includes(answer.questionId)) acc[answer.userId].score += answer.points;
+
+    return acc;
+  }, usersPointsMap);
+
+  // sort
   const rankingUsers_: RankUser[] = sortBy(
     Object.entries(usersPointsMap).map((userPointMap) => ({
       userId: userPointMap[0],
@@ -57,9 +66,12 @@ const computeRanking = (answers: Answer[], invalidQuestions: string[] = []): Ran
 const putRanking = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { lobbyId } = req.query as { [key: string]: string };
-    console.log(`>>> lobbyId ${lobbyId}`);
 
     const answersSnapshot = await firestore.collection(`lobbies/${lobbyId}/answers`).get();
+
+    const usersSnapshot = await firestore.collection(`lobbies/${lobbyId}/users`).get();
+    const usersSize = usersSnapshot.size;
+    const users = snapshotToArray(usersSnapshot);
 
     const lobbySnapshot = await firestore.doc(`lobbies/${lobbyId}`).get();
     const lobby = lobbySnapshot.data();
@@ -67,7 +79,7 @@ const putRanking = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const answers = snapshotToArray(answersSnapshot);
 
-    const usersRanking = computeRanking(answers, invalidQuestions);
+    const usersRanking = computeRanking(users, answers, invalidQuestions);
 
     const updateRankingListPromise = usersRanking.map((rankingUser) =>
       firestore.collection(`lobbies/${lobbyId}/ranking`).doc(rankingUser.userId).set(rankingUser, { merge: true })
@@ -80,7 +92,11 @@ const putRanking = async (req: NextApiRequest, res: NextApiResponse) => {
         .update({ rank: rankingUser.rank, score: rankingUser.score })
     );
 
-    await Promise.all([...updateRankingListPromise, ...updateUserScoringListPromise]);
+    const updateLobbyPromise = firestore.doc(`lobbies/${lobbyId}`).update({
+      playersCount: usersSize,
+    });
+
+    await Promise.all([...updateRankingListPromise, ...updateUserScoringListPromise, updateLobbyPromise]);
 
     return res.send({ success: true });
   } catch (error) {
