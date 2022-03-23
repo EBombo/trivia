@@ -31,7 +31,7 @@ export const checkIsCorrect = (question, answer) => {
     return answers.includes(answer);
   }
 
-  if (question.type === TRUE_FALSE_QUESTION_TYPE) return answer == question.answer;
+  if (question.type === TRUE_FALSE_QUESTION_TYPE) return answer === question.answer;
 
   if (question.type === OPEN_QUESTION_TYPE)
     return (question.answer.map(answer => answer.toLowerCase())).includes(answer.toLowerCase());

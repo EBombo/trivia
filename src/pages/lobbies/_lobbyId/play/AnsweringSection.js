@@ -94,20 +94,20 @@ export const AnsweringSection = (props) => {
             color="red"
             value={true}
             disabled={userHasAnswered}
-            enableOpacity={props.lobby.game.state === QUESTION_TIMEOUT && question.answer}
+            enableOpacity={props.lobby.game.state === QUESTION_TIMEOUT && !question.answer}
             onClick={() => onAnswering(true)}
           />
           <TrueFalseAnswerCard
             color="green"
             value={false}
             disabled={userHasAnswered}
-            enableOpacity={props.lobby.game.state === QUESTION_TIMEOUT && !question.answer}
+            enableOpacity={props.lobby.game.state === QUESTION_TIMEOUT && question.answer}
             onClick={() => onAnswering(false)}
           />
         </>
       ) : question?.type === OPEN_QUESTION_TYPE && !authUser.isAdmin ? (
         <div className="col-start-1 col-end-3">
-          <OpenAnswerCard color="red" disabled={userHasAnswered} onSubmit={(data) => onAnswering(data)} />
+          <OpenAnswerCard disabled={userHasAnswered} onSubmit={(data) => onAnswering(data)} />
         </div>
       ) : (
         <div />
