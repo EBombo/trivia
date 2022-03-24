@@ -92,7 +92,7 @@ export const QuestionResults = (props) => {
 
   if (props.question?.type === OPEN_QUESTION_TYPE)
     return (
-      <div className="grid grid-cols-4 gap-7">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-7  mx-6">
         {Object.entries(answerCountMap).map((answerCountEntry, i) => (
           <OpenAnswerCellResult
             key={`open-answer-${i}`}

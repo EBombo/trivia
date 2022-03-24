@@ -4,7 +4,7 @@ export const OpenAnswerCellResult = (props) => (
   <div
     className={`relative ${
       props.isCorrect ? "bg-inGameGreen" : "bg-inGameRed"
-    } font-bold text-whiteLight text-lg rounded py-2`}
+    } font-bold text-whiteLight text-lg rounded py-2 px-2`}
   >
     <div
       className={`absolute top-[-12px] left-[94%] ${
@@ -13,6 +13,6 @@ export const OpenAnswerCellResult = (props) => (
     >
       {props.count ?? 0}
     </div>
-    {props.answer}
+    <p className="text-ellipsis overflow-hidden whitespace-nowrap text-base">{props.answer}</p>
   </div>
 );
