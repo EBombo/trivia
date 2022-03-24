@@ -2,6 +2,7 @@ import React, { useMemo, useEffect, useState } from "reactn";
 import { useRouter } from "next/router";
 import { firestore } from "../../../../firebase";
 import { spinLoaderMin } from "../../../../components/common/loader";
+import { checkIsCorrect } from "../../../../business";
 import { AlternativeBarResult } from "./AlternativeBarResult";
 import { TrueFalseBarResult } from "./TrueFalseBarResult";
 import { OpenAnswerCellResult } from "./OpenAnswerCellResult";
@@ -91,12 +92,12 @@ export const QuestionResults = (props) => {
 
   if (props.question?.type === OPEN_QUESTION_TYPE)
     return (
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-4 gap-7">
         {Object.entries(answerCountMap).map((answerCountEntry, i) => (
           <OpenAnswerCellResult
             key={`open-answer-${i}`}
             count={answerCountEntry[1]?.count}
-            isCorrect={props.question?.answer.includes(answerCountEntry[0])}
+            isCorrect={checkIsCorrect(props.question, answerCountEntry[0])}
             answer={answerCountEntry[0]}
           />
         ))}
