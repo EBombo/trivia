@@ -28,10 +28,10 @@ export const ResultCard = (props) => {
       const userSnapshot = await firestore.doc(`lobbies/${lobbyId}/users/${authUser.id}`).get();
       const user = userSnapshot.data();
 
-      setPointsEarned(user.lastPointsEarned);
-      setStreakCount(user.streak);
-      setUserScore(user.score);
-      setUserRank(user.rank);
+      setPointsEarned(user.lastPointsEarned ?? 0);
+      setStreakCount(user.streak ?? 0);
+      setUserScore(user.score ?? 0);
+      setUserRank(user.rank ?? 0);
 
       setIsCorrect(user.isLastAnswerCorrect);
     };
