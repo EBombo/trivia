@@ -77,14 +77,14 @@ export const QuestionResults = (props) => {
           option={true}
           value={Math.ceil(((answerCountMap?.[true]?.count ?? 0) / totalCount) * 100)}
           count={answerCountMap?.[true]?.count ?? 0}
-          enableOpacity={props.lobby.game.state === QUESTION_TIMEOUT && props.question.answer}
+          enableOpacity={props.lobby.game.state === QUESTION_TIMEOUT && !props.question.answer}
         />
         <TrueFalseBarResult
           isCorrect={!props.question?.answer}
           option={false}
           value={Math.ceil(((answerCountMap?.[false]?.count ?? 0) / totalCount) * 100)}
           count={answerCountMap?.[false]?.count ?? 0}
-          enableOpacity={props.lobby.game.state === QUESTION_TIMEOUT && !props.question.answer}
+          enableOpacity={props.lobby.game.state === QUESTION_TIMEOUT && props.question.answer}
         />
       </div>
     );

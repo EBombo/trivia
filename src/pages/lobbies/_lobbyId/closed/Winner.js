@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "reactn";
+import React, { useState, useEffect, useRef, useMemo } from "reactn";
 import styled from "styled-components";
 import { Image } from "../../../../components/common/Image";
 import { config } from "../../../../firebase";
@@ -6,7 +6,7 @@ import { CaretDownOutlined, CaretUpOutlined } from "@ant-design/icons";
 import { _animate } from "../../../../utils/popmotion";
 import delay from "lodash/delay";
 
-const ANIMATION_NORMAL_DURATION = 3000;
+const ANIMATION_NORMAL_DURATION = 2000;
 
 export const Winner = (props) => {
   const [award, setAward] = useState(null);
@@ -70,7 +70,7 @@ export const Winner = (props) => {
         from: clonePositionStart,
         to: clonePositionMid,
         duration: 1000,
-        elapsed: -3000 * (2 - props.index),
+        elapsed: -ANIMATION_NORMAL_DURATION * (props.animationDelay ?? 0),
         onUpdate: (tween) => {
           if (!prizeIconCloned) return;
 
@@ -188,14 +188,14 @@ export const Winner = (props) => {
             firstPlaceBgNode.style.transform = `scaleX(${tween})`;
           },
         });
-      }, 2 * ANIMATION_NORMAL_DURATION);
+      }, ANIMATION_NORMAL_DURATION * (props.animationDelay ?? 0));
 
       return (
         _animate({
           from: clonePositionStart,
           to: clonePositionStep1,
           duration: 1000,
-          elapsed: -ANIMATION_NORMAL_DURATION * (2 - props.index) - 1000,
+          elapsed: -ANIMATION_NORMAL_DURATION * (props.animationDelay ?? 0) - 1000,
           onUpdate: (tween) => {
             if (!prizeIconCloned) return;
 

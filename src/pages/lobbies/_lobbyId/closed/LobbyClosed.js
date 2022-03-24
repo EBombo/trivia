@@ -123,6 +123,10 @@ export const LobbyClosed = (props) => {
     setShowWinnersAnimation(false);
   };
 
+  const winnersSize = useMemo(() => {
+    return (props.lobby?.winners?.slice(0, 3)?.length) ?? 0;
+  }, [props.lobby]);
+
   const itemAttendees = useMemo(
     () => (
       <div className="item flex">
@@ -294,7 +298,7 @@ export const LobbyClosed = (props) => {
       {!isVisibleTitle && (
         <div className="winners">
           {props.lobby?.winners?.slice(0, 3)?.map((winner, index) => (
-            <Winner winner={winner} index={index} key={index} enableAnimation />
+            <Winner winner={winner} index={index} key={index} enableAnimation animationDelay={(winnersSize - 1) - index} />
           ))}
         </div>
       )}
