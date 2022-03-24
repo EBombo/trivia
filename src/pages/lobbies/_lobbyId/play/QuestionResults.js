@@ -27,26 +27,25 @@ export const QuestionResults = (props) => {
   useEffect(() => {
     if (!props.question) return;
 
-    const fetchBarResult = async () => {
-      const answersSnapshot = await firestore
-        .collection(`lobbies/${lobbyId}/answers`)
-        .where("questionId", "==", props.question?.id)
-        .get();
+    const listenAnswersSnapshot = () => firestore
+      .collection(`lobbies/${lobbyId}/answers`)
+      .where("questionId", "==", props.question?.id)
+      .onSnapshot((answersSnapshot) => {
+        const answerCountMap_ = answersSnapshot.docs.reduce((acc, answerSnapshot) => {
+          const answer = answerSnapshot.data();
 
-      const answerCountMap_ = answersSnapshot.docs.reduce((acc, answerSnapshot) => {
-        const answer = answerSnapshot.data();
+          if (!(answer.answer in acc)) acc[answer.answer] = { count: 0 };
 
-        if (!(answer.answer in acc)) acc[answer.answer] = { count: 0 };
+          acc[answer.answer].count += 1;
 
-        acc[answer.answer].count += 1;
+          return acc;
+        }, {});
 
-        return acc;
-      }, {});
+        setAnswerCountMap({ ...answerCountMap_ });
+      });
 
-      setAnswerCountMap({ ...answerCountMap_ });
-    };
-
-    fetchBarResult();
+    const listenAnswersUnsub = listenAnswersSnapshot();
+    return () => listenAnswersUnsub && listenAnswersUnsub();
   }, [props.question]);
 
   if (!props.question) return spinLoaderMin();

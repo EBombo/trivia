@@ -191,7 +191,7 @@ export const LobbyInPlay = (props) => {
         {...props}
       >
         {showImage ? (
-          <div className="aspect-[4/1] w-full h-full bg-secondaryDark mb-2">
+          <div className="aspect-[4/1] w-full h-[calc(100%-25px)] bg-secondaryDark mb-2">
             {question.fileUrl ? (
               <Image src={question.fileUrl} width="100%" size="contain" noImgTag />
             ) : (
