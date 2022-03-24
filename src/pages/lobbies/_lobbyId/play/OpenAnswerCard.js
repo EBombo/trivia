@@ -40,8 +40,8 @@ export const OpenAnswerCard = (props) => {
             />
           )}
         </div>
-        <div className="self-center">
-          <ButtonAnt htmlType="submit" color="success" size="big" disabled={props.isAnswered}>
+        <div className="self-center text-center md:text-left">
+          <ButtonAnt className="justify-center" width="150px" display="inline-block" htmlType="submit" color="success" size="big" disabled={props.isAnswered}>
             <span className="font-bold text-lg px-4">Enviar</span>
           </ButtonAnt>
         </div>
