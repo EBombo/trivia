@@ -160,15 +160,8 @@ export const LobbyHeader = (props) => {
               />
             </ButtonLobby>
           ) : (
-            <div
-              onClick={() => {
-                navigator.clipboard.writeText(props.lobby.pin);
-                props.showNotification("OK", "PIN copiado!", "success");
-              }}
-            >
-              <Tooltip placement="bottom" title="Click aquí para copiar el PIN">
-                {props.lobby?.pin}
-              </Tooltip>
+            <div>
+              {props.lobby?.pin}
             </div>
           )}
         </div>
