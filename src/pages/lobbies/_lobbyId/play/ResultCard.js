@@ -2,7 +2,7 @@ import React, { useGlobal, useEffect, useState, useMemo } from "reactn";
 import { useRouter } from "next/router";
 import { config, firestore } from "../../../../firebase";
 import { InPlaySpinLoader } from "./InPlaySpinLoader";
-import { Image } from "../../../../components/common/Image";
+import NextImage from 'next/image'
 
 export const ResultCard = (props) => {
   const router = useRouter();
@@ -46,28 +46,30 @@ export const ResultCard = (props) => {
   );
 
   return (
-    <div className="relative my-4 mx-4 pt-8 pb-4 px-4 bg-whiteLight text-lg min-w-[300px] self-center rounded-lg">
-      <div
-        className={`absolute top-[-20px] left-1/2 translate-x-[-50%]
+    <div className="relative my-4 mx-4 pt-9 pb-4 px-4 bg-whiteLight text-lg min-w-[300px] self-center rounded-lg">
+      <div className={`absolute top-[-20px] left-0 right-0`}>
+        <div className={`px-4 max-w-[250px] mx-auto rounded whitespace-nowrap
           ${isCorrect ? "bg-success" : "bg-danger"} 
           ${isCorrect ? "text-secondaryDarken" : "text-whiteLight"}
-          rounded max-w-[280px] whitespace-nowrap px-8`}
-      >
-        <span className="inline-block py-4 pr-4 align-middle">
-          {isCorrect ? (
-            <Image src={`${config.storageUrl}/resources/check-with-depth.svg`} width="16px" />
-          ) : (
-            <Image src={`${config.storageUrl}/resources/cross-with-depth.svg`} width="16px" />
-          )}
-        </span>
-        {isCorrect ? "Respuesta correcta" : "Respuesta incorrecta"}
+        `}>
+          <span className="inline-block py-4 pr-2 align-middle">
+            {isCorrect ? (
+              <NextImage src={`${config.storageUrl}/resources/check-with-depth.svg`} width={27} height={22} />
+            ) : (
+              <NextImage src={`${config.storageUrl}/resources/cross-with-depth.svg`} width={24} height={25} />
+            )}
+          </span>
+          <span>
+            {isCorrect ? "Respuesta correcta" : "Respuesta incorrecta"}
+          </span>
+        </div>
       </div>
 
       {isCorrect ? (
         <>
           <div className="text-secondaryDarken">
-            <span className="inline-block py-4 align-middle">
-              <Image src={`${config.storageUrl}/resources/red-fire-streak.svg`} size="contain" width="12px" />
+            <span className="inline-block py-4 px-2 align-middle">
+              <NextImage src={`${config.storageUrl}/resources/red-fire-streak.svg`}  width={17} height={26} />
             </span>
             Racha de respuestas: {streakCount}
           </div>

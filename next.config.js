@@ -76,4 +76,7 @@ module.exports = withBundleAnalyzer({
       },
     ];
   },
+  images: {
+    domains: ['storage.googleapis.com'],
+  },
 });
