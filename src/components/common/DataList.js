@@ -106,3 +106,12 @@ export const getIconUrl = (color) =>
     : "";
 
 export const DEFAULT_POINTS = 100;
+
+export const resourcesURL = [
+  { name: "checkWithDepth", url: `${config.storageUrl}/resources/check-with-depth.svg` },
+  { name: "crossWithDepth", url: `${config.storageUrl}/resources/cross-with-depth.svg` },
+  { name: "redFireStreak", url: `${config.storageUrl}/resources/red-fire-streak.svg` },
+
+  { name: "alternativeQuestionLogo", url: `${config.storageUrl}/resources/alternative-question-logo.svg` },
+  { name: "trueFalseQuestionLogo", url: `${config.storageUrl}/resources/true-false-question-logo.svg` },
+];

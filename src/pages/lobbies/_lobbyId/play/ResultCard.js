@@ -52,11 +52,20 @@ export const ResultCard = (props) => {
           ${isCorrect ? "bg-success" : "bg-danger"} 
           ${isCorrect ? "text-secondaryDarken" : "text-whiteLight"}
         `}>
-          <span className="inline-block py-4 pr-2 align-middle">
+          <span className="inline-block py-4 pr-2 align-middle content-visibility-auto">
             {isCorrect ? (
-              <NextImage src={`${config.storageUrl}/resources/check-with-depth.svg`} width={27} height={22} />
+              <NextImage
+                src={`${config.storageUrl}/resources/check-with-depth.svg`}
+                blurDataURL={props.resources.checkWithDepth.blurBase64}
+                placeholder="blur"
+                width={27} height={22} />
             ) : (
-              <NextImage src={`${config.storageUrl}/resources/cross-with-depth.svg`} width={24} height={25} />
+              <NextImage
+                src={`${config.storageUrl}/resources/cross-with-depth.svg`}
+                blurDataURL={props.resources.crossWithDepth.blurBase64}
+                placeholder="blur"
+                width={24}
+                height={25} />
             )}
           </span>
           <span>
@@ -68,8 +77,13 @@ export const ResultCard = (props) => {
       {isCorrect ? (
         <>
           <div className="text-secondaryDarken">
-            <span className="inline-block py-4 px-2 align-middle">
-              <NextImage src={`${config.storageUrl}/resources/red-fire-streak.svg`}  width={17} height={26} />
+            <span className="inline-block py-4 px-2 align-middle content-visibility-auto">
+              <NextImage
+                src={`${config.storageUrl}/resources/red-fire-streak.svg`} 
+                blurDataURL={props.resources.redFireStreak.blurBase64}
+                placeholder="blur"
+                width={17}
+                height={26}/>
             </span>
             Racha de respuestas: {streakCount}
           </div>
