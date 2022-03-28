@@ -31,7 +31,7 @@ export const UserLayout = (props) => {
   return (
     <UserLayoutCss>
       <div className="left-content">
-        { authUser?.isAdmin && (
+        {authUser?.isAdmin && (
           <div className="left-container">
             <Popover
               trigger="click"
@@ -143,7 +143,6 @@ export const UserLayout = (props) => {
           </div>
         )}
         <div className="title no-wrap">
-          
           <Tooltip placement="bottom" title="Click aquí para copiar el link de ebombo con pin">
             <div
               className="label"
@@ -156,25 +155,34 @@ export const UserLayout = (props) => {
                 "Este juego esta bloqueado"
               ) : (
                 <>
-                  <span className="font-black"> PIN:{props.lobby.pin} <Image className="inline-block" src={`${config.storageUrl}/resources/link.svg`} width="18px" /></span>
+                  <span className="font-black">
+                    {" "}
+                    PIN:{props.lobby.pin}{" "}
+                    <Image className="inline-block" src={`${config.storageUrl}/resources/link.svg`} width="18px" />
+                  </span>
                 </>
               )}
             </div>
           </Tooltip>
-
         </div>
       </div>
       <div className="text-xl font-black text-center text-ellipsis overflow-hidden whitespace-nowrap">
         {props.lobby.game.name}
       </div>
-        <div className="right-content">
+      <div className="right-content">
+        {props.enableChat && (
           <Desktop>
             <ButtonAnt
-              onClick={() => { props.setToggleChat((prevValue) => !prevValue) }}
-            ><MessageOutlined/> Chat</ButtonAnt>
+              onClick={() => {
+                props.setToggleChat((prevValue) => !prevValue);
+              }}
+            >
+              <MessageOutlined /> Chat
+            </ButtonAnt>
           </Desktop>
+        )}
 
-          {!authUser.isAdmin && (
+        {!authUser.isAdmin && (
           <Popover
             trigger="click"
             content={
@@ -202,8 +210,8 @@ export const UserLayout = (props) => {
               <span />
             </div>
           </Popover>
-          )}
-        </div>
+        )}
+      </div>
     </UserLayoutCss>
   );
 };
@@ -328,4 +336,3 @@ const SliderContent = styled.div`
     border: solid 2px ${(props) => props.theme.basic.successDark} !important;
   }
 `;
-

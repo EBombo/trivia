@@ -8,6 +8,7 @@ import { Image } from "../../../components/common/Image";
 import { useSendError } from "../../../hooks";
 import { saveMembers } from "../../../constants/saveMembers";
 import { useRouter } from "next/router";
+import { INITIALIZING } from "../../../components/common/DataList";
 
 export const LobbyHeader = (props) => {
   const { sendError } = useSendError();
@@ -42,32 +43,50 @@ export const LobbyHeader = (props) => {
       return { ...usersSum, [newUser.id]: newUser };
     }, {});
 
-  const updateLobby = async (isLocked = false, gameStarted = null) => {
+  const setLobbyLock = async (isLocked = false) => {
+    try {
+      if (!lobbyId) throw Error("Lobby not exist");
+
+      let newLobby = {
+        isLocked,
+        updateAt: new Date(),
+      };
+
+      await firestore.doc(`lobbies/${lobbyId}`).update(newLobby);
+    } catch (error) {
+      setIsLoadingStart(false);
+
+      props.showNotification("ERROR", "Lobby not exist");
+      sendError(error, "setLobbyLock");
+    }
+  };
+
+  const updateLobby = async (gameStarted = null) => {
     // TODO: Consider move this functions to backend [optimize performance].
     try {
       if (!lobbyId) throw Error("Lobby not exist");
 
       let users = null;
-      let newLobby = {
-        isLocked,
-        startAt: gameStarted,
-        updateAt: new Date(),
-      };
-
-      // Add users to lobby.
-      const promiseLobbyTrivia = firestore.doc(`lobbies/${lobbyId}`).update(newLobby);
-      const promiseLobbyGames = firestoreBomboGames.doc(`lobbies/${lobbyId}`).update(newLobby);
-
-      if (!gameStarted) return;
 
       // Fetch users.
-      const usersDatabaseRef = database.ref(`lobbies/${props.lobby.id}/users`);
+      const usersDatabaseRef = database.ref(`lobbies/${lobbyId}/users`);
       const snapshot = await usersDatabaseRef.get();
 
       // Mapped users.
       let users_ = Object.values(snapshot.val());
       const usersFiltered = users_.filter((user) => user.state.includes("online"));
       users = mapUsersWithCards(usersFiltered);
+
+      let newLobby = {
+        startAt: gameStarted,
+        updateAt: new Date(),
+        playersCount: usersFiltered.length,
+        game: { ...props.lobby.game, state: INITIALIZING },
+      };
+
+      // Add users to lobby.
+      const promiseLobbyTrivia = firestore.doc(`lobbies/${lobbyId}`).update(newLobby);
+      const promiseLobbyGames = firestoreBomboGames.doc(`lobbies/${lobbyId}`).update(newLobby);
 
       // Save users in sub collection.
       const promisesUsers = Object.values(users).map(
@@ -88,6 +107,7 @@ export const LobbyHeader = (props) => {
       await Promise.all([promiseLobbyTrivia, promiseLobbyGames, promiseMembers]);
     } catch (error) {
       if (!gameStarted) setIsLoadingStart(false);
+
       props.showNotification("ERROR", "Lobby not exist");
       sendError(error, "updateLobby");
     }
@@ -140,15 +160,8 @@ export const LobbyHeader = (props) => {
               />
             </ButtonLobby>
           ) : (
-            <div
-              onClick={() => {
-                navigator.clipboard.writeText(props.lobby.pin);
-                props.showNotification("OK", "PIN copiado!", "success");
-              }}
-            >
-              <Tooltip placement="bottom" title="Click aquí para copiar el PIN">
-                {props.lobby?.pin}
-              </Tooltip>
+            <div>
+              {props.lobby?.pin}
             </div>
           )}
         </div>
@@ -249,7 +262,7 @@ export const LobbyHeader = (props) => {
             loading={isLoadingLock}
             onClick={async () => {
               setIsLoadingLock(true);
-              await updateLobby(!props.lobby.isLocked);
+              await setLobbyLock(!props.lobby.isLocked);
               setIsLoadingLock(false);
             }}
           >
@@ -276,7 +289,7 @@ export const LobbyHeader = (props) => {
             disabled={!props.lobby.countPlayers || isLoadingStart}
             onClick={async () => {
               setIsLoadingStart(true);
-              await updateLobby(false, new Date());
+              await updateLobby(new Date());
             }}
           >
             Empezar
@@ -433,4 +446,3 @@ const LobbyHeaderStyled = styled.div`
     grid-row: 2 / 3;
   }
 `;
-

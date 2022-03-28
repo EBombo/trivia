@@ -11,11 +11,9 @@ const LobbyPage = (props) => {
   return (
     <>
       <SEOMeta {...props} />
-      
       {lobbyId === "new" ? <CreateLobby {...props} /> : <Lobby {...props} />}
     </>
   );
 };
 
 export default LobbyPage;
-

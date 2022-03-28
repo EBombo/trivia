@@ -1,10 +1,10 @@
 import React from "reactn";
 import styled from "styled-components";
-import {mediaQuery} from "../../constants";
+import { mediaQuery } from "../../constants";
 
 export const Image = (props) => (
-  <ImageCss {...props}>
-    <img src={props.src} alt={props.src} />
+  <ImageCss {...props} ref={props.innerRef}>
+    {!props.noImgTag && <img src={props.src} alt={props.alt || props.src} />}
   </ImageCss>
 );
 

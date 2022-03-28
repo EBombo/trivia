@@ -1,7 +1,7 @@
-import React, {forwardRef} from "reactn";
+import React, { forwardRef } from "reactn";
 import styled from "styled-components";
 import Button from "antd/lib/button";
-import {darkTheme} from "../../theme";
+import { darkTheme } from "../../theme";
 
 export const ButtonAnt = forwardRef((props, ref) => (
   <ButtonAntCss
@@ -20,7 +20,7 @@ const ButtonAntCss = styled(Button)`
   cursor: pointer;
   width: ${(props) => props.width};
   height: ${(props) => (props.height ? props.height : "auto")};
-  display: flex;
+  display: ${(props) => props.display ||  "flex"};
   align-items: center;
   justify-content: space-evenly;
 

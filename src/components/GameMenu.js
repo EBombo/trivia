@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "reactn";
 import styled from "styled-components";
-import {Collapse} from "antd";
-import {ButtonAnt, Select, Switch, Input} from "./form";
-import {languages} from "./common/DataList";
+import { Collapse } from "antd";
+import { ButtonAnt, Select, Switch, Input } from "./form";
+import { languages } from "./common/DataList";
 import defaultTo from "lodash/defaultTo";
 import { config, firestore } from "../firebase";
 import { Image } from "./common/Image";
@@ -10,7 +10,6 @@ import { Image } from "./common/Image";
 const { Panel } = Collapse;
 
 export const GameMenu = (props) => {
-
   const [awards, setAwards] = useState([
     {
       name: "",
@@ -60,8 +59,9 @@ export const GameMenu = (props) => {
         <Collapse defaultActiveKey={["1"]} accordion className="border-none">
           <Panel header="Opciones del juego" key="1">
             <div className="options">
-
-              <div class="mb-3 py-3 text-center font-bold bg-whiteLight rounded-[2px] shadow-[0px_4px_0px_rgb(196,196,196)]">Recomendado</div>
+              <div className="mb-3 py-3 text-center font-bold bg-whiteLight rounded-[2px] shadow-[0px_4px_0px_rgb(196,196,196)]">
+                Recomendado
+              </div>
 
               <div className="grid grid-cols-[6fr_2fr] items-center mx-auto my-[2px] px-[10px] py-[5px] text-[13px] leading-[16px] bg-primaryDarken rounded-[2px] text-whiteLight">
                 <div>
@@ -73,7 +73,9 @@ export const GameMenu = (props) => {
                 </div>
               </div>
 
-              <div class="mt-3 mb-3 py-3 text-center font-bold bg-whiteLight rounded-[2px] shadow-[0px_4px_0px_rgb(196,196,196)]">General</div>
+              <div className="mt-3 mb-3 py-3 text-center font-bold bg-whiteLight rounded-[2px] shadow-[0px_4px_0px_rgb(196,196,196)]">
+                General
+              </div>
 
               <div className="grid grid-cols-[5fr_3fr] items-center mx-auto my-[2px] px-[10px] py-[5px] text-[13px] leading-[16px] bg-primaryDarken rounded-[2px] text-whiteLight">
                 <div>
@@ -117,7 +119,10 @@ export const GameMenu = (props) => {
               </div>
 
               {showAwards && (
-                <div id={awards.length} className="grid items-center mx-auto my-[2px] px-[10px] py-[5px] text-[13px] leading-[16px] bg-primaryDarken rounded-[2px] text-whiteLight">
+                <div
+                  id={awards.length}
+                  className="grid items-center mx-auto my-[2px] px-[10px] py-[5px] text-[13px] leading-[16px] bg-primaryDarken rounded-[2px] text-whiteLight"
+                >
                   {defaultTo(awards, []).map((award, index) => (
                     <div className="relative my-1" key={`award-${index}`}>
                       <Input
@@ -142,7 +147,7 @@ export const GameMenu = (props) => {
                         }}
                       >
                         <Image
-                          src={`${config.storageUrl}/resources/close_white.svg`}
+                          src={`${config.storageUrl}/resources/close-white.svg`}
                           height="15px"
                           width="15px"
                           cursor="pointer"
@@ -170,7 +175,6 @@ export const GameMenu = (props) => {
                   </ButtonAnt>
                 </div>
               )}
-
             </div>
           </Panel>
         </Collapse>

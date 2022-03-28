@@ -4,12 +4,15 @@ import { useRouter } from "next/router";
 import { spinLoaderMin } from "../../../components/common/loader";
 import { LobbyUser } from "./LobbyUser";
 import { LobbyLoading } from "./LobbyLoading";
+import { LobbyClosed } from "./closed/LobbyClosed";
 import { LobbyInPlay } from "./play/LobbyInPlay";
 import { useUser } from "../../../hooks";
 import { snapshotToArray } from "../../../utils";
+import { INITIALIZING } from "../../../components/common/DataList";
 
 export const Lobby = (props) => {
   const router = useRouter();
+
   const { lobbyId } = router.query;
 
   const [authUserLs, setAuthUserLs] = useUser();
@@ -17,7 +20,6 @@ export const Lobby = (props) => {
   const [authUser, setAuthUser] = useGlobal("user");
 
   const [lobby, setLobby] = useState(null);
-  const [users, setUsers] = useState([]);
   const [isLoading, setLoading] = useState(true);
   const [game, setGame] = useState(null);
 
@@ -33,9 +35,9 @@ export const Lobby = (props) => {
 
     const userMapped = {
       id: userId,
-      email: authUserLs.email,
-      avatar: authUserLs.avatar,
-      nickname: authUserLs.nickname,
+      email: authUserLs?.email,
+      avatar: authUserLs?.avatar,
+      nickname: authUserLs?.nickname,
     };
 
     await setAuthUser(userMapped);
@@ -48,6 +50,12 @@ export const Lobby = (props) => {
   useEffect(() => {
     if (!lobbyId) return;
 
+    const fetchQuestions = async () => {
+      const gameQuestionsSnapshot = await firestore.collection(`lobbies/${lobbyId}/gameQuestions`).get();
+
+      return snapshotToArray(gameQuestionsSnapshot);
+    };
+
     const fetchLobby = () =>
       firestore.doc(`lobbies/${lobbyId}`).onSnapshot(async (lobbyRef) => {
         const currentLobby = lobbyRef.data();
@@ -59,10 +67,14 @@ export const Lobby = (props) => {
         }
 
         // If the game is closed logout user.
-        if (currentLobby?.isClosed) return logout();
+        if (currentLobby?.isClosed && !authUser.isAdmin) return logout();
 
         setAuthUserLs({ ...authUser, lobby: currentLobby });
         await setAuthUser({ ...authUser, lobby: currentLobby });
+
+        if (!lobby?.gameQuestions) {
+          currentLobby.gameQuestions = await fetchQuestions();
+        }
 
         setLobby(currentLobby);
       });
@@ -71,29 +83,12 @@ export const Lobby = (props) => {
     return () => unSubLobby && unSubLobby();
   }, [lobbyId]);
 
-  // Fetch users.
-  useEffect(() => {
-    if (!lobby || !game || !game?.isLive) return;
-
-    const fetchUsers = () =>
-      firestore
-        .collection("lobbies")
-        .doc(lobbyId)
-        .collection("users")
-        .onSnapshot((usersRef) => {
-          const users_ = snapshotToArray(usersRef);
-          setUsers(users_);
-        });
-
-    const unSubUsers = fetchUsers();
-    return () => unSubUsers && unSubUsers();
-  }, [lobby, game]);
 
   // Fetch Game
   useEffect(() => {
     if (!lobby) return;
 
-    const gameId = (lobby.gameId || lobby.game?.id);
+    const gameId = lobby.gameId || lobby.game?.id;
     const fetchGame = () =>
       firestore.doc(`games/${gameId}`).onSnapshot((gameRef) => {
         const _game = gameRef.data();
@@ -109,20 +104,23 @@ export const Lobby = (props) => {
 
   const additionalProps = {
     lobby,
-    users,
     audioRef: audioRef,
     logout: logout,
     game,
     ...props,
   };
 
+  const lobbyIsClosed = lobby?.isClosed && authUser?.isAdmin;
+
+  /** Game report. **/
+  if (lobbyIsClosed) return <LobbyClosed {...additionalProps} onLogout={() => logout()} />;
+
   /** The game is playing. **/
   if (lobby?.isPlaying) return <LobbyInPlay {...additionalProps} />;
 
   /** Loading page. **/
-  if (lobby?.startAt) return <LobbyLoading {...additionalProps} />;
+  if (lobby?.game.state === INITIALIZING) return <LobbyLoading {...additionalProps} />;
 
   /** Before starting the game. **/
   return <LobbyUser {...additionalProps} />;
 };
-
