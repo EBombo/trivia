@@ -43,6 +43,9 @@ export const computeRanking = (users: User[], answers: Answer[], invalidQuestion
 
   // calculates score from valid answers
   usersPointsMap = answers.reduce((acc, answer) => {
+    // if answer has a non-existent user
+    if (!acc[answer.userId]) acc[answer.userId] = { id: answer?.userId, nickname: answer?.user?.nickname, score: 0 };
+
     if (!invalidQuestions.includes(answer.questionId)) acc[answer.userId].score += answer.points;
 
     return acc;
@@ -52,8 +55,8 @@ export const computeRanking = (users: User[], answers: Answer[], invalidQuestion
   const rankingUsers_: RankUser[] = orderBy(
     Object.entries(usersPointsMap).map((userPointMap) => ({
       userId: userPointMap[0],
-      nickname: userPointMap[1].nickname,
-      score: userPointMap[1].score,
+      nickname: userPointMap[1]?.nickname,
+      score: userPointMap[1]?.score,
       rank: 0,
     })),
     ["score"],
