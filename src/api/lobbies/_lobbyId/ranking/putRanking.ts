@@ -99,7 +99,7 @@ const putRanking = async (req: NextApiRequest, res: NextApiResponse) => {
       playersCount: usersSize,
     });
 
-    await Promise.all([...updateRankingListPromise, ...updateUserScoringListPromise, updateLobbyPromise]);
+    await Promise.allSettled([...updateRankingListPromise, ...updateUserScoringListPromise, updateLobbyPromise]);
 
     return res.send({ success: true });
   } catch (error) {
