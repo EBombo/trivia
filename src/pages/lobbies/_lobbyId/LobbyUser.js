@@ -14,6 +14,7 @@ import { Tablet } from "../../../constants";
 import { Image } from "../../../components/common/Image";
 import debounce from "lodash/debounce";
 import moment from "moment";
+import { UserLayout } from "./userLayout";
 
 const userListSizeRatio = 50;
 const currentTime = moment().format("x");
@@ -164,9 +165,7 @@ export const LobbyUser = (props) => {
   return (
     <LobbyUserCss>
       <div className="bg-secondary bg-secondary w-full h-screen bg-center bg-contain bg-lobby-pattern md:w-auto">
-        <div className="text-center bg-white text-black py-2 text-[18px] font-bold shadow-[0_4px_4px_rgba(0,0,0,0.25)] md: text-[2rem]">
-          {props.lobby?.game?.name}
-        </div>
+        <UserLayout {...props} />
         <LobbyHeader {...props} />
 
         <div className="px-[15px] py-[10px] md: px-[5px]">
