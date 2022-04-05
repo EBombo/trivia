@@ -363,7 +363,7 @@ export const Winner = (props) => {
           } text-3xl cursor-pointer grid h-[fit-content] rounded-lg text-black bg-white py-3 pl-14 pr-3 z-[1]`}
           onClick={() => setAward(award ? null : props.winner.award?.name)}
         >
-          {props.isList && (<span className="whitespace-nowrap mr-4"> {props.winner.rank}</span>)} 
+          {props.isList && (<span className="whitespace-nowrap mr-4"> {props.winner.rank}.</span>)} 
           <span>{props.winner.nickname}</span>
           <span className="whitespace-nowrap"> {props.winner.score?.toFixed(1)} pts</span>
           {props.winner.award?.name && (award ? <CaretUpOutlined /> : <CaretDownOutlined />)}
