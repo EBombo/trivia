@@ -73,13 +73,13 @@ export const InPlayHeader = (props) => {
 
     try {
       await putRankingUsers(lobbyId);
-
-      await firestore.doc(`lobbies/${lobbyId}`).update({
-        "game.state": RANKING,
-      });
     } catch (e) {
       sendError(e, "goToRanking");
     }
+
+    await firestore.doc(`lobbies/${lobbyId}`).update({
+      "game.state": RANKING,
+    });
 
     props.setIsGameLoading(false);
   };
