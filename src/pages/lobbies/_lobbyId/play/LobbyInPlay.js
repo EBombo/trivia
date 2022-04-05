@@ -128,7 +128,7 @@ export const LobbyInPlay = (props) => {
   if (!question)
     return (
       <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto text-center flex flex-col justify-center">
-        <UserLayout {...props} />
+        <UserLayout musicPickerSetting volumeSetting lockSetting {...props} />
         <div className="my-4">
           <InPlaySpinLoader />
         </div>
@@ -142,7 +142,7 @@ export const LobbyInPlay = (props) => {
   if (!authUser.isAdmin && props.lobby.game?.state === ANSWERING_QUESTION && userHasAnswered)
     return (
       <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto text-center grid grid-rows-[50px-auto]">
-        <UserLayout {...props} />
+        <UserLayout musicPickerSetting volumeSetting lockSetting {...props} />
         <div className="">
           <div className="my-4">
             <InPlaySpinLoader />
@@ -155,7 +155,7 @@ export const LobbyInPlay = (props) => {
   if (props.lobby.game?.state === RANKING)
     return (
       <>
-        <UserLayout {...props} />
+        <UserLayout musicPickerSetting volumeSetting lockSetting {...props} />
         <Scoreboard
           onGoToNextQuestion={goToNextQuestion}
           questions={questions}
@@ -169,7 +169,7 @@ export const LobbyInPlay = (props) => {
   if (props.lobby.game?.state === QUESTION_TIMEOUT && !authUser.isAdmin)
     return (
       <div className="font-['Lato'] font-bold bg-secondary bg-center bg-contain bg-lobby-pattern w-screen overflow-auto text-center">
-        <UserLayout {...props} />
+        <UserLayout musicPickerSetting volumeSetting lockSetting {...props} />
         <div className="min-h-screen flex flex-col justify-center bg-secondaryDark bg-opacity-50">
           <ResultCard question={question} invalidQuestions={props.lobby.game.invalidQuestions} {...props} />
         </div>
@@ -179,7 +179,7 @@ export const LobbyInPlay = (props) => {
   // ANSWERING_QUESTION state
   return (
     <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto grid grid-rows-[50px_min-content_auto_60px] 2xl:grid-rows-[50px_auto_auto_75px]">
-      <UserLayout {...props} />
+      <UserLayout musicPickerSetting volumeSetting lockSetting  {...props} />
 
       <InPlayHeader
         key={question}

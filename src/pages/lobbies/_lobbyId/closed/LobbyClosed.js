@@ -123,9 +123,9 @@ export const LobbyClosed = (props) => {
     setShowWinnersAnimation(false);
   };
 
-  const winnersSize = useMemo(() => {
-    return (props.lobby?.winners?.slice(0, 3)?.length) ?? 0;
-  }, [props.lobby]);
+  // gets size of first three players in ranking. if there are lower than that,
+  // then takes all of them
+  const winnersSize = useMemo(() => rankingUsers.slice(0, 3)?.length ?? 0, [rankingUsers]);
 
   const itemAttendees = useMemo(
     () => (
@@ -297,7 +297,7 @@ export const LobbyClosed = (props) => {
 
       {!isVisibleTitle && (
         <div className="winners">
-          {props.lobby?.winners?.slice(0, 3)?.map((winner, index) => (
+          {rankingUsers.slice(0, 3)?.map((winner, index) => (
             <Winner winner={winner} index={index} key={index} enableAnimation animationDelay={(winnersSize - 1) - index} />
           ))}
         </div>
