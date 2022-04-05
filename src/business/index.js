@@ -22,7 +22,7 @@ export const getCurrentQuestion = (questions, currentQuestionNumber) =>
 
 // kahoot scoring [1-(r/q/2)]p
 // r = time left, q = total time, p = points
-export const computePointsEarned = (timeLeft, totalTime, point) => (1 - (totalTime - timeLeft) / totalTime / 2) * point;
+export const computePointsEarned = (timeLeft, totalTime, point) => (1 - (totalTime - (timeLeft ?? totalTime)) / totalTime / 2) * point;
 
 export const checkIsCorrect = (question, answer) => {
   if (question.type === ALTERNATIVES_QUESTION_TYPE) {
