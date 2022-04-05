@@ -76,20 +76,20 @@ export const Scoreboard = (props) => {
 
   const RankingItem = ({ user }) => (
     <div
-      key={`rankint-item-${user.rank}`}
+      key={`rankint-item-${user?.rank}`}
       className="grid grid-cols-[min-content_auto_min-content] bg-secondaryDark text-whiteLight py-4 w-full max-w-[1000px] md:mx-auto text-lg md:text-2xl my-4"
     >
       <div className={`px-5 self-center ${authUser?.id === user.userId ? "text-success" : "text-whiteLight"}`}>
-        {user.rank}
+        {user?.rank}
       </div>
       <div
         className={`px-4 self-center justify-self-start ${
           authUser?.id === user.userId ? "text-success" : "text-whiteLight"
         }`}
       >
-        {user.nickname}
+        {user?.nickname}
       </div>
-      <div className="px-4 whitespace-nowrap">{user.score.toFixed(1)} pts</div>
+      <div className="px-4 whitespace-nowrap">{user?.score?.toFixed(1)} pts</div>
     </div>
   );
 
