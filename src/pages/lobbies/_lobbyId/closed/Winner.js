@@ -359,11 +359,14 @@ export const Winner = (props) => {
       >
         <div
           className={`my-auto ${
-            props.isList ? "ml-0" : "ml-[-50px]"
-          } text-3xl cursor-pointer flex h-[fit-content] rounded-lg text-black bg-white py-3 pl-14 pr-3 z-[1]`}
+            props.isList ? "ml-0 grid-cols-[min-content_auto_min-content_min-content]" : "ml-[-50px] grid-cols-[auto_min-content_min-content]"
+          } text-3xl cursor-pointer grid h-[fit-content] rounded-lg text-black bg-white py-3 pl-14 pr-3 z-[1]`}
           onClick={() => setAward(award ? null : props.winner.award?.name)}
         >
-          {props.winner.nickname} {props.winner.award?.name && (award ? <CaretUpOutlined /> : <CaretDownOutlined />)}
+          {props.isList && (<span className="whitespace-nowrap mr-4"> {props.winner.rank}</span>)} 
+          <span>{props.winner.nickname}</span>
+          <span className="whitespace-nowrap"> {props.winner.score?.toFixed(1)} pts</span>
+          {props.winner.award?.name && (award ? <CaretUpOutlined /> : <CaretDownOutlined />)}
         </div>
 
         {award && (

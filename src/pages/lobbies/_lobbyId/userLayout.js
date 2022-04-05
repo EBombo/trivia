@@ -33,113 +33,121 @@ export const UserLayout = (props) => {
       <div className="left-content">
         {authUser?.isAdmin && (
           <div className="left-container">
-            <Popover
-              trigger="click"
-              content={
-                <AudioStyled>
-                  {audios.map((audio_) => (
-                    <div
-                      key={audio_.id}
-                      className="item-audio"
-                      onClick={() => {
-                        if (props.audioRef.current) props.audioRef.current.pause();
+            {props.musicPickerSetting && (
+              <Popover
+                trigger="click"
+                content={
+                  <AudioStyled>
+                    {audios.map((audio_) => (
+                      <div
+                        key={audio_.id}
+                        className="item-audio"
+                        onClick={() => {
+                          if (props.audioRef.current) props.audioRef.current.pause();
 
-                        const currentAudio = new Audio(audio_.audioUrl);
+                          const currentAudio = new Audio(audio_.audioUrl);
 
-                        props.audioRef.current = currentAudio;
-                        props.audioRef.current.volume = volume / 100;
-                        props.audioRef.current.play();
-                        setIsPlay(true);
+                          props.audioRef.current = currentAudio;
+                          props.audioRef.current.volume = volume / 100;
+                          props.audioRef.current.play();
+                          setIsPlay(true);
+                        }}
+                      >
+                        {audio_.title}
+                      </div>
+                    ))}
+                  </AudioStyled>
+                }
+              >
+                <button className="nav-button" key={props.audioRef.current?.paused}>
+                  {isPlay ? (
+                    <Image
+                      cursor="pointer"
+                      src={`${config.storageUrl}/resources/sound.svg`}
+                      height="25px"
+                      width="25px"
+                      size="contain"
+                      margin="auto"
+                    />
+                  ) : (
+                    "►"
+                  )}
+                </button>
+              </Popover>
+            )}
+
+            {props.volumeSetting && (
+              <Popover
+                content={
+                  <SliderContent>
+                    <Slider
+                      value={volume}
+                      defaultValue={30}
+                      onChange={(value) => {
+                        if (!props.audioRef.current) return;
+
+                        props.audioRef.current.volume = value / 100;
+                        setVolume(value);
                       }}
-                    >
-                      {audio_.title}
-                    </div>
-                  ))}
-                </AudioStyled>
-              }
-            >
-              <button className="nav-button" key={props.audioRef.current?.paused}>
-                {isPlay ? (
+                    />
+                  </SliderContent>
+                }
+              >
+                <button
+                  className="nav-button"
+                  disabled={!isPlay}
+                  onClick={() => {
+                    if (!props.audioRef.current) return;
+
+                    if (props.audioRef.current.volume === 0) {
+                      props.audioRef.current.volume = 30 / 100;
+                      setVolume(30);
+
+                      return setIsMuted(false);
+                    }
+                    setVolume(0);
+                    props.audioRef.current.volume = 0;
+                    setIsMuted(true);
+                  }}
+                  key={isMuted}
+                >
                   <Image
                     cursor="pointer"
-                    src={`${config.storageUrl}/resources/sound.svg`}
+                    src={
+                      isMuted ? `${config.storageUrl}/resources/mute.svg` : `${config.storageUrl}/resources/volume.svg`
+                    }
                     height="25px"
                     width="25px"
                     size="contain"
                     margin="auto"
                   />
+                </button>
+              </Popover>
+            )}
+
+            {props.lockSetting && (
+              <button
+                disabled={isLoadingLock}
+                onClick={async () => {
+                  setIsLoadingLock(true);
+                  await updateLobby();
+                  setIsLoadingLock(false);
+                }}
+              >
+                {isLoadingLock ? (
+                  <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
                 ) : (
-                  "►"
+                  <Image
+                    src={`${config.storageUrl}/resources/${props.lobby.isLocked ? "lock.svg" : "un-lock.svg"}`}
+                    cursor="pointer"
+                    height="25px"
+                    width="25px"
+                    size="contain"
+                    margin="auto"
+                  />
                 )}
               </button>
-            </Popover>
-            <Popover
-              content={
-                <SliderContent>
-                  <Slider
-                    value={volume}
-                    defaultValue={30}
-                    onChange={(value) => {
-                      if (!props.audioRef.current) return;
-
-                      props.audioRef.current.volume = value / 100;
-                      setVolume(value);
-                    }}
-                  />
-                </SliderContent>
-              }
-            >
-              <button
-                className="nav-button"
-                disabled={!isPlay}
-                onClick={() => {
-                  if (!props.audioRef.current) return;
-
-                  if (props.audioRef.current.volume === 0) {
-                    props.audioRef.current.volume = 30 / 100;
-                    setVolume(30);
-
-                    return setIsMuted(false);
-                  }
-                  setVolume(0);
-                  props.audioRef.current.volume = 0;
-                  setIsMuted(true);
-                }}
-                key={isMuted}
-              >
-                <Image
-                  cursor="pointer"
-                  src={
-                    isMuted ? `${config.storageUrl}/resources/mute.svg` : `${config.storageUrl}/resources/volume.svg`
-                  }
-                  height="25px"
-                  width="25px"
-                  size="contain"
-                  margin="auto"
-                />
-              </button>
-            </Popover>
-            <button
-              disabled={isLoadingLock}
-              onClick={async () => {
-                setIsLoadingLock(true);
-                await updateLobby();
-                setIsLoadingLock(false);
-              }}
-            >
-              {isLoadingLock ? (
-                <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
-              ) : (
-                <Image
-                  src={`${config.storageUrl}/resources/${props.lobby.isLocked ? "lock.svg" : "un-lock.svg"}`}
-                  cursor="pointer"
-                  height="25px"
-                  width="25px"
-                  size="contain"
-                  margin="auto"
-                />
-              )}
-            </button>
+            )}
           </div>
         )}
         <div className="title no-wrap">
