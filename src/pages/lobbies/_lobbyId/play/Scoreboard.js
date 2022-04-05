@@ -76,7 +76,6 @@ export const Scoreboard = (props) => {
 
   const RankingItem = ({ user }) => (
     <div
-      key={`rankint-item-${user?.rank}`}
       className="grid grid-cols-[min-content_auto_min-content] bg-secondaryDark text-whiteLight py-4 w-full max-w-[1000px] md:mx-auto text-lg md:text-2xl my-4"
     >
       <div className={`px-5 self-center ${authUser?.id === user.userId ? "text-success" : "text-whiteLight"}`}>
@@ -109,7 +108,7 @@ export const Scoreboard = (props) => {
           </div>
         )}
 
-        <div className="mb-6">{rankingUsers.map((user) => <RankingItem user={user}/>)}</div>
+        <div className="mb-6">{rankingUsers.map((user, i) => <RankingItem key={`ranking-item-${i}`} user={user}/>)}</div>
 
         {!authUser.isAdmin && authUser.rank > DEFAULT_RANKING_LENGTH && (
           <>
