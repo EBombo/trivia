@@ -1,5 +1,5 @@
-import { computePointsEarned  } from "../../src/business"
-import { DEFAULT_POINTS  } from "../../src/components/common/DataList"
+import { checkIsCorrect, computePointsEarned  } from "../../src/business"
+import { DEFAULT_POINTS, OPEN_QUESTION_TYPE  } from "../../src/components/common/DataList"
 
 describe("Computation of points earned", () => {
 
@@ -47,5 +47,22 @@ describe("Computation of points earned", () => {
     }
   });
 
+});
+
+
+describe("checkIsCorrect method", () => {
+  it("when open question it should match all correct answers", () => {
+    const question = {
+      type: OPEN_QUESTION_TYPE,
+      answer: [
+        "reino cuántico ",
+        "reino cuantico ",
+        "quantum realm",
+      ],
+    };
+    const answer = "";
+
+    checkIsCorrect(question, answer);
+  });
 });
 

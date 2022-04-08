@@ -16,7 +16,7 @@ export const OpenAnswerCard = (props) => {
   });
 
   const submitAnswer = async (data) => {
-    props.onSubmit?.(data.answer);
+    props.onSubmit?.(data?.answer?.trim());
   };
 
   return (
