@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from "reactn";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "reactn";
 import find from "lodash/find";
 import { config, firestore } from "../../../../firebase";
 import { Image } from "../../../../components/common/Image";
@@ -16,10 +16,13 @@ import { QuestionStep } from "./QuestionStep";
 const TOTAL_ANIMATION_DURATION = 6000;
 
 export const LobbyQuestionIntroduction = (props) => {
-  const currentQuestionNumber = props.lobby?.game?.currentQuestionNumber ?? 1;
+  const imgSizeRef = useRef(null);
+
   const [question, setQuestion] = useState(props.question);
 
-  const imgSizeRef = useRef(null);
+  const currentQuestionNumber = useMemo(() => {
+    return props.lobby?.game?.currentQuestionNumber ?? 1;
+  }, [props.lobby?.game?.currentQuestionNumber]);
 
   const imgRef = useCallback((node) => {
     if (!node) return;
@@ -48,10 +51,12 @@ export const LobbyQuestionIntroduction = (props) => {
     };
 
     updateLobby();
-  }, []);
+  }, [props.lobby.id]);
 
   useEffect(() => {
-    const question_ = find(props.lobby?.game?.questions ?? [], (q) => q.questionNumber === currentQuestionNumber);
+    const questions = props.lobby?.game?.questions ?? [];
+    const question_ = find(questions, (q) => q.questionNumber === currentQuestionNumber);
+
     if (!question_) return;
 
     setQuestion(question_);
@@ -77,7 +82,7 @@ export const LobbyQuestionIntroduction = (props) => {
     </div>
   );
 
-  // add animation for question
+  // Add animation for question.
   return (
     <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto flex justify-center items-center">
       <LobbyQuestionIntroductionContent {...props}>
