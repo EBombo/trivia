@@ -298,7 +298,13 @@ export const LobbyClosed = (props) => {
       {!isVisibleTitle && (
         <div className="winners">
           {rankingUsers.slice(0, 3)?.map((winner, index) => (
-            <Winner winner={winner} index={index} key={index} enableAnimation animationDelay={(winnersSize - 1) - index} />
+            <Winner
+              winner={winner}
+              index={index}
+              key={index}
+              enableAnimation
+              animationDelay={winnersSize - 1 - index}
+            />
           ))}
         </div>
       )}

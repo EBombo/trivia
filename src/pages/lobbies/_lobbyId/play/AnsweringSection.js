@@ -4,10 +4,10 @@ import { checkIsCorrect, computePointsEarned } from "../../../../business";
 import { firebase, firestore } from "../../../../firebase";
 import {
   ALTERNATIVES_QUESTION_TYPE,
+  DEFAULT_POINTS,
   OPEN_QUESTION_TYPE,
   QUESTION_TIMEOUT,
   TRUE_FALSE_QUESTION_TYPE,
-  DEFAULT_POINTS,
 } from "../../../../components/common/DataList";
 import { AlternativeAnswerCard } from "./AlternativeAnswerCard";
 import { TrueFalseAnswerCard } from "./TrueFalseAnswerCard";
@@ -54,14 +54,11 @@ export const AnsweringSection = (props) => {
 
     const newStreak = isCorrectAnswer ? firebase.firestore.FieldValue.increment(1) : 0;
 
-    const updateScorePromise = firestore
-      .collection(`lobbies/${lobbyId}/users`)
-      .doc(authUser.id)
-      .update({
-        lastPointsEarned: points,
-        streak: newStreak,
-        isLastAnswerCorrect: isCorrectAnswer,
-      });
+    const updateScorePromise = firestore.collection(`lobbies/${lobbyId}/users`).doc(authUser.id).update({
+      lastPointsEarned: points,
+      streak: newStreak,
+      isLastAnswerCorrect: isCorrectAnswer,
+    });
 
     const updateAnswersCount = firestore.doc(`lobbies/${lobbyId}`).update({
       answersCount: firebase.firestore.FieldValue.increment(1),

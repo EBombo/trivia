@@ -1,10 +1,10 @@
-import React, { useEffect, useGlobal, useState, useMemo } from "reactn";
+import React, { useEffect, useGlobal, useMemo, useState } from "reactn";
 import { UserLayout } from "../userLayout";
 import { useRouter } from "next/router";
 import { config, firestore } from "../../../../firebase";
 import isEmpty from "lodash/isEmpty";
 import { Image } from "../../../../components/common/Image";
-import { ButtonAnt } from "../../../../components/form/Button";
+import { ButtonAnt } from "../../../../components/form";
 import { InPlayHeader } from "./InPlayHeader";
 import { AnsweringSection } from "./AnsweringSection";
 import { InPlaySpinLoader } from "./InPlaySpinLoader";
@@ -179,7 +179,7 @@ export const LobbyInPlay = (props) => {
   // ANSWERING_QUESTION state
   return (
     <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto grid grid-rows-[50px_min-content_auto_60px] 2xl:grid-rows-[50px_auto_auto_75px]">
-      <UserLayout musicPickerSetting volumeSetting lockSetting  {...props} />
+      <UserLayout musicPickerSetting volumeSetting lockSetting {...props} />
 
       <InPlayHeader
         key={question}

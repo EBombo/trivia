@@ -83,7 +83,6 @@ export const Lobby = (props) => {
     return () => unSubLobby && unSubLobby();
   }, [lobbyId]);
 
-
   // Fetch Game
   useEffect(() => {
     if (!lobby) return;

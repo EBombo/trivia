@@ -1,9 +1,9 @@
-import React, { useGlobal, useEffect, useMemo } from "reactn";
+import React, { useEffect, useGlobal, useMemo } from "reactn";
 import { useRouter } from "next/router";
 import { Timer } from "./Timer";
 import { QuestionStep } from "./QuestionStep";
 import { ButtonAnt } from "../../../../components/form";
-import { firestore, config } from "../../../../firebase";
+import { config, firestore } from "../../../../firebase";
 import { ANSWERING_QUESTION, QUESTION_TIMEOUT, RANKING } from "../../../../components/common/DataList";
 import { useFetch } from "../../../../hooks/useFetch";
 import { useSendError } from "../../../../hooks";
@@ -36,9 +36,7 @@ export const InPlayHeader = (props) => {
     if (!authUser.isAdmin) return;
 
     const finishAnswerTime = async () => {
-      if (props.lobby.answersCount >= props.lobby.playersCount &&
-        props.lobby.game.state === ANSWERING_QUESTION) {
-
+      if (props.lobby.answersCount >= props.lobby.playersCount && props.lobby.game.state === ANSWERING_QUESTION) {
         await updateGameState({ state: QUESTION_TIMEOUT });
       }
     };
@@ -47,7 +45,6 @@ export const InPlayHeader = (props) => {
   }, [props.lobby.answersCount, props.lobby.playersCount]);
 
   const updateGameState = async (newGame) => {
-
     if (newGame.state === QUESTION_TIMEOUT) {
       props.setIsGameLoading(true);
       try {

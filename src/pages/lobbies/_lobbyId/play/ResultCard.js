@@ -1,4 +1,4 @@
-import React, { useGlobal, useEffect, useState, useMemo } from "reactn";
+import React, { useEffect, useGlobal, useMemo, useState } from "reactn";
 import { useRouter } from "next/router";
 import { config, firestore } from "../../../../firebase";
 import { InPlaySpinLoader } from "./InPlaySpinLoader";
@@ -39,11 +39,12 @@ export const ResultCard = (props) => {
     fetchUsers();
   }, []);
 
-  if (isCorrect === null) return (
-    <div className="relative my-4 mx-4 pt-8 pb-4 px-4 bg-whiteLight text-lg min-w-[300px] self-center rounded-lg">
-      <InPlaySpinLoader/>
-    </div>
-  );
+  if (isCorrect === null)
+    return (
+      <div className="relative my-4 mx-4 pt-8 pb-4 px-4 bg-whiteLight text-lg min-w-[300px] self-center rounded-lg">
+        <InPlaySpinLoader />
+      </div>
+    );
 
   return (
     <div className="relative my-4 mx-4 pt-8 pb-4 px-4 bg-whiteLight text-lg min-w-[300px] self-center rounded-lg">
