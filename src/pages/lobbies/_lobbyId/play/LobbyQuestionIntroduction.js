@@ -86,6 +86,7 @@ export const LobbyQuestionIntroduction = (props) => {
   return (
     <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto flex justify-center items-center">
       <LobbyQuestionIntroductionContent {...props}>
+
         {question.type === ALTERNATIVES_QUESTION_TYPE ? (
           <>
             <Image
