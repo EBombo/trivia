@@ -34,25 +34,26 @@ type User = {
 };
 
 export const computeRanking = (users: User[], answers: Answer[], invalidQuestions: string[] = []): RankUser[] => {
-  // initialize all users for ranking
+  // Initialize all users for ranking.
   let usersPointsMap = users.reduce((acc, user) => {
     acc[user.id] = { id: user.id, nickname: user.nickname, score: 0 };
 
     return acc;
   }, {} as { [key: string]: any });
 
-  // calculates score from valid answers
+  // Calculates score from valid answers.
   usersPointsMap = answers.reduce((acc, answer) => {
-    // if answer has a non-existent user
+    // If answer has a non-existent user.
     if (!acc[answer.userId]) acc[answer.userId] = { id: answer?.userId, nickname: answer?.user?.nickname, score: 0 };
 
+    // Accumulate score just for valid answer.
     if (!invalidQuestions.includes(answer.questionId)) acc[answer.userId].score += answer.points;
 
     return acc;
   }, usersPointsMap);
 
-  // sort
-  const rankingUsers_: RankUser[] = orderBy(
+  // sort and return.
+  return orderBy(
     Object.entries(usersPointsMap).map((userPointMap) => ({
       userId: userPointMap[0],
       nickname: userPointMap[1]?.nickname,
@@ -62,8 +63,6 @@ export const computeRanking = (users: User[], answers: Answer[], invalidQuestion
     ["score"],
     ["desc"]
   ).map((userRank, i) => ({ ...userRank, rank: i + 1 }));
-
-  return rankingUsers_;
 };
 
 const putRanking = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -79,17 +78,19 @@ const putRanking = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const usersRanking = computeRanking(users, answers, invalidQuestions);
 
+    // Create documents rankings.
+    const rankingRef = firestore.collection(`lobbies/${lobbyId}/ranking`);
     const updateRankingListPromise = usersRanking.map((rankingUser) =>
-      firestore.collection(`lobbies/${lobbyId}/ranking`).doc(rankingUser.userId).set(rankingUser, { merge: true })
+      rankingRef.doc(rankingUser.userId).set(rankingUser, { merge: true })
     );
 
+    // Update users with ranking and score.
+    const usersRef = firestore.collection(`lobbies/${lobbyId}/users`);
     const updateUserScoringListPromise = usersRanking.map((rankingUser) =>
-      firestore
-        .collection(`lobbies/${lobbyId}/users`)
-        .doc(rankingUser.userId)
-        .update({ rank: rankingUser.rank, score: rankingUser.score })
+      usersRef.doc(rankingUser.userId).update({ rank: rankingUser.rank, score: rankingUser.score })
     );
 
+    // Update lobby.
     const updateLobbyPromise = firestore.doc(`lobbies/${lobbyId}`).update({
       playersCount: usersSize,
     });
