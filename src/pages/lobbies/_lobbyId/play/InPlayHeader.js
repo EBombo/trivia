@@ -10,15 +10,20 @@ import { useSendError } from "../../../../hooks";
 
 const putRankingUsers = async (lobbyId) => {
   const { Fetch } = useFetch();
+  const { sendError } = useSendError();
 
-  const fetchProps = {
-    url: `${config.serverUrl}/lobbies/${lobbyId}/ranking`,
-    method: "PUT",
-  };
+  try {
+    const fetchProps = {
+      url: `${config.serverUrl}/lobbies/${lobbyId}/ranking`,
+      method: "PUT",
+    };
 
-  const { error } = await Fetch(fetchProps.url, fetchProps.method);
+    const { error } = await Fetch(fetchProps.url, fetchProps.method);
 
-  if (error) throw new Error(error);
+    if (error) throw new Error(error);
+  } catch (error) {
+    sendError(error, "putRankingUsers");
+  }
 };
 
 export const InPlayHeader = (props) => {
@@ -36,36 +41,23 @@ export const InPlayHeader = (props) => {
 
   useEffect(() => {
     if (!authUser?.isAdmin) return;
+    if (props.lobby.game.state !== ANSWERING_QUESTION) return;
+    if (props.lobby.answersCount < props.lobby.playersCount) return;
 
     const finishAnswerTime = async () => {
-      if (props.lobby.answersCount >= props.lobby.playersCount && props.lobby.game.state === ANSWERING_QUESTION) {
-        await updateGameState({ state: QUESTION_TIMEOUT });
-      }
+      props.setIsGameLoading(true);
+
+      await putRankingUsers(lobbyId);
+
+      await firestore.doc(`lobbies/${lobbyId}`).update({
+        "game.state": QUESTION_TIMEOUT,
+      });
+
+      props.setIsGameLoading(false);
     };
 
     finishAnswerTime();
   }, [props.lobby.answersCount, props.lobby.playersCount]);
-
-  const updateGameState = async (newGame) => {
-    if (newGame.state === QUESTION_TIMEOUT) {
-      props.setIsGameLoading(true);
-      try {
-        await putRankingUsers(lobbyId);
-      } catch (e) {
-        sendError(e, "updateGameState");
-      }
-    }
-
-    const updateGame = Object.entries(newGame).reduce((acc, entryGameMap) => {
-      acc[`game.${entryGameMap[0]}`] = entryGameMap[1];
-
-      return acc;
-    }, {});
-
-    await firestore.doc(`lobbies/${lobbyId}`).update(updateGame);
-
-    props.setIsGameLoading(false);
-  };
 
   const goToRanking = async () => {
     props.setIsGameLoading(true);
@@ -111,7 +103,7 @@ export const InPlayHeader = (props) => {
             </div>
           )}
 
-          <Timer onUpdateGame={updateGameState} {...props} />
+          <Timer lobbyId={lobbyId} {...props} putRankingUsers={putRankingUsers} />
         </div>
 
         <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:row-start-1 md:row-end-2 md:col-start-2 md:col-end-3 mx-4 text-center">
