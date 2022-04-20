@@ -33,12 +33,12 @@ export const Timer = (props) => {
   }, [secondsLeft]);
 
   useInterval(() => {
-    if (secondsLeft === null) return null;
+    if (secondsLeft === null) return;
 
     // Only admin has control over timer.
     if (!authUser.isAdmin) return;
 
-    if (props.lobby.game.state === QUESTION_TIMEOUT) return null;
+    if (props.lobby.game.state === QUESTION_TIMEOUT) return;
 
     if (secondsLeft > 0) return setSecondsLeft(secondsLeft - 1);
 

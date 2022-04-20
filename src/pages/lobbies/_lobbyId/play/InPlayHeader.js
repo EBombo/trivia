@@ -38,8 +38,9 @@ export const InPlayHeader = (props) => {
 
   useEffect(() => {
     if (!authUser?.isAdmin) return;
+    if (props.lobby.game.state === QUESTION_TIMEOUT) return;
     if (props.lobby.game.state !== ANSWERING_QUESTION) return;
-    if (props.lobby.answersCount < props.lobby.playersCount) return;
+    if ((props.lobby.answersCount ?? 0) < props.lobby.playersCount) return;
 
     const finishAnswerTime = async () => {
       props.setIsGameLoading(true);
@@ -54,7 +55,7 @@ export const InPlayHeader = (props) => {
     };
 
     finishAnswerTime();
-  }, [props.lobby.answersCount, props.lobby.playersCount]);
+  }, [props.lobby.answersCount, props.lobby.playersCount, props.lobby.game.state]);
 
   const goToRanking = async () => {
     props.setIsGameLoading(true);
@@ -100,7 +101,7 @@ export const InPlayHeader = (props) => {
             </div>
           )}
 
-          <Timer lobbyId={lobbyId} {...props} putRankingUsers={putRankingUsers} />
+          <Timer {...props} lobbyId={lobbyId} putRankingUsers={putRankingUsers} />
         </div>
 
         <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:row-start-1 md:row-end-2 md:col-start-2 md:col-end-3 mx-4 text-center">
