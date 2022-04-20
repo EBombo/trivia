@@ -24,7 +24,7 @@ export const AnsweringSection = (props) => {
 
   // creates user answer and update user score
   const onAnswering = async (answer) => {
-    if (authUser.isAdmin) return;
+    if (authUser?.isAdmin) return;
 
     const isCorrectAnswer = checkIsCorrect(question, answer);
 
@@ -41,7 +41,7 @@ export const AnsweringSection = (props) => {
         nickname: authUser.nickname,
       },
       answer,
-      secondtLeft: props.lobby.game.secondsLeft,
+      secondsLeft: props.lobby.game.secondsLeft,
       questionTime: question.time,
       questionId: question.id,
       questionNumber: question.questionNumber,
