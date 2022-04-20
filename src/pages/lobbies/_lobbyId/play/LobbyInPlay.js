@@ -56,7 +56,7 @@ export const LobbyInPlay = (props) => {
   }, [props.lobby.game.state]);
 
   useEffect(() => {
-    if (authUser.isAdmin) return;
+    if (authUser?.isAdmin) return;
 
     if (!currentQuestion) return;
 
@@ -74,7 +74,7 @@ export const LobbyInPlay = (props) => {
     };
 
     fetchUserHasAnswered();
-  }, [currentQuestion]);
+  }, [currentQuestion, lobbyId, authUser]);
 
   const invalidateQuestion = async () => {
     setIsGameLoading(true);
@@ -83,14 +83,14 @@ export const LobbyInPlay = (props) => {
       await firestore.doc(`lobbies/${lobbyId}`).update({
         "game.invalidQuestions": (props.lobby.game.invalidQuestions ?? []).concat([currentQuestion.id]),
       });
-    } catch (e) {
-      sendError(e, "invalidateQuestion");
+    } catch (error) {
+      sendError(error, "invalidateQuestion");
     }
 
     setIsGameLoading(false);
   };
 
-  // only admin calls this function
+  // Only admin calls this function.
   const goToNextQuestion = async () => {
     setIsGameLoading(true);
 
@@ -107,8 +107,8 @@ export const LobbyInPlay = (props) => {
           secondsLeft: parseInt(nextQuestion.time),
         },
       });
-    } catch (e) {
-      sendError(e, "goToNextQuestion");
+    } catch (error) {
+      sendError(error, "goToNextQuestion");
     }
 
     setShowImage(true);
@@ -123,9 +123,10 @@ export const LobbyInPlay = (props) => {
       await firestore.doc(`lobbies/${lobbyId}`).update({
         isClosed: true,
       });
-    } catch (e) {
-      sendError(e, "closeLobby");
+    } catch (error) {
+      sendError(error, "closeLobby");
     }
+
     setIsGameLoading(false);
   };
 
@@ -230,6 +231,7 @@ export const LobbyInPlay = (props) => {
             </span>
           )}
         </div>
+
         <div className="grid md:grid-cols-2 md:col-start-2 md:col-end-3">
           <AnsweringSection
             setUserHasAnswered={setUserHasAnswered}
@@ -255,6 +257,7 @@ export const LobbyInPlay = (props) => {
           )}
         </div>
       </div>
+
       <Footer {...props} />
     </div>
   );
