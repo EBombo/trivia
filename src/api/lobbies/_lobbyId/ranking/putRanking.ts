@@ -1,6 +1,6 @@
+import orderBy from "lodash/orderBy";
 import { firestore } from "../../../../firebase";
 import { snapshotToArray } from "../../../../utils";
-import orderBy from "lodash/orderBy";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type AnswerUser = {
@@ -70,17 +70,12 @@ const putRanking = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { lobbyId } = req.query as { [key: string]: string };
 
-    const answersSnapshot = await firestore.collection(`lobbies/${lobbyId}/answers`).get();
+    const answers = await fetchAnswers(lobbyId);
 
-    const usersSnapshot = await firestore.collection(`lobbies/${lobbyId}/users`).get();
-    const usersSize = usersSnapshot.size;
-    const users = snapshotToArray(usersSnapshot);
+    const { usersSize, users } = await fetchUsers(lobbyId);
 
-    const lobbySnapshot = await firestore.doc(`lobbies/${lobbyId}`).get();
-    const lobby = lobbySnapshot.data();
+    const lobby = await fetchLobby(lobbyId);
     const invalidQuestions = lobby?.game?.invalidQuestions || [];
-
-    const answers = snapshotToArray(answersSnapshot);
 
     const usersRanking = computeRanking(users, answers, invalidQuestions);
 
@@ -106,6 +101,24 @@ const putRanking = async (req: NextApiRequest, res: NextApiResponse) => {
     console.error(error);
     return res.status(500).send("Something went wrong");
   }
+};
+
+const fetchAnswers = async (lobbyId: string) => {
+  const answersSnapshot = await firestore.collection(`lobbies/${lobbyId}/answers`).get();
+  return snapshotToArray(answersSnapshot);
+};
+
+const fetchUsers = async (lobbyId: string) => {
+  const usersSnapshot = await firestore.collection(`lobbies/${lobbyId}/users`).get();
+  const usersSize = usersSnapshot.size;
+  const users = snapshotToArray(usersSnapshot);
+
+  return { usersSize, users };
+};
+
+const fetchLobby = async (lobbyId: string) => {
+  const lobbySnapshot = await firestore.doc(`lobbies/${lobbyId}`).get();
+  return lobbySnapshot.data();
 };
 
 export default putRanking;

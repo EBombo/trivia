@@ -111,7 +111,7 @@ export const Scoreboard = (props) => {
 
         <div className="mb-6">
           {rankingUsers.map((user) => (
-            <RankingItem user={user} />
+            <RankingItem user={user} key={user.userId} />
           ))}
         </div>
 
