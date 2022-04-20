@@ -8,29 +8,11 @@ import { ANSWERING_QUESTION, QUESTION_TIMEOUT, RANKING } from "../../../../compo
 import { useFetch } from "../../../../hooks/useFetch";
 import { useSendError } from "../../../../hooks";
 
-const putRankingUsers = async (lobbyId) => {
-  const { Fetch } = useFetch();
-  const { sendError } = useSendError();
-
-  try {
-    const fetchProps = {
-      url: `${config.serverUrl}/lobbies/${lobbyId}/ranking`,
-      method: "PUT",
-    };
-
-    const { error } = await Fetch(fetchProps.url, fetchProps.method);
-
-    if (error) throw new Error(error);
-  } catch (error) {
-    sendError(error, "putRankingUsers");
-  }
-};
-
 export const InPlayHeader = (props) => {
   const router = useRouter();
-
   const { lobbyId } = router.query;
 
+  const { Fetch } = useFetch();
   const { sendError } = useSendError();
 
   const [authUser] = useGlobal("user");
@@ -38,6 +20,21 @@ export const InPlayHeader = (props) => {
   const answersCount = useMemo(() => {
     return props.lobby.answersCount ?? 0;
   }, [props.lobby.answersCount]);
+
+  const putRankingUsers = async (lobbyId) => {
+    try {
+      const fetchProps = {
+        url: `${config.serverUrl}/lobbies/${lobbyId}/ranking`,
+        method: "PUT",
+      };
+
+      const { error } = await Fetch(fetchProps.url, fetchProps.method);
+
+      if (error) throw new Error(error);
+    } catch (error) {
+      sendError(error, "putRankingUsers");
+    }
+  };
 
   useEffect(() => {
     if (!authUser?.isAdmin) return;
