@@ -101,7 +101,10 @@ export const InPlayHeader = (props) => {
                 className="font-bold text-base"
                 onClick={() => props.onInvalidateQuestion?.()}
                 loading={props.isGameLoading}
-                disabled={props.lobby.game.state === QUESTION_TIMEOUT}
+                disabled={
+                  props.lobby.game.state === QUESTION_TIMEOUT ||
+                  props.lobby.game.invalidQuestions?.includes(props.question.id)
+                }
               >
                 Invalidar pregunta
               </ButtonAnt>

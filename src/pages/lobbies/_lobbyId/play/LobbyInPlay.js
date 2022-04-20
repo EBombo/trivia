@@ -255,7 +255,10 @@ export const LobbyInPlay = (props) => {
                 className="font-bold text-base"
                 width="100%"
                 loading={isGameLoading}
-                disabled={props.lobby.game.state === QUESTION_TIMEOUT}
+                disabled={
+                  props.lobby.game.state === QUESTION_TIMEOUT ||
+                  props.lobby.game.invalidQuestions?.includes(currentQuestion.id)
+                }
                 onClick={() => !isGameLoading && invalidateQuestion()}
               >
                 Invalidar pregunta
