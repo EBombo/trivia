@@ -130,6 +130,7 @@ export const LobbyInPlay = (props) => {
     setIsGameLoading(false);
   };
 
+  /** Loading page. **/
   if (!currentQuestion)
     return (
       <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto text-center flex flex-col justify-center">
@@ -140,6 +141,7 @@ export const LobbyInPlay = (props) => {
       </div>
     );
 
+  /** Question logo animation. **/
   if (props.lobby.game?.state === INTRODUCING_QUESTION)
     return <LobbyQuestionIntroduction question={currentQuestion} {...props} />;
 
