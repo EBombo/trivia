@@ -69,11 +69,18 @@ const putRanking = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { lobbyId } = req.query as { [key: string]: string };
 
-    const answers = await fetchAnswers(lobbyId);
+    const answersPromise = fetchAnswers(lobbyId);
 
-    const { usersSize, users } = await fetchUsers(lobbyId);
+    const usersPromise = fetchUsers(lobbyId);
 
-    const lobby = await fetchLobby(lobbyId);
+    const lobbyPromise = fetchLobby(lobbyId);
+
+    const response = await Promise.all([answersPromise, usersPromise, lobbyPromise]);
+
+    const answers = response[0];
+    const { usersSize, users } = response[1];
+    const lobby = response[2];
+
     const invalidQuestions = lobby?.game?.invalidQuestions || [];
 
     const usersRanking = computeRanking(users, answers, invalidQuestions);
