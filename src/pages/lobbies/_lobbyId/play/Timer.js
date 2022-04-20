@@ -1,5 +1,5 @@
-import React, { useGlobal, useState, useEffect, useMemo } from "reactn";
-import { Tablet, Desktop } from "../../../../constants";
+import React, { useEffect, useGlobal, useMemo, useState } from "reactn";
+import { Desktop, Tablet } from "../../../../constants";
 import { useInterval } from "../../../../hooks/useInterval";
 import { ANSWERING_QUESTION, QUESTION_TIMEOUT } from "../../../../components/common/DataList";
 
@@ -70,6 +70,7 @@ export const Timer = (props) => {
               />
             </svg>
           </Desktop>
+
           <Tablet>
             <svg className="w-20 h-20 mx-4">
               <circle
@@ -101,9 +102,11 @@ export const Timer = (props) => {
             <span className="text-2xl md:text-3xl">
               {authUser.isAdmin ? secondsLeft : props.lobby.game.secondsLeft}
             </span>
+
             <div className="text-xs md:text-sm hidden md:block">segundos</div>
           </div>
         </div>
+
         <div className="text-left hidden md:block">{props.label ?? ""}</div>
       </div>
     </div>
