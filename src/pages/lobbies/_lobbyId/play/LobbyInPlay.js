@@ -145,20 +145,23 @@ export const LobbyInPlay = (props) => {
   if (props.lobby.game?.state === INTRODUCING_QUESTION)
     return <LobbyQuestionIntroduction question={currentQuestion} {...props} />;
 
-  // if user has already answered
+  /** If user has already answered. **/
   if (!authUser.isAdmin && props.lobby.game?.state === ANSWERING_QUESTION && userHasAnswered)
     return (
       <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto text-center grid grid-rows-[50px-auto]">
         <UserLayout musicPickerSetting volumeSetting lockSetting {...props} />
+
         <div className="">
           <div className="my-4">
             <InPlaySpinLoader />
           </div>
+
           <div className="font-bold text-whiteLight text-xl">¿Te sientes confiado?</div>
         </div>
       </div>
     );
 
+  /** Show ranking. **/
   if (props.lobby.game?.state === RANKING)
     return (
       <>
@@ -173,6 +176,7 @@ export const LobbyInPlay = (props) => {
       </>
     );
 
+  /** User, show score. **/
   if (props.lobby.game?.state === QUESTION_TIMEOUT && !authUser.isAdmin)
     return (
       <div className="font-['Lato'] font-bold bg-secondary bg-center bg-contain bg-lobby-pattern w-screen overflow-auto text-center">
@@ -183,7 +187,7 @@ export const LobbyInPlay = (props) => {
       </div>
     );
 
-  // ANSWERING_QUESTION state
+  /** User and Admin, answering question form. **/
   return (
     <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto grid grid-rows-[50px_min-content_auto_60px] 2xl:grid-rows-[50px_auto_auto_75px]">
       <UserLayout musicPickerSetting volumeSetting lockSetting {...props} />
@@ -216,6 +220,7 @@ export const LobbyInPlay = (props) => {
           </div>
         )}
 
+        {/** Admin, show result. **/}
         {props.lobby.game.state === QUESTION_TIMEOUT && (
           <div>
             <span className="cursor-pointer underline" onClick={() => setShowImage((oldValue) => !oldValue)}>
@@ -227,7 +232,7 @@ export const LobbyInPlay = (props) => {
 
       <div className="grid md:grid-cols-[1fr_3fr_1fr] bg-secondaryDark bg-opacity-50 pb-2">
         <div className="text-center self-end py-4">
-          {props.lobby.game.state === QUESTION_TIMEOUT && (
+          {props.lobby.game.state === QUESTION_TIMEOUT && authUser?.isAdmin && (
             <span className="text-whiteLight text-lg cursor-pointer" onClick={() => !isGameLoading && closeLobby()}>
               Finalizar
             </span>

@@ -7,6 +7,7 @@ export const Footer = (props) => (
       <span className="font-normal">Entra a: </span>
       <span className="font-bold">{hostName}</span>
     </div>
+
     <div className="text-xl px-4 py-2">
       <span className="font-normal">PIN: </span>
       <span>{props.lobby?.pin}</span>

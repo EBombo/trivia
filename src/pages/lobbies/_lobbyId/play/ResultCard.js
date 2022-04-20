@@ -21,7 +21,9 @@ export const ResultCard = (props) => {
 
   const [isCorrect, setIsCorrect] = useState(null);
 
-  const usersSize = useMemo(() => props.lobby?.playersCount ?? 0, [props.lobby]);
+  const usersSize = useMemo(() => {
+    return props.lobby?.playersCount ?? 0;
+  }, [props.lobby?.playersCount]);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -61,6 +63,7 @@ export const ResultCard = (props) => {
             <Image src={`${config.storageUrl}/resources/cross-with-depth.svg`} width="16px" />
           )}
         </span>
+
         {isCorrect ? "Respuesta correcta" : "Respuesta incorrecta"}
       </div>
 
@@ -79,6 +82,7 @@ export const ResultCard = (props) => {
       )}
 
       <div className="text-black">Puntaje actual: {userScore?.toFixed(1)} pts</div>
+
       <div className="text-black">
         Puesto: {userRank}/{usersSize !== 0 ? usersSize : "--"}
       </div>
