@@ -31,17 +31,21 @@ export const LobbyInPlay = (props) => {
 
   const { sendError } = useSendError();
 
-  const [questions] = useState(props.lobby.gameQuestions ?? []);
-
   const [isGameLoading, setIsGameLoading] = useState(false);
-
-  const [showImage, setShowImage] = useState(!(props.lobby.game.state === QUESTION_TIMEOUT));
 
   const [userHasAnswered, setUserHasAnswered] = useState(null);
 
-  const currentQuestionNumber = useMemo(() => props.lobby.game.currentQuestionNumber ?? 1, [props.lobby.game]);
+  const [showImage, setShowImage] = useState(!(props.lobby.game.state === QUESTION_TIMEOUT));
 
-  const question = useMemo(() => {
+  const currentQuestionNumber = useMemo(() => {
+    return props.lobby.game.currentQuestionNumber ?? 1;
+  }, [props.lobby.game]);
+
+  const questions = useMemo(() => {
+    return props.lobby.gameQuestions ?? [];
+  }, [props.lobby]);
+
+  const currentQuestion = useMemo(() => {
     if (isEmpty(questions)) return;
 
     return getCurrentQuestion(questions, currentQuestionNumber);
@@ -54,13 +58,13 @@ export const LobbyInPlay = (props) => {
   useEffect(() => {
     if (authUser.isAdmin) return;
 
-    if (!question) return;
+    if (!currentQuestion) return;
 
     const fetchUserHasAnswered = async () => {
       const answersQuerySnapshot = await firestore
         .collection(`lobbies/${lobbyId}/answers`)
         .where("userId", "==", authUser.id)
-        .where("questionId", "==", question.id)
+        .where("questionId", "==", currentQuestion.id)
         .get();
 
       const hasAnswered = !answersQuerySnapshot.empty;
@@ -70,14 +74,14 @@ export const LobbyInPlay = (props) => {
     };
 
     fetchUserHasAnswered();
-  }, [question]);
+  }, [currentQuestion]);
 
   const invalidateQuestion = async () => {
     setIsGameLoading(true);
 
     try {
       await firestore.doc(`lobbies/${lobbyId}`).update({
-        "game.invalidQuestions": (props.lobby.game.invalidQuestions ?? []).concat([question.id]),
+        "game.invalidQuestions": (props.lobby.game.invalidQuestions ?? []).concat([currentQuestion.id]),
       });
     } catch (e) {
       sendError(e, "invalidateQuestion");
@@ -125,7 +129,7 @@ export const LobbyInPlay = (props) => {
     setIsGameLoading(false);
   };
 
-  if (!question)
+  if (!currentQuestion)
     return (
       <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto text-center flex flex-col justify-center">
         <UserLayout musicPickerSetting volumeSetting lockSetting {...props} />
@@ -136,7 +140,7 @@ export const LobbyInPlay = (props) => {
     );
 
   if (props.lobby.game?.state === INTRODUCING_QUESTION)
-    return <LobbyQuestionIntroduction question={question} {...props} />;
+    return <LobbyQuestionIntroduction question={currentQuestion} {...props} />;
 
   // if user has already answered
   if (!authUser.isAdmin && props.lobby.game?.state === ANSWERING_QUESTION && userHasAnswered)
@@ -171,7 +175,7 @@ export const LobbyInPlay = (props) => {
       <div className="font-['Lato'] font-bold bg-secondary bg-center bg-contain bg-lobby-pattern w-screen overflow-auto text-center">
         <UserLayout musicPickerSetting volumeSetting lockSetting {...props} />
         <div className="min-h-screen flex flex-col justify-center bg-secondaryDark bg-opacity-50">
-          <ResultCard question={question} invalidQuestions={props.lobby.game.invalidQuestions} {...props} />
+          <ResultCard question={currentQuestion} invalidQuestions={props.lobby.game.invalidQuestions} {...props} />
         </div>
       </div>
     );
@@ -182,9 +186,9 @@ export const LobbyInPlay = (props) => {
       <UserLayout musicPickerSetting volumeSetting lockSetting {...props} />
 
       <InPlayHeader
-        key={question}
-        time={question?.time}
-        question={question}
+        key={currentQuestion.id}
+        time={currentQuestion?.time}
+        question={currentQuestion}
         onInvalidateQuestion={invalidateQuestion}
         isGameLoading={isGameLoading}
         setIsGameLoading={setIsGameLoading}
@@ -192,8 +196,8 @@ export const LobbyInPlay = (props) => {
       >
         {showImage ? (
           <div className="aspect-[4/1] w-full h-[calc(100%-25px)] bg-secondaryDark mb-2">
-            {question.fileUrl ? (
-              <Image src={question.fileUrl} width="100%" size="contain" noImgTag />
+            {currentQuestion.fileUrl ? (
+              <Image src={currentQuestion.fileUrl} width="100%" size="contain" noImgTag />
             ) : (
               <Image
                 src={`${config.storageUrl}/resources/trivia-brand-logo.svg`}
@@ -204,7 +208,9 @@ export const LobbyInPlay = (props) => {
             )}
           </div>
         ) : (
-          <div className="aspect-[4/1] w-full">{question && <QuestionResults question={question} {...props} />}</div>
+          <div className="aspect-[4/1] w-full">
+            {currentQuestion && <QuestionResults question={currentQuestion} {...props} />}
+          </div>
         )}
 
         {props.lobby.game.state === QUESTION_TIMEOUT && (
@@ -228,7 +234,7 @@ export const LobbyInPlay = (props) => {
           <AnsweringSection
             setUserHasAnswered={setUserHasAnswered}
             userHasAnswered={userHasAnswered}
-            question={question}
+            question={currentQuestion}
             {...props}
           />
 
