@@ -17,12 +17,11 @@ export const AnsweringSection = (props) => {
   const { question, userHasAnswered, setUserHasAnswered } = props;
 
   const router = useRouter();
-
   const { lobbyId } = router.query;
 
   const [authUser] = useGlobal("user");
 
-  // creates user answer and update user score
+  // Creates user answer and update user score.
   const onAnswering = async (answer) => {
     if (authUser?.isAdmin) return;
 
