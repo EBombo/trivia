@@ -2,7 +2,7 @@ import React from "reactn";
 import { useForm } from "react-hook-form";
 import { object, string } from "yup";
 import { config } from "../../../../firebase";
-import { Input, ButtonAnt } from "../../../../components/form";
+import { ButtonAnt, Input } from "../../../../components/form";
 import { Image } from "../../../../components/common/Image";
 
 export const OpenAnswerCard = (props) => {
@@ -41,7 +41,15 @@ export const OpenAnswerCard = (props) => {
           )}
         </div>
         <div className="self-center text-center md:text-left">
-          <ButtonAnt className="justify-center" width="150px" display="inline-block" htmlType="submit" color="success" size="big" disabled={props.isAnswered}>
+          <ButtonAnt
+            className="justify-center"
+            width="150px"
+            display="inline-block"
+            htmlType="submit"
+            color="success"
+            size="big"
+            disabled={props.isAnswered}
+          >
             <span className="font-bold text-lg px-4">Enviar</span>
           </ButtonAnt>
         </div>

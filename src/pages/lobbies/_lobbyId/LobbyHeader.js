@@ -1,7 +1,7 @@
 import React, { useEffect, useGlobal, useState } from "reactn";
 import { config, database, firestore, firestoreBomboGames, hostName } from "../../../firebase";
 import { ButtonAnt, ButtonLobby } from "../../../components/form";
-import { mediaQuery, Desktop } from "../../../constants";
+import { Desktop, mediaQuery } from "../../../constants";
 import styled from "styled-components";
 import { Popover, Slider, Tooltip } from "antd";
 import { Image } from "../../../components/common/Image";
@@ -160,9 +160,7 @@ export const LobbyHeader = (props) => {
               />
             </ButtonLobby>
           ) : (
-            <div>
-              {props.lobby?.pin}
-            </div>
+            <div>{props.lobby?.pin}</div>
           )}
         </div>
       </div>

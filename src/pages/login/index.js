@@ -191,35 +191,35 @@ const Login = (props) => {
         {!authUser?.lobby && (
           <>
             <PinStep isLoading={isLoading} setIsLoading={setIsLoading} fetchLobby={fetchLobby} {...props} />
-            {authUser?.email ||
-              (authUser?.nickname && (
-                <div className="back">
-                  <Tooltip title={`email: ${authUser.email} nickname: ${authUser.nickname}`} placement="bottom">
-                    <Anchor
-                      underlined
-                      variant="white"
-                      fontSize="11px"
-                      margin="10px auto"
-                      onClick={async () => {
-                        await setAuthUser({
-                          ...authUser,
-                          email: null,
-                          nickname: null,
-                          lobby: null,
-                        });
-                        setAuthUserLs({
-                          ...authUser,
-                          email: null,
-                          nickname: null,
-                          lobby: null,
-                        });
-                      }}
-                    >
-                      Remover email y nickname
-                    </Anchor>
-                  </Tooltip>
-                </div>
-              ))}
+
+            {(authUser?.email || authUser?.nickname) && (
+              <div className="back">
+                <Tooltip title={`email: ${authUser.email} nickname: ${authUser.nickname}`} placement="bottom">
+                  <Anchor
+                    underlined
+                    variant="white"
+                    fontSize="11px"
+                    margin="10px auto"
+                    onClick={async () => {
+                      await setAuthUser({
+                        ...authUser,
+                        email: null,
+                        nickname: null,
+                        lobby: null,
+                      });
+                      setAuthUserLs({
+                        ...authUser,
+                        email: null,
+                        nickname: null,
+                        lobby: null,
+                      });
+                    }}
+                  >
+                    Remover email y nickname
+                  </Anchor>
+                </Tooltip>
+              </div>
+            )}
           </>
         )}
 
