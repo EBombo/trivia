@@ -77,13 +77,17 @@ export const ResultCard = (props) => {
             </span>
             {t("pages.lobby.in-play.answers-streak")}: {streakCount}
           </div>
-          <div className="text-black text-3xl py-8">+{pointsEarned?.toFixed(1)} {t("pages.lobby.in-play.points")}</div>
+          <div className="text-black text-3xl py-8">
+            +{pointsEarned?.toFixed(1)} {t("pages.lobby.in-play.points")}
+          </div>
         </>
       ) : (
         <div className="text-secondaryDarken">{t("pages.lobby.in-play.help-phrase-after-fail")} </div>
       )}
 
-      <div className="text-black">{t("pages.lobby.in-play.current-score")}: {userScore?.toFixed(1)} pts</div>
+      <div className="text-black">
+        {t("pages.lobby.in-play.current-score")}: {userScore?.toFixed(1)} pts
+      </div>
       <div className="text-black">
         {t("pages.lobby.in-play.rank")}: {userRank}/{usersSize !== 0 ? usersSize : "--"}
       </div>

@@ -260,7 +260,7 @@ export const LobbyClosed = (props) => {
             margin="auto auto 15px auto"
             onClick={initializeTransitionToWinners}
           >
-          {t("pages.lobby.closed.go-back-to-podium-button-label")}
+            {t("pages.lobby.closed.go-back-to-podium-button-label")}
           </ButtonAnt>
         </div>
         <div className="child">

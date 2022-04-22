@@ -11,7 +11,6 @@ import { useTranslation } from "../hooks";
 const { Panel } = Collapse;
 
 export const GameMenu = (props) => {
-
   const { t } = useTranslation();
 
   const [awards, setAwards] = useState([

@@ -6,7 +6,6 @@ import { ANSWERING_QUESTION, QUESTION_TIMEOUT } from "../../../../components/com
 import { firestore } from "../../../../firebase";
 
 export const Timer = (props) => {
-
   const { t } = useTranslation();
 
   const [authUser] = useGlobal("user");

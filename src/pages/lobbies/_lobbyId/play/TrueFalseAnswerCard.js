@@ -4,7 +4,6 @@ import { Image } from "../../../../components/common/Image";
 import { useTranslation } from "../../../../hooks";
 
 export const TrueFalseAnswerCard = (props) => {
-
   const { t } = useTranslation();
 
   const iconUrl = useMemo(

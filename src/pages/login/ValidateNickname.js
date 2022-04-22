@@ -6,7 +6,6 @@ import { Image } from "../../components/common/Image";
 import { useTranslation } from "../../hooks";
 
 export const ValidateNickname = (props) => {
-
   const { t } = useTranslation();
 
   return (

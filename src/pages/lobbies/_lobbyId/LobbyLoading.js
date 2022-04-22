@@ -9,7 +9,6 @@ import { Image } from "../../../components/common/Image";
 import { useTranslation } from "../../../hooks";
 
 export const LobbyLoading = (props) => {
-
   const { t } = useTranslation();
 
   const [authUser] = useGlobal("user");

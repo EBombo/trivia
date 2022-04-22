@@ -175,7 +175,9 @@ export const LobbyUser = (props) => {
           {!authUser?.isAdmin && (
             <div className="notification-joint-user font-bold text-white bg-green-800 text-center sm:text-lg py-2">
               {t("pages.login.player-in-lobby-label")}
-              <div className="inline-block bg-primary p-2 m-2 rounded shadow-xl">{authUser.nickname} ({t("pages.login.you")})</div>
+              <div className="inline-block bg-primary p-2 m-2 rounded shadow-xl">
+                {authUser.nickname} ({t("pages.login.you")})
+              </div>
             </div>
           )}
 

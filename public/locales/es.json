@@ -12,7 +12,7 @@
   "nav": {
     "exit": "Exit",
     "copy-link-label": "Click aquí para copiar el link de ebombo con pin",
-    "link-copied": "Link copiado!",
+    "link-copied": "Link copiado!"
   },
   "footer": {
     "visit-label": "Entra a"
@@ -37,7 +37,6 @@
       "admin-would-start-the-game-soon": "El administrador iniciará el juego pronto",
       "remove-email-nickname": "Remover email y nickname",
       "go-back": "Volver",
-
       "email-step": {
         "subtitle": "Añadir identificación del jugador",
         "description": "El anfitrión del juego ha pedido que coloques tu mail cómo una medida de identificación para entrar al juego",
@@ -75,23 +74,11 @@
         "general": "General",
         "lobby-music-title": "Música en el Lobby",
         "prize": "Premio",
-        "add-button-label": "Agregar",
-
-
-
-        "play-button-label": "Jugar",
-        "simple-game-mode-label": "Versión Simple",
-        "simple-game-mode-description": "La manera sencilla",
-        "seconds-per-round-option-label": "Segundos por ronda",
-        "no-time": "Sin tiempo",
-        "phrases-descriptions": "Frases o palabras (Máx. 50 caractéres). Solo se aceptan letras, signos de interrogación y exclamación (¿?¡!), espacio y comma (,).",
-        "cancel-button-label": "Cancelar",
-        "save-button-label": "Guardar",
-        "new-phrase-placeholder": "Insertar nueva frase/palabra",
+        "add-button-label": "Agregar"
       },
       "loading": {
         "get-into-ebombo": "Entra a www.ebombo.io",
-        "get-ready": "¡Prepárate!",
+        "get-ready": "¡Prepárate!"
       },
       "in-play": {
         "header-invalidate-question-button-label": "Invalidar pregunta",
@@ -110,21 +97,8 @@
         "current-score": "Puntaje actual",
         "your-rank": "Tu puesto",
         "true": "Verdadero",
-        "false": "Falso",
-
-
-        "edit-game": "Editar juego",
-        "jump-phrase": "Saltar turno",
-        "finish-game": "Finalizar juego",
-        "jump-phrase-message": "¡Salto de turno!",
-        "game-is-over": "¡Se acabó el juego!",
-        "play-again-button-label": "Jugar de nuevo",
-        "word-was": "La palabra era",
-        "next-button-label": "Siguiente",
-        "alert-start-game": "Haz click en una letra para empezar",
-        "resume-game": "Debes apretar el botón \"Play\" para iniciar el juego."
+        "false": "Falso"
       }
     }
   }
 }
-

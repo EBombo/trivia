@@ -45,9 +45,7 @@ export const EmailStep = (props) => {
 
       <div className="login-container">
         <div className="subtitle">{t("pages.login.email-step.subtitle")}</div>
-        <div className="description">
-          {t("pages.login.email-step.description")}
-        </div>
+        <div className="description">{t("pages.login.email-step.description")}</div>
 
         <InputBingo
           ref={register}

@@ -3,7 +3,6 @@ import { hostName } from "../../../../firebase";
 import { useTranslation } from "../../../../hooks";
 
 export const Footer = (props) => {
-
   const { t } = useTranslation();
 
   return (

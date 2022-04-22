@@ -6,7 +6,6 @@ import { ButtonLobby } from "../../components/form";
 import { useTranslation } from "../../hooks";
 
 export const ModalVerification = (props) => {
-
   const { t } = useTranslation();
 
   return (
@@ -21,9 +20,7 @@ export const ModalVerification = (props) => {
     >
       <ContentModal>
         <div className="title">{t("pages.login.modal-container-title")}</div>
-        <div className="description">
-          {t("pages.login.modal-container-description")}
-        </div>
+        <div className="description">{t("pages.login.modal-container-description")}</div>
         <ButtonLobby variant="secondary" width="200px" onClick={() => props.setIsVisibleModalVerification(props.email)}>
           {t("ok-button-label")}
         </ButtonLobby>

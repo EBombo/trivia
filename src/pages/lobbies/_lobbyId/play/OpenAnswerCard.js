@@ -7,7 +7,6 @@ import { Image } from "../../../../components/common/Image";
 import { useTranslation } from "../../../../hooks";
 
 export const OpenAnswerCard = (props) => {
-
   const { t } = useTranslation();
 
   const schema = object().shape({
@@ -45,7 +44,15 @@ export const OpenAnswerCard = (props) => {
           )}
         </div>
         <div className="self-center text-center md:text-left">
-          <ButtonAnt className="justify-center" width="150px" display="inline-block" htmlType="submit" color="success" size="big" disabled={props.isAnswered}>
+          <ButtonAnt
+            className="justify-center"
+            width="150px"
+            display="inline-block"
+            htmlType="submit"
+            color="success"
+            size="big"
+            disabled={props.isAnswered}
+          >
             <span className="font-bold text-lg px-4">{t("pages.lobby.in-play.send-button-label")}</span>
           </ButtonAnt>
         </div>
