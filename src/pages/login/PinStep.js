@@ -4,6 +4,7 @@ import { Image } from "../../components/common/Image";
 import { ButtonLobby, InputBingo } from "../../components/form";
 import { object, string } from "yup";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "ebombo-components";
 import { Carousel } from "../../components/common/Carousel";
 import { avatars } from "../../components/common/DataList";
 import { darkTheme } from "../../theme";
@@ -12,6 +13,8 @@ export const PinStep = (props) => {
   const [authUser] = useGlobal("user");
 
   const [avatarIdx, setAvatarIdx] = useState(0);
+
+  const { t } = useTranslation();
 
   const validationSchema = object().shape({
     pin: string().required().min(6),
@@ -65,7 +68,7 @@ export const PinStep = (props) => {
           placeholder="Pin del juego"
         />
         <ButtonLobby width="100%" disabled={props.isLoading} loading={props.isLoading} htmlType="submit">
-          Ingresar
+          {t("ingress")}
         </ButtonLobby>
       </div>
     </form>

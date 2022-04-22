@@ -5,6 +5,7 @@ import { snapshotToArray } from "../../../../utils";
 import { useRouter } from "next/router";
 import isEmpty from "lodash/isEmpty";
 import { get } from "lodash";
+import { useTranslation } from "../../../../hooks";
 
 const DEFAULT_RANKING_LENGTH = 5;
 
@@ -12,6 +13,8 @@ export const Scoreboard = (props) => {
   const router = useRouter();
 
   const { lobbyId } = router.query;
+
+  const { t } = useTranslation();
 
   const [authUser, setAuthUser] = useGlobal("user");
 
@@ -104,7 +107,7 @@ export const Scoreboard = (props) => {
               className="font-bold text-xl px-8"
               onClick={() => props.onGoToNextQuestion?.()}
             >
-              Siguiente
+              {t("next-button-label")}
             </ButtonAnt>
           </div>
         )}
@@ -118,7 +121,7 @@ export const Scoreboard = (props) => {
             w-full max-w-[1000px] md:mx-auto my-4 text-xl md:text-2xl text-whiteLight text-left
             after:inline-block after:w-[82%] md:after:w-[86%] after:h-[2px] after:relative after:content-[''] after:bottom-1 after:left-6 after:ml-0.5 after:bg-whiteLight`}
             >
-              Tu puesto
+              {t("pages.lobby.in-play.your-rank")}
             </div>
             <RankingItem user={authUser}/>
           </>
@@ -132,7 +135,7 @@ export const Scoreboard = (props) => {
               className="inline-block font-bold text-lg px-8"
               onClick={() => props.onCloseLobby?.()}
             >
-              Finalizar
+              {t("pages.lobby.in-play.finish")}
             </ButtonAnt>
           </div>
         )}

@@ -1,0 +1,98 @@
+{
+  "en": "English",
+  "es": "Spanish",
+  "language": "Language",
+  "ingress": "Continue",
+  "ingress-button-label": "Continue",
+  "ok-button-label": "Ok",
+  "next-button-label": "Next",
+  "of-step": "out of",
+  "nav": {
+    "exit": "Exit"
+  },
+  "footer": {
+    "visit-label": "Visit"
+  },
+  "pages": {
+    "register": {
+      "title": "Sign up",
+      "register-button-label": "Register"
+    },
+    "login": {
+      "email-step": {
+        "subtitle": "Add player identification",
+        "description": "El anfitrión del juego ha pedido que coloques tu mail cómo una medida de identificación para entrar al juego",
+        "placeholder-email-input": "Fill in your email"
+      },
+      "modal-container-title": "Identificación del jugador grabada",
+      "modal-container-description": "",
+      "nickname-step-input-placeholder": "Nickname",
+      "already-registered-nikname-error-message": "nickname already registered",
+      "pin-step-input-placeholder": "Pin of the game",
+      "verify-nickname-title": "Verifying your nickname"
+    },
+    "lobby": {
+      "closed": {
+        "assistants": "Assistants",
+        "play-again-label": "Had you all have fun?",
+        "answers-label": "Correct",
+        "corrects-label": "answers",
+        "play-again-button-label": "Play again",
+        "messages-label": "messages",
+        "see-full-report-button-label": "See full report",
+        "go-back-button-label": "Go back",
+        "log-out-button-label": "Log out",
+        "go-back-to-podium-button-label": "Go back to podium",
+        "see-all-positions-label": "See all positions"
+      },
+      "game-settings": {
+        "play-button-label": "Play",
+        "simple-game-mode-label": "Simple version",
+        "simple-game-mode-description": "The seamless way",
+        "lobby-music-title": "Music on the Lobby",
+        "seconds-per-round-option-label": "Seconds per round",
+        "no-time": "No time",
+        "phrases-descriptions": "Phrases or words (Max. 50 characters). Letters, symbols (?!), white-space and comma are only allowed.",
+        "add-button-label": "Add",
+        "cancel-button-label": "Cancel",
+        "save-button-label": "Save",
+        "new-phrase-placeholder": "Insert new phrase/word",
+        "options-game-title": "Game options"
+      },
+      "loading": {
+        "get-into-ebombo": "Visit www.ebombo.io"
+      },
+      "in-play": {
+        "header-invalidate-question-button-label": "Invalidate question",
+        "header-answers": "answers",
+        "waiting-label": "Do you feel confident?",
+        "show-image": "Show Image",
+        "finish": "Finalizar",
+        "send-button-label": "Enviar",
+        "seconds": "seconds",
+        "correct-answer": "Correct answer",
+        "incorrect-answer": "Incorrect answer",
+        "answers-streak": "Answers streak",
+        "points": "points",
+        "rank": "Rank",
+        "help-phrase-after-fail": "¡Keep going!",
+        "current-score": "Current score",
+        "your-rank": "Your rank",
+        "true": "True",
+        "false": "False",
+
+        "edit-game": "Edit game",
+        "jump-phrase": "Skip phrase",
+        "finish-game": "Finish game",
+        "jump-phrase-message": "Skip phrase!",
+        "game-is-over": "Game is over!",
+        "play-again-button-label": "Play again",
+        "word-was": "The word was",
+        "next-button-label": "Next",
+        "alert-start-game": "Click on any letter to start!",
+        "resume-game": "To start the game, you should click on the \"Play\" button."
+      }
+    }
+  }
+}
+

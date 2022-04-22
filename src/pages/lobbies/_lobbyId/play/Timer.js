@@ -1,9 +1,13 @@
 import React, { useGlobal, useState, useEffect, useMemo } from "reactn";
 import { Tablet, Desktop } from "../../../../constants";
 import { useInterval } from "../../../../hooks/useInterval";
+import { useTranslation } from "../../../../hooks";
 import { ANSWERING_QUESTION, QUESTION_TIMEOUT } from "../../../../components/common/DataList";
 
 export const Timer = (props) => {
+
+  const { t } = useTranslation();
+
   const [authUser] = useGlobal("user");
 
   const totalSeconds = useMemo(() => {
@@ -101,7 +105,7 @@ export const Timer = (props) => {
             <span className="text-2xl md:text-3xl">
               {authUser.isAdmin ? secondsLeft : props.lobby.game.secondsLeft}
             </span>
-            <div className="text-xs md:text-sm hidden md:block">segundos</div>
+            <div className="text-xs md:text-sm hidden md:block">{t("pages.lobby.in-play.seconds")}</div>
           </div>
         </div>
         <div className="text-left hidden md:block">{props.label ?? ""}</div>

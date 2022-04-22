@@ -6,10 +6,14 @@ import { languages } from "./common/DataList";
 import defaultTo from "lodash/defaultTo";
 import { config, firestore } from "../firebase";
 import { Image } from "./common/Image";
+import { useTranslation } from "../hooks";
 
 const { Panel } = Collapse;
 
 export const GameMenu = (props) => {
+
+  const { t } = useTranslation();
+
   const [awards, setAwards] = useState([
     {
       name: "",
