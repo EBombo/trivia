@@ -68,7 +68,7 @@ export const PinStep = (props) => {
           placeholder="Pin del juego"
         />
         <ButtonLobby width="100%" disabled={props.isLoading} loading={props.isLoading} htmlType="submit">
-          {t("ingress")}
+          {t("ingress-button-label")}
         </ButtonLobby>
       </div>
     </form>

@@ -7,8 +7,12 @@
   "ok-button-label": "Ok",
   "next-button-label": "Next",
   "of-step": "out of",
+  "website": "ebombo.io",
+  "www-website": "www.ebombo.io",
   "nav": {
-    "exit": "Exit"
+    "exit": "Exit",
+    "copy-link-label": "Click here to copy game link with PIN",
+    "link-copied": "Link copiado!",
   },
   "footer": {
     "visit-label": "Visit"
@@ -19,6 +23,22 @@
       "register-button-label": "Register"
     },
     "login": {
+      "copy-link-label": "Click here to copy game link with PIN",
+      "link-copied": "Link copied!"
+      "game-is-blocked": "This game is blocked",
+      "game-is-closed": "This game is closed",
+      "game-not-found": "Lobby not found, try again",
+      "lobby-is-over": "This lobby is finished",
+      "visit": "Visit",
+      "pin-step-label": "Pin of the game",
+      "start-button-label": "Empezar",
+      "player-in-lobby-label": "You are in the lobby!",
+      "you": "You",
+      "admin-would-start-the-game-soon": "Admin will start the game in a moment",
+      "remove-email-nickname": "Remove email and nickname",
+      "go-back": "Go back",
+
+
       "email-step": {
         "subtitle": "Add player identification",
         "description": "El anfitrión del juego ha pedido que coloques tu mail cómo una medida de identificación para entrar al juego",
@@ -45,22 +65,34 @@
         "go-back-to-podium-button-label": "Go back to podium",
         "see-all-positions-label": "See all positions"
       },
+      "login": {
+
+      },
       "game-settings": {
-        "play-button-label": "Play",
+        "players-vs-players": "Players vs Players",
+        "one-one-devices": "1:1 devices",
+        "classic-button-label": "Classic",
+        "recommended": "Recommended",
+        "identify-players-label": "Players ID",
+        "identify-players-description": "Know name's person besides his/her nickname",
+        "options-game-title": "Game options",
+        "general": "General",
+        "lobby-music-title": "Music on the Lobby",
+        "prize": "Prize",
+        "add-button-label": "Add",
+
         "simple-game-mode-label": "Simple version",
         "simple-game-mode-description": "The seamless way",
-        "lobby-music-title": "Music on the Lobby",
         "seconds-per-round-option-label": "Seconds per round",
         "no-time": "No time",
         "phrases-descriptions": "Phrases or words (Max. 50 characters). Letters, symbols (?!), white-space and comma are only allowed.",
-        "add-button-label": "Add",
         "cancel-button-label": "Cancel",
         "save-button-label": "Save",
         "new-phrase-placeholder": "Insert new phrase/word",
-        "options-game-title": "Game options"
       },
       "loading": {
-        "get-into-ebombo": "Visit www.ebombo.io"
+        "get-into-ebombo": "Visit www.ebombo.io",
+        "get-ready": "Get Ready!",
       },
       "in-play": {
         "header-invalidate-question-button-label": "Invalidate question",

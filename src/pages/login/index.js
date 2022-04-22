@@ -4,7 +4,7 @@ import { NicknameStep } from "./NicknameStep";
 import { snapshotToArray } from "../../utils";
 import { EmailStep } from "./EmailStep";
 import { useRouter } from "next/router";
-import { useUser } from "../../hooks";
+import { useUser, useTranslation } from "../../hooks";
 import { PinStep } from "./PinStep";
 import { avatars } from "../../components/common/DataList";
 import { Anchor } from "../../components/form";
@@ -17,6 +17,8 @@ const Login = (props) => {
   const router = useRouter();
   const { pin } = router.query;
 
+  const { t } = useTranslation();
+
   const [, setAuthUserLs] = useUser();
   const [authUser, setAuthUser] = useGlobal("user");
 
@@ -27,11 +29,11 @@ const Login = (props) => {
       // Fetch lobby.
       const lobbyRef = await firestore.collection("lobbies").where("pin", "==", pin.toString()).limit(1).get();
 
-      if (lobbyRef.empty) throw Error("No encontramos tu sala, intenta nuevamente");
+      if (lobbyRef.empty) throw Error(t("pages.login.game-not-found"));
 
       const currentLobby = snapshotToArray(lobbyRef)[0];
 
-      if (currentLobby?.isLocked) throw Error("Este juego esta cerrado");
+      if (currentLobby?.isLocked) throw Error(t("pages.login.game-is-closed"));
 
       if (currentLobby?.isClosed) {
         await setAuthUser({
@@ -42,7 +44,7 @@ const Login = (props) => {
           nickname: authUser.nickname,
         });
 
-        throw Error("Esta sala ha concluido");
+        throw Error(t("pages.login.lobby-is-over"));
       }
 
       const isAdmin = !!currentLobby?.game?.usersIds?.includes(authUser.id);
@@ -178,7 +180,7 @@ const Login = (props) => {
             });
           }}
         >
-          Volver
+          {t("pages.login.go-back")}
         </Anchor>
       </div>
     ),
@@ -215,7 +217,7 @@ const Login = (props) => {
                         });
                       }}
                     >
-                      Remover email y nickname
+                      {t("pages.login.remove-email-nickname")}
                     </Anchor>
                   </Tooltip>
                 </div>

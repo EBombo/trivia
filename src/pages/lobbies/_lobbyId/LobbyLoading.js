@@ -6,8 +6,12 @@ import { config, firestore } from "../../../firebase";
 import { timeoutPromise } from "../../../utils/promised";
 import { INTRODUCING_QUESTION } from "../../../components/common/DataList";
 import { Image } from "../../../components/common/Image";
+import { useTranslation } from "../../../hooks";
 
 export const LobbyLoading = (props) => {
+
+  const { t } = useTranslation();
+
   const [authUser] = useGlobal("user");
 
   // awaits for 10 seconds then go to the game
@@ -39,7 +43,7 @@ export const LobbyLoading = (props) => {
               margin="0 auto"
               className="step-one-logo"
             />
-            <div className="step-one-description">Entra a www.ebombo.io</div>
+            <div className="step-one-description">{t("pages.lobby.loading.get-into-ebombo")}</div>
           </div>
           <div className="step-two">
             <div className="step-two-name">{get(props, "lobby.game.name", "")}</div>
@@ -59,7 +63,7 @@ export const LobbyLoading = (props) => {
       ) : (
         <>
           <div className="step-one-tablet">
-            <div className="step-one-tablet-title">¡Prepárate!</div>
+            <div className="step-one-tablet-title">{t("pages.lobby.loading.get-ready")}</div>
 
             <Image
               src={`${config.storageUrl}/resources/white_spinner.gif`}

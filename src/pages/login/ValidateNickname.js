@@ -3,19 +3,25 @@ import styled from "styled-components";
 import { mediaQuery } from "../../constants";
 import { config } from "../../firebase";
 import { Image } from "../../components/common/Image";
+import { useTranslation } from "../../hooks";
 
-export const ValidateNickname = (props) => (
-  <ValidatingContainer>
-    <div className="title">Verificando tu apodo...</div>
-    <Image
-      src={`${config.storageUrl}/resources/white_spinner.gif`}
-      height="75px"
-      width="75px"
-      size="contain"
-      margin="1rem auto"
-    />
-  </ValidatingContainer>
-);
+export const ValidateNickname = (props) => {
+
+  const { t } = useTranslation();
+
+  return (
+    <ValidatingContainer>
+      <div className="title">{t("pages.login.verify-nickname-title")}</div>
+      <Image
+        src={`${config.storageUrl}/resources/white_spinner.gif`}
+        height="75px"
+        width="75px"
+        size="contain"
+        margin="1rem auto"
+      />
+    </ValidatingContainer>
+  );
+};
 
 const ValidatingContainer = styled.div`
   width: 100%;

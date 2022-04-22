@@ -7,8 +7,12 @@
   "ok-button-label": "Ok",
   "next-button-label": "Siguiente",
   "of-step": "de",
+  "website": "ebombo.io",
+  "www-website": "www.ebombo.io",
   "nav": {
-    "exit": "Exit"
+    "exit": "Exit",
+    "copy-link-label": "Click aquí para copiar el link de ebombo con pin",
+    "link-copied": "Link copiado!",
   },
   "footer": {
     "visit-label": "Entra a"
@@ -19,6 +23,21 @@
       "register-button-label": "Registrar"
     },
     "login": {
+      "copy-link-label": "Click aquí para copiar el link de ebombo con pin",
+      "link-copied": "Link copiado!",
+      "game-is-blocked": "Este juego esta bloqueado",
+      "game-is-closed": "Este juego esta cerrado",
+      "game-not-found": "No encontramos tu sala, intenta nuevamente",
+      "lobby-is-over": "Esta sala ha concluido",
+      "visit": "Entra a",
+      "pin-step-label": "Pin del juego",
+      "start-button-label": "Empezar",
+      "player-in-lobby-label": "Entró correctamente al juego.",
+      "you": "Tú",
+      "admin-would-start-the-game-soon": "El administrador iniciará el juego pronto",
+      "remove-email-nickname": "Remover email y nickname",
+      "go-back": "Volver",
+
       "email-step": {
         "subtitle": "Añadir identificación del jugador",
         "description": "El anfitrión del juego ha pedido que coloques tu mail cómo una medida de identificación para entrar al juego",
@@ -46,21 +65,33 @@
         "see-all-positions-label": "Ver todas las posiciones"
       },
       "game-settings": {
+        "players-vs-players": "Jugadores vs Jugadores",
+        "one-one-devices": "1:1 dispositivos",
+        "classic-button-label": "Clásico",
+        "recommended": "Recomendado",
+        "identify-players-label": "Identificador de jugador",
+        "identify-players-description": "Conoce el nombre de la persona atrás del nickname",
+        "options-game-title": "Opciones del juego",
+        "general": "General",
+        "lobby-music-title": "Música en el Lobby",
+        "prize": "Premio",
+        "add-button-label": "Agregar",
+
+
+
         "play-button-label": "Jugar",
         "simple-game-mode-label": "Versión Simple",
         "simple-game-mode-description": "La manera sencilla",
-        "lobby-music-title": "Música en el Lobby",
         "seconds-per-round-option-label": "Segundos por ronda",
         "no-time": "Sin tiempo",
         "phrases-descriptions": "Frases o palabras (Máx. 50 caractéres). Solo se aceptan letras, signos de interrogación y exclamación (¿?¡!), espacio y comma (,).",
-        "add-button-label": "Agregar",
         "cancel-button-label": "Cancelar",
         "save-button-label": "Guardar",
         "new-phrase-placeholder": "Insertar nueva frase/palabra",
-        "options-game-title": "Opciones del juego"
       },
       "loading": {
-        "get-into-ebombo": "Entra a www.ebombo.io"
+        "get-into-ebombo": "Entra a www.ebombo.io",
+        "get-ready": "¡Prepárate!",
       },
       "in-play": {
         "header-invalidate-question-button-label": "Invalidar pregunta",

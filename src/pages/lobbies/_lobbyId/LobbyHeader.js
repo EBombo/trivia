@@ -5,7 +5,7 @@ import { mediaQuery, Desktop } from "../../../constants";
 import styled from "styled-components";
 import { Popover, Slider, Tooltip } from "antd";
 import { Image } from "../../../components/common/Image";
-import { useSendError } from "../../../hooks";
+import { useSendError, useTranslation } from "../../../hooks";
 import { saveMembers } from "../../../constants/saveMembers";
 import { useRouter } from "next/router";
 import { INITIALIZING } from "../../../components/common/DataList";
@@ -15,6 +15,8 @@ export const LobbyHeader = (props) => {
 
   const router = useRouter();
   const { lobbyId } = router.query;
+
+  const { t } = useTranslation();
 
   const [authUser] = useGlobal("user");
   const [audios] = useGlobal("audios");
@@ -116,21 +118,21 @@ export const LobbyHeader = (props) => {
   return (
     <LobbyHeaderStyled {...props}>
       <div className="item-pin">
-        <Tooltip placement="bottom" title="Click aquí para copiar el link de ebombo con pin">
+        <Tooltip placement="bottom" title={t("pages.login.copy-link-label")}>
           <div
             className="label"
             onClick={() => {
               navigator.clipboard.writeText(`${hostName}/?pin=${props.lobby?.pin}`);
-              props.showNotification("OK", "Link copiado!", "success");
+              props.showNotification("OK", t("pages.login.link-copied"), "success");
             }}
           >
             {props.lobby.isLocked ? (
-              "Este juego esta bloqueado"
+              t("pages.login.game-is-blocked")
             ) : (
               <>
-                Entra a{" "}
+                {t("pages.login.visit")}{" "}
                 <span className="font-black">
-                  ebombo.io{" "}
+                  {t("website")}{" "}
                   <Image
                     className="inline-block"
                     src={`${config.storageUrl}/resources/link.svg`}
@@ -145,7 +147,7 @@ export const LobbyHeader = (props) => {
           </div>
         </Tooltip>
 
-        <div className="pin-label">Pin del juego:</div>
+        <div className="pin-label">{t("pages.login.pin-step-label")}:</div>
 
         <div className="pin">
           {props.lobby.isLocked ? (
@@ -292,7 +294,7 @@ export const LobbyHeader = (props) => {
               await updateLobby(new Date());
             }}
           >
-            Empezar
+            {t("pages.login.start-button-label")}:
           </ButtonAnt>
         </div>
       )}

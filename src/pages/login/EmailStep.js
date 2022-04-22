@@ -6,11 +6,13 @@ import { ButtonLobby, InputBingo } from "../../components/form";
 import { object, string } from "yup";
 import { useForm } from "react-hook-form";
 import { ModalVerification } from "./ModalVerification";
-import { useUser } from "../../hooks";
+import { useUser, useTranslation } from "../../hooks";
 
 export const EmailStep = (props) => {
   const [, setAuthUserLs] = useUser();
   const [authUser, setAuthUser] = useGlobal("user");
+
+  const { t } = useTranslation();
 
   const [email, setEmail] = useState(null);
 
@@ -42,9 +44,9 @@ export const EmailStep = (props) => {
       <Image src={`${config.storageUrl}/resources/white-icon-ebombo.png`} width="180px" margin="10px auto" />
 
       <div className="login-container">
-        <div className="subtitle">Añadir identificación del jugador</div>
+        <div className="subtitle">{t("pages.login.email-step.subtitle")}</div>
         <div className="description">
-          El anfitrión del juego ha pedido que coloques tu mail cómo una medida de identificación para entrar al juego
+          {t("pages.login.email-step.description")}
         </div>
 
         <InputBingo
@@ -57,10 +59,10 @@ export const EmailStep = (props) => {
           margin="10px auto"
           defaultValue={authUser?.email ?? null}
           disabled={props.isLoading}
-          placeholder="Ingresa tu email"
+          placeholder={t("pages.login.email-step.placeholder-email-input")}
         />
         <ButtonLobby width="100%" disabled={props.isLoading} htmlType="submit">
-          Ingresar
+          {t("ingress-button-label")}
         </ButtonLobby>
       </div>
     </EmailForm>
