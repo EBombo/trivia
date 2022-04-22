@@ -291,7 +291,7 @@ export const LobbyClosed = (props) => {
       <div className="header">
         {!isVisibleTitle && (
           <ButtonAnt variant="primary" margin="10px 10px auto auto" onClick={initializeTransitionToResume}>
-            {t("pages.lobby.closed.go-back-to-podium-button-label")}
+            {t("next-button-label")}
           </ButtonAnt>
         )}
       </div>
