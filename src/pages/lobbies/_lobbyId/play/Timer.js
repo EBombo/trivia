@@ -1,8 +1,9 @@
-import React, { useGlobal, useState, useEffect, useMemo } from "reactn";
-import { Tablet, Desktop } from "../../../../constants";
+import React, { useEffect, useGlobal, useMemo, useState } from "reactn";
+import { Desktop, Tablet } from "../../../../constants";
 import { useInterval } from "../../../../hooks/useInterval";
 import { useTranslation } from "../../../../hooks";
 import { ANSWERING_QUESTION, QUESTION_TIMEOUT } from "../../../../components/common/DataList";
+import { firestore } from "../../../../firebase";
 
 export const Timer = (props) => {
 
@@ -27,21 +28,39 @@ export const Timer = (props) => {
   useEffect(() => {
     if (!authUser.isAdmin) return;
 
-    props.onUpdateGame?.({ secondsLeft: secondsLeft });
+    const updateSecondsLeftLobby = async () =>
+      await firestore.doc(`lobbies/${props.lobbyId}`).update({
+        "game.secondsLeft": secondsLeft,
+      });
+
+    updateSecondsLeftLobby();
   }, [secondsLeft]);
 
   useInterval(() => {
-    if (secondsLeft === null) return null;
+    if (secondsLeft === null) return;
 
-    // only admin has control over timer
+    // Only admin has control over timer.
     if (!authUser.isAdmin) return;
 
-    if (props.lobby.game.state === QUESTION_TIMEOUT) return null;
+    if (props.lobby.game.state === QUESTION_TIMEOUT) return;
 
-    if (secondsLeft <= 0 && props.lobby.game.state === ANSWERING_QUESTION)
-      return props.onUpdateGame?.({ state: QUESTION_TIMEOUT });
+    if (secondsLeft > 0) return setSecondsLeft(secondsLeft - 1);
 
-    setSecondsLeft(secondsLeft - 1);
+    if (props.lobby.game.state !== ANSWERING_QUESTION) return;
+
+    const finishAnswerTime = async () => {
+      props.setIsGameLoading(true);
+
+      await props.putRankingUsers(props.lobbyId);
+
+      await firestore.doc(`lobbies/${props.lobbyId}`).update({
+        "game.state": QUESTION_TIMEOUT,
+      });
+
+      props.setIsGameLoading(false);
+    };
+
+    finishAnswerTime();
   }, 1000);
 
   return (
@@ -74,6 +93,7 @@ export const Timer = (props) => {
               />
             </svg>
           </Desktop>
+
           <Tablet>
             <svg className="w-20 h-20 mx-4">
               <circle
@@ -108,6 +128,7 @@ export const Timer = (props) => {
             <div className="text-xs md:text-sm hidden md:block">{t("pages.lobby.in-play.seconds")}</div>
           </div>
         </div>
+
         <div className="text-left hidden md:block">{props.label ?? ""}</div>
       </div>
     </div>

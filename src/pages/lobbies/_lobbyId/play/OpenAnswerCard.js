@@ -2,7 +2,7 @@ import React from "reactn";
 import { useForm } from "react-hook-form";
 import { object, string } from "yup";
 import { config } from "../../../../firebase";
-import { Input, ButtonAnt } from "../../../../components/form";
+import { ButtonAnt, Input } from "../../../../components/form";
 import { Image } from "../../../../components/common/Image";
 import { useTranslation } from "../../../../hooks";
 

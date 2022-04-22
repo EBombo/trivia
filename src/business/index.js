@@ -22,7 +22,8 @@ export const getCurrentQuestion = (questions, currentQuestionNumber) =>
 
 // kahoot scoring [1-(r/q/2)]p
 // r = time left, q = total time, p = points
-export const computePointsEarned = (timeLeft, totalTime, point) => (1 - (totalTime - (timeLeft ?? totalTime)) / totalTime / 2) * point;
+export const computePointsEarned = (timeLeft, totalTime, point) =>
+  (1 - (totalTime - (timeLeft ?? totalTime)) / totalTime / 2) * point;
 
 export const checkIsCorrect = (question, answer) => {
   if (question.type === ALTERNATIVES_QUESTION_TYPE) {
@@ -31,8 +32,13 @@ export const checkIsCorrect = (question, answer) => {
     return answers.includes(answer);
   }
 
-  if (question.type === TRUE_FALSE_QUESTION_TYPE) return answer === question.answer;
+  if (question.type === OPEN_QUESTION_TYPE) {
+    const answers = question.answer.map((answer) => answer.toLowerCase().replaceAll(" ", ""));
 
-  if (question.type === OPEN_QUESTION_TYPE)
-    return (question.answer.map(answer => answer.toLowerCase())).includes(answer.toLowerCase());
+    return answers.includes(answer.toLowerCase().replaceAll(" ", ""));
+  }
+
+  /** By default, it will be TRUE_FALSE_QUESTION_TYPE. **/
+  //if (question.type === TRUE_FALSE_QUESTION_TYPE)
+  return answer === question.answer;
 };

@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState } from "reactn";
+import React, { useEffect, useMemo, useState } from "reactn";
 import { useRouter } from "next/router";
 import { firestore } from "../../../../firebase";
 import { spinLoaderMin } from "../../../../components/common/loader";
@@ -28,22 +28,23 @@ export const QuestionResults = (props) => {
   useEffect(() => {
     if (!props.question) return;
 
-    const listenAnswersSnapshot = () => firestore
-      .collection(`lobbies/${lobbyId}/answers`)
-      .where("questionId", "==", props.question?.id)
-      .onSnapshot((answersSnapshot) => {
-        const answerCountMap_ = answersSnapshot.docs.reduce((acc, answerSnapshot) => {
-          const answer = answerSnapshot.data();
+    const listenAnswersSnapshot = () =>
+      firestore
+        .collection(`lobbies/${lobbyId}/answers`)
+        .where("questionId", "==", props.question?.id)
+        .onSnapshot((answersSnapshot) => {
+          const answerCountMap_ = answersSnapshot.docs.reduce((acc, answerSnapshot) => {
+            const answer = answerSnapshot.data();
 
-          if (!(answer.answer in acc)) acc[answer.answer] = { count: 0 };
+            if (!(answer.answer in acc)) acc[answer.answer] = { count: 0 };
 
-          acc[answer.answer].count += 1;
+            acc[answer.answer].count += 1;
 
-          return acc;
-        }, {});
+            return acc;
+          }, {});
 
-        setAnswerCountMap({ ...answerCountMap_ });
-      });
+          setAnswerCountMap({ ...answerCountMap_ });
+        });
 
     const listenAnswersUnsub = listenAnswersSnapshot();
     return () => listenAnswersUnsub && listenAnswersUnsub();

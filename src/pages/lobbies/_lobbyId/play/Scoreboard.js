@@ -1,4 +1,4 @@
-import React, { useGlobal, useMemo, useEffect, useState } from "reactn";
+import React, { useEffect, useGlobal, useMemo, useState } from "reactn";
 import { firestore } from "../../../../firebase";
 import { ButtonAnt } from "../../../../components/form/Button";
 import { snapshotToArray } from "../../../../utils";
@@ -112,7 +112,11 @@ export const Scoreboard = (props) => {
           </div>
         )}
 
-        <div className="mb-6">{rankingUsers.map((user) => <RankingItem user={user}/>)}</div>
+        <div className="mb-6">
+          {rankingUsers.map((user) => (
+            <RankingItem user={user} key={user.userId} />
+          ))}
+        </div>
 
         {!authUser.isAdmin && authUser.rank > DEFAULT_RANKING_LENGTH && (
           <>
@@ -123,7 +127,7 @@ export const Scoreboard = (props) => {
             >
               {t("pages.lobby.in-play.your-rank")}
             </div>
-            <RankingItem user={authUser}/>
+            <RankingItem user={authUser} />
           </>
         )}
 

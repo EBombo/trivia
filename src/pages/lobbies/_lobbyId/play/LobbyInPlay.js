@@ -1,10 +1,10 @@
-import React, { useEffect, useGlobal, useState, useMemo } from "reactn";
+import React, { useEffect, useGlobal, useMemo, useState } from "reactn";
 import { UserLayout } from "../userLayout";
 import { useRouter } from "next/router";
 import { config, firestore } from "../../../../firebase";
 import isEmpty from "lodash/isEmpty";
 import { Image } from "../../../../components/common/Image";
-import { ButtonAnt } from "../../../../components/form/Button";
+import { ButtonAnt } from "../../../../components/form";
 import { InPlayHeader } from "./InPlayHeader";
 import { AnsweringSection } from "./AnsweringSection";
 import { InPlaySpinLoader } from "./InPlaySpinLoader";
@@ -33,17 +33,21 @@ export const LobbyInPlay = (props) => {
 
   const { sendError } = useSendError();
 
-  const [questions] = useState(props.lobby.gameQuestions ?? []);
-
   const [isGameLoading, setIsGameLoading] = useState(false);
-
-  const [showImage, setShowImage] = useState(!(props.lobby.game.state === QUESTION_TIMEOUT));
 
   const [userHasAnswered, setUserHasAnswered] = useState(null);
 
-  const currentQuestionNumber = useMemo(() => props.lobby.game.currentQuestionNumber ?? 1, [props.lobby.game]);
+  const [showImage, setShowImage] = useState(!(props.lobby.game.state === QUESTION_TIMEOUT));
 
-  const question = useMemo(() => {
+  const currentQuestionNumber = useMemo(() => {
+    return props.lobby.game.currentQuestionNumber ?? 1;
+  }, [props.lobby.game]);
+
+  const questions = useMemo(() => {
+    return props.lobby.gameQuestions ?? [];
+  }, [props.lobby]);
+
+  const currentQuestion = useMemo(() => {
     if (isEmpty(questions)) return;
 
     return getCurrentQuestion(questions, currentQuestionNumber);
@@ -54,15 +58,15 @@ export const LobbyInPlay = (props) => {
   }, [props.lobby.game.state]);
 
   useEffect(() => {
-    if (authUser.isAdmin) return;
+    if (authUser?.isAdmin) return;
 
-    if (!question) return;
+    if (!currentQuestion) return;
 
     const fetchUserHasAnswered = async () => {
       const answersQuerySnapshot = await firestore
         .collection(`lobbies/${lobbyId}/answers`)
         .where("userId", "==", authUser.id)
-        .where("questionId", "==", question.id)
+        .where("questionId", "==", currentQuestion.id)
         .get();
 
       const hasAnswered = !answersQuerySnapshot.empty;
@@ -72,23 +76,23 @@ export const LobbyInPlay = (props) => {
     };
 
     fetchUserHasAnswered();
-  }, [question]);
+  }, [currentQuestion, lobbyId, authUser]);
 
   const invalidateQuestion = async () => {
     setIsGameLoading(true);
 
     try {
       await firestore.doc(`lobbies/${lobbyId}`).update({
-        "game.invalidQuestions": (props.lobby.game.invalidQuestions ?? []).concat([question.id]),
+        "game.invalidQuestions": (props.lobby.game.invalidQuestions ?? []).concat([currentQuestion.id]),
       });
-    } catch (e) {
-      sendError(e, "invalidateQuestion");
+    } catch (error) {
+      sendError(error, "invalidateQuestion");
     }
 
     setIsGameLoading(false);
   };
 
-  // only admin calls this function
+  // Only admin calls this function.
   const goToNextQuestion = async () => {
     setIsGameLoading(true);
 
@@ -105,8 +109,8 @@ export const LobbyInPlay = (props) => {
           secondsLeft: parseInt(nextQuestion.time),
         },
       });
-    } catch (e) {
-      sendError(e, "goToNextQuestion");
+    } catch (error) {
+      sendError(error, "goToNextQuestion");
     }
 
     setShowImage(true);
@@ -121,13 +125,15 @@ export const LobbyInPlay = (props) => {
       await firestore.doc(`lobbies/${lobbyId}`).update({
         isClosed: true,
       });
-    } catch (e) {
-      sendError(e, "closeLobby");
+    } catch (error) {
+      sendError(error, "closeLobby");
     }
+
     setIsGameLoading(false);
   };
 
-  if (!question)
+  /** Loading page. **/
+  if (!currentQuestion)
     return (
       <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto text-center flex flex-col justify-center">
         <UserLayout musicPickerSetting volumeSetting lockSetting {...props} />
@@ -137,14 +143,16 @@ export const LobbyInPlay = (props) => {
       </div>
     );
 
+  /** Question logo animation. **/
   if (props.lobby.game?.state === INTRODUCING_QUESTION)
-    return <LobbyQuestionIntroduction question={question} {...props} />;
+    return <LobbyQuestionIntroduction question={currentQuestion} {...props} />;
 
-  // if user has already answered
+  /** If user has already answered. **/
   if (!authUser.isAdmin && props.lobby.game?.state === ANSWERING_QUESTION && userHasAnswered)
     return (
       <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto text-center grid grid-rows-[50px-auto]">
         <UserLayout musicPickerSetting volumeSetting lockSetting {...props} />
+
         <div className="">
           <div className="my-4">
             <InPlaySpinLoader />
@@ -154,6 +162,7 @@ export const LobbyInPlay = (props) => {
       </div>
     );
 
+  /** Show ranking. **/
   if (props.lobby.game?.state === RANKING)
     return (
       <>
@@ -168,25 +177,26 @@ export const LobbyInPlay = (props) => {
       </>
     );
 
+  /** User, show score. **/
   if (props.lobby.game?.state === QUESTION_TIMEOUT && !authUser.isAdmin)
     return (
       <div className="font-['Lato'] font-bold bg-secondary bg-center bg-contain bg-lobby-pattern w-screen overflow-auto text-center">
         <UserLayout musicPickerSetting volumeSetting lockSetting {...props} />
         <div className="min-h-screen flex flex-col justify-center bg-secondaryDark bg-opacity-50">
-          <ResultCard question={question} invalidQuestions={props.lobby.game.invalidQuestions} {...props} />
+          <ResultCard question={currentQuestion} invalidQuestions={props.lobby.game.invalidQuestions} {...props} />
         </div>
       </div>
     );
 
-  // ANSWERING_QUESTION state
+  /** User and Admin, answering question form. **/
   return (
     <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto grid grid-rows-[50px_min-content_auto_60px] 2xl:grid-rows-[50px_auto_auto_75px]">
-      <UserLayout musicPickerSetting volumeSetting lockSetting  {...props} />
+      <UserLayout musicPickerSetting volumeSetting lockSetting {...props} />
 
       <InPlayHeader
-        key={question}
-        time={question?.time}
-        question={question}
+        key={currentQuestion.id}
+        time={currentQuestion?.time}
+        question={currentQuestion}
         onInvalidateQuestion={invalidateQuestion}
         isGameLoading={isGameLoading}
         setIsGameLoading={setIsGameLoading}
@@ -194,8 +204,8 @@ export const LobbyInPlay = (props) => {
       >
         {showImage ? (
           <div className="aspect-[4/1] w-full h-[calc(100%-25px)] bg-secondaryDark mb-2">
-            {question.fileUrl ? (
-              <Image src={question.fileUrl} width="100%" size="contain" noImgTag />
+            {currentQuestion.fileUrl ? (
+              <Image src={currentQuestion.fileUrl} width="100%" size="contain" noImgTag />
             ) : (
               <Image
                 src={`${config.storageUrl}/resources/trivia-brand-logo.svg`}
@@ -206,9 +216,12 @@ export const LobbyInPlay = (props) => {
             )}
           </div>
         ) : (
-          <div className="aspect-[4/1] w-full">{question && <QuestionResults question={question} {...props} />}</div>
+          <div className="aspect-[4/1] w-full">
+            {currentQuestion && <QuestionResults question={currentQuestion} {...props} />}
+          </div>
         )}
 
+        {/** Admin, show result. **/}
         {props.lobby.game.state === QUESTION_TIMEOUT && (
           <div>
             <span className="cursor-pointer underline" onClick={() => setShowImage((oldValue) => !oldValue)}>
@@ -220,17 +233,18 @@ export const LobbyInPlay = (props) => {
 
       <div className="grid md:grid-cols-[1fr_3fr_1fr] bg-secondaryDark bg-opacity-50 pb-2">
         <div className="text-center self-end py-4">
-          {props.lobby.game.state === QUESTION_TIMEOUT && (
+          {props.lobby.game.state === QUESTION_TIMEOUT && authUser?.isAdmin && (
             <span className="text-whiteLight text-lg cursor-pointer" onClick={() => !isGameLoading && closeLobby()}>
               {t("pages.lobby.in-play.finish")}
             </span>
           )}
         </div>
+
         <div className="grid md:grid-cols-2 md:col-start-2 md:col-end-3">
           <AnsweringSection
             setUserHasAnswered={setUserHasAnswered}
             userHasAnswered={userHasAnswered}
-            question={question}
+            question={currentQuestion}
             {...props}
           />
 
@@ -242,7 +256,10 @@ export const LobbyInPlay = (props) => {
                 className="font-bold text-base"
                 width="100%"
                 loading={isGameLoading}
-                disabled={props.lobby.game.state === QUESTION_TIMEOUT}
+                disabled={
+                  props.lobby.game.state === QUESTION_TIMEOUT ||
+                  props.lobby.game.invalidQuestions?.includes(currentQuestion.id)
+                }
                 onClick={() => !isGameLoading && invalidateQuestion()}
               >
                 {t("pages.lobby.in-play.header-invalidate-question-button-label")}
@@ -251,6 +268,7 @@ export const LobbyInPlay = (props) => {
           )}
         </div>
       </div>
+
       <Footer {...props} />
     </div>
   );
