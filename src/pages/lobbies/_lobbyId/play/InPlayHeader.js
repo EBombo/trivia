@@ -15,6 +15,8 @@ export const InPlayHeader = (props) => {
   const { Fetch } = useFetch();
   const { sendError } = useSendError();
 
+  const { t } = useTranslation();
+
   const [authUser] = useGlobal("user");
 
   const answersCount = useMemo(() => {

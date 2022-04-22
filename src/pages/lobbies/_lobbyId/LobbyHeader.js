@@ -292,7 +292,7 @@ export const LobbyHeader = (props) => {
               await updateLobby(new Date());
             }}
           >
-            {t("pages.login.start-button-label")}:
+            {t("pages.login.start-button-label")}
           </ButtonAnt>
         </div>
       )}

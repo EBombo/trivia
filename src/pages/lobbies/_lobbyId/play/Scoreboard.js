@@ -71,7 +71,7 @@ export const Scoreboard = (props) => {
 
       const user_ = userSnapshot.data();
 
-      setAuthUser({ ...authUser, rank: user_.rank, score: user_.score });
+      setAuthUser({ ...authUser, rank: user_?.rank, score: user_?.score });
     };
 
     fetchUserStats();
