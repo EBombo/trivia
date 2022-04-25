@@ -17,7 +17,7 @@ const Login = (props) => {
   const router = useRouter();
   const { pin } = router.query;
 
-  const { t } = useTranslation();
+  const { t, SwitchTranslation } = useTranslation();
 
   const [, setAuthUserLs] = useUser();
   const [authUser, setAuthUser] = useGlobal("user");
@@ -188,7 +188,11 @@ const Login = (props) => {
   );
 
   return (
-    <div className="bg-secondary w-full h-screen bg-center bg-contain bg-lobby-pattern">
+    <div className="relative bg-secondary w-full h-screen bg-center bg-contain bg-lobby-pattern">
+      <div className="absolute top-4 right-4 lg:top-10 lg:right-10">
+        <SwitchTranslation />
+      </div>
+      
       <div className="p-[10px] max-w-[400px] my-0 mx-auto">
         {!authUser?.lobby && (
           <>
