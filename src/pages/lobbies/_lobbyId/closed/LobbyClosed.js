@@ -1,21 +1,21 @@
-import React, { useEffect, useGlobal, useMemo, useState } from "reactn";
-import styled, { keyframes } from "styled-components";
-import { useRouter } from "next/router";
-import { timeoutPromise } from "../../../../utils/promised";
-import { Desktop, mediaQuery, Tablet } from "../../../../constants";
-import { Winner } from "./Winner";
-import { ButtonAnt } from "../../../../components/form";
+import React, {useEffect, useGlobal, useMemo, useState} from "reactn";
+import styled, {keyframes} from "styled-components";
+import {useRouter} from "next/router";
+import {timeoutPromise} from "../../../../utils/promised";
+import {Desktop, mediaQuery, Tablet} from "../../../../constants";
+import {Winner} from "./Winner";
+import {ButtonAnt} from "../../../../components/form";
 import {
-  fadeInLeftBig,
-  fadeInRightBig,
-  fadeInUp,
-  fadeOutLeftBig,
-  fadeOutRightBig,
-  fadeOutUpBig,
+    fadeInLeftBig,
+    fadeInRightBig,
+    fadeInUp,
+    fadeOutLeftBig,
+    fadeOutRightBig,
+    fadeOutUpBig,
 } from "react-animations";
-import { config, firestore } from "../../../../firebase";
-import { Image } from "../../../../components/common/Image";
-import { snapshotToArray } from "../../../../utils";
+import {config, firestore} from "../../../../firebase";
+import {Image} from "../../../../components/common/Image";
+import {snapshotToArray} from "../../../../utils";
 
 export const LobbyClosed = (props) => {
   const router = useRouter();
@@ -133,7 +133,7 @@ export const LobbyClosed = (props) => {
         <div className="grid grid-cols-[1fr_2fr] w-full">
           <Image src={`${config.storageUrl}/resources/attendees.png`} width="55px" desktopWidth="75px" />
           <div className="self-center justify-self-start">
-            <div className="text-3xl md:text-4xl text-left">{users.length}</div>
+            <div className="text-3xl md:text-4xl text-left">{users?.length}</div>
             <div className="text-xl md:text-3xl">Participantes</div>
           </div>
         </div>
@@ -229,7 +229,7 @@ export const LobbyClosed = (props) => {
           {props.lobby.winners?.map((winner, index) => (
             <Winner winner={winner} index={index} key={index} isList />
           ))}
-          {rankingUsers.slice(props.lobby.winners.length)?.map((winner, index) => (
+          {rankingUsers.slice(props.lobby.winners?.length)?.map((winner, index) => (
             <Winner winner={winner} index={index} key={index} isList />
           ))}
         </div>
