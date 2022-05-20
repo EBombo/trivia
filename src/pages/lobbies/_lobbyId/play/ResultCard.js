@@ -3,11 +3,14 @@ import { useRouter } from "next/router";
 import { config, firestore } from "../../../../firebase";
 import { InPlaySpinLoader } from "./InPlaySpinLoader";
 import { Image } from "../../../../components/common/Image";
+import { useTranslation } from "../../../../hooks";
 
 export const ResultCard = (props) => {
   const router = useRouter();
 
   const { lobbyId } = router.query;
+
+  const { t } = useTranslation();
 
   const [authUser] = useGlobal("user");
 
@@ -63,8 +66,7 @@ export const ResultCard = (props) => {
             <Image src={`${config.storageUrl}/resources/cross-with-depth.svg`} width="16px" />
           )}
         </span>
-
-        {isCorrect ? "Respuesta correcta" : "Respuesta incorrecta"}
+        {isCorrect ? t("pages.lobby.in-play.correct-answer") : t("pages.lobby.in-play.incorrect-answer")}
       </div>
 
       {isCorrect ? (
@@ -73,18 +75,21 @@ export const ResultCard = (props) => {
             <span className="inline-block py-4 align-middle">
               <Image src={`${config.storageUrl}/resources/red-fire-streak.svg`} size="contain" width="12px" />
             </span>
-            Racha de respuestas: {streakCount}
+            {t("pages.lobby.in-play.answers-streak")}: {streakCount}
           </div>
-          <div className="text-black text-3xl py-8">+{pointsEarned?.toFixed(1)} puntos</div>
+          <div className="text-black text-3xl py-8">
+            +{pointsEarned?.toFixed(1)} {t("pages.lobby.in-play.points")}
+          </div>
         </>
       ) : (
-        <div className="text-secondaryDarken">¡Hay que mantener la cabeza en el juego!</div>
+        <div className="text-secondaryDarken">{t("pages.lobby.in-play.help-phrase-after-fail")} </div>
       )}
 
-      <div className="text-black">Puntaje actual: {userScore?.toFixed(1)} pts</div>
-
       <div className="text-black">
-        Puesto: {userRank}/{usersSize !== 0 ? usersSize : "--"}
+        {t("pages.lobby.in-play.current-score")}: {userScore?.toFixed(1)} pts
+      </div>
+      <div className="text-black">
+        {t("pages.lobby.in-play.rank")}: {userRank}/{usersSize !== 0 ? usersSize : "--"}
       </div>
     </div>
   );

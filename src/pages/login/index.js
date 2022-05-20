@@ -4,7 +4,7 @@ import { NicknameStep } from "./NicknameStep";
 import { snapshotToArray } from "../../utils";
 import { EmailStep } from "./EmailStep";
 import { useRouter } from "next/router";
-import { useUser } from "../../hooks";
+import { useUser, useTranslation } from "../../hooks";
 import { PinStep } from "./PinStep";
 import { avatars } from "../../components/common/DataList";
 import { Anchor } from "../../components/form";
@@ -17,6 +17,8 @@ const Login = (props) => {
   const router = useRouter();
   const { pin } = router.query;
 
+  const { t, SwitchTranslation } = useTranslation();
+
   const [, setAuthUserLs] = useUser();
   const [authUser, setAuthUser] = useGlobal("user");
 
@@ -27,11 +29,11 @@ const Login = (props) => {
       // Fetch lobby.
       const lobbyRef = await firestore.collection("lobbies").where("pin", "==", pin.toString()).limit(1).get();
 
-      if (lobbyRef.empty) throw Error("No encontramos tu sala, intenta nuevamente");
+      if (lobbyRef.empty) throw Error(t("pages.login.game-not-found"));
 
       const currentLobby = snapshotToArray(lobbyRef)[0];
 
-      if (currentLobby?.isLocked) throw Error("Este juego esta cerrado");
+      if (currentLobby?.isLocked) throw Error(t("pages.login.game-is-closed"));
 
       if (currentLobby?.isClosed) {
         await setAuthUser({
@@ -42,7 +44,7 @@ const Login = (props) => {
           nickname: authUser.nickname,
         });
 
-        throw Error("Esta sala ha concluido");
+        throw Error(t("pages.login.lobby-is-over"));
       }
 
       const isAdmin = !!currentLobby?.game?.usersIds?.includes(authUser.id);
@@ -178,7 +180,7 @@ const Login = (props) => {
             });
           }}
         >
-          Volver
+          {t("pages.login.go-back")}
         </Anchor>
       </div>
     ),
@@ -186,40 +188,44 @@ const Login = (props) => {
   );
 
   return (
-    <div className="bg-secondary w-full h-screen bg-center bg-contain bg-lobby-pattern">
+    <div className="relative bg-secondary w-full h-screen bg-center bg-contain bg-lobby-pattern">
+      <div className="absolute top-4 right-4 lg:top-10 lg:right-10">
+        <SwitchTranslation />
+      </div>
+      
       <div className="p-[10px] max-w-[400px] my-0 mx-auto">
         {!authUser?.lobby && (
           <>
             <PinStep isLoading={isLoading} setIsLoading={setIsLoading} fetchLobby={fetchLobby} {...props} />
-
-            {(authUser?.email || authUser?.nickname) && (
-              <div className="back">
-                <Tooltip title={`email: ${authUser.email} nickname: ${authUser.nickname}`} placement="bottom">
-                  <Anchor
-                    underlined
-                    variant="white"
-                    fontSize="11px"
-                    margin="10px auto"
-                    onClick={async () => {
-                      await setAuthUser({
-                        ...authUser,
-                        email: null,
-                        nickname: null,
-                        lobby: null,
-                      });
-                      setAuthUserLs({
-                        ...authUser,
-                        email: null,
-                        nickname: null,
-                        lobby: null,
-                      });
-                    }}
-                  >
-                    Remover email y nickname
-                  </Anchor>
-                </Tooltip>
-              </div>
-            )}
+            {authUser?.email ||
+              (authUser?.nickname && (
+                <div className="back">
+                  <Tooltip title={`email: ${authUser.email} nickname: ${authUser.nickname}`} placement="bottom">
+                    <Anchor
+                      underlined
+                      variant="white"
+                      fontSize="11px"
+                      margin="10px auto"
+                      onClick={async () => {
+                        await setAuthUser({
+                          ...authUser,
+                          email: null,
+                          nickname: null,
+                          lobby: null,
+                        });
+                        setAuthUserLs({
+                          ...authUser,
+                          email: null,
+                          nickname: null,
+                          lobby: null,
+                        });
+                      }}
+                    >
+                      {t("pages.login.remove-email-nickname")}
+                    </Anchor>
+                  </Tooltip>
+                </div>
+              ))}
           </>
         )}
 

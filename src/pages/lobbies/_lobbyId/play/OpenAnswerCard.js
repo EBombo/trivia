@@ -4,8 +4,11 @@ import { object, string } from "yup";
 import { config } from "../../../../firebase";
 import { ButtonAnt, Input } from "../../../../components/form";
 import { Image } from "../../../../components/common/Image";
+import { useTranslation } from "../../../../hooks";
 
 export const OpenAnswerCard = (props) => {
+  const { t } = useTranslation();
+
   const schema = object().shape({
     answer: string().required(),
   });
@@ -50,7 +53,7 @@ export const OpenAnswerCard = (props) => {
             size="big"
             disabled={props.isAnswered}
           >
-            <span className="font-bold text-lg px-4">Enviar</span>
+            <span className="font-bold text-lg px-4">{t("pages.lobby.in-play.send-button-label")}</span>
           </ButtonAnt>
         </div>
       </form>

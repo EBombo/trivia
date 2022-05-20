@@ -6,7 +6,7 @@ import { ButtonAnt } from "../../../../components/form";
 import { config, firestore } from "../../../../firebase";
 import { ANSWERING_QUESTION, QUESTION_TIMEOUT, RANKING } from "../../../../components/common/DataList";
 import { useFetch } from "../../../../hooks/useFetch";
-import { useSendError } from "../../../../hooks";
+import { useSendError, useTranslation } from "../../../../hooks";
 
 export const InPlayHeader = (props) => {
   const router = useRouter();
@@ -14,6 +14,8 @@ export const InPlayHeader = (props) => {
 
   const { Fetch } = useFetch();
   const { sendError } = useSendError();
+
+  const { t } = useTranslation();
 
   const [authUser] = useGlobal("user");
 
@@ -96,7 +98,7 @@ export const InPlayHeader = (props) => {
                   props.lobby.game.invalidQuestions?.includes(props.question.id)
                 }
               >
-                Invalidar pregunta
+                {t("pages.lobby.in-play.header-invalidate-question-button-label")}
               </ButtonAnt>
             </div>
           )}
@@ -118,15 +120,14 @@ export const InPlayHeader = (props) => {
                 loading={props.isGameLoading}
                 onClick={() => goToRanking()}
               >
-                Siguiente
+                {t("next-button-label")}
               </ButtonAnt>
             </div>
           )}
 
           <div className="min-h-[120px] flex flex-col justify-center md:justify-start">
             <div className="text-3xl md:text-5xl">{answersCount}</div>
-
-            <div className="text-base">respuestas</div>
+            <div className="text-base">{t("pages.lobby.in-play.header-answers")}</div>
           </div>
         </div>
       </div>

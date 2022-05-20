@@ -6,10 +6,13 @@ import { languages } from "./common/DataList";
 import defaultTo from "lodash/defaultTo";
 import { config, firestore } from "../firebase";
 import { Image } from "./common/Image";
+import { useTranslation } from "../hooks";
 
 const { Panel } = Collapse;
 
 export const GameMenu = (props) => {
+  const { t } = useTranslation();
+
   const [awards, setAwards] = useState([
     {
       name: "",
@@ -40,8 +43,8 @@ export const GameMenu = (props) => {
         {props.showChooseGameMode && (
           <div className="grid grid-cols-1	gap-[5px] p-[5px] pt-[10px]">
             <div className="font-['Lato'] p-[15px] text-[15px] font-bold leading-8 rounded-[4px] items-center bg-primary">
-              <div className="w-full text-center">Jugadores vs Jugadores</div>
-              <div className="w-full text-center mb-2">1:1 dispositivos</div>
+              <div className="w-full text-center">{t("pages.lobby.game-settings.players-vs-players")}</div>
+              <div className="w-full text-center mb-2">{t("pages.lobby.game-settings.one-one-devices")}</div>
               <ButtonAnt
                 className="font-bold"
                 color="success"
@@ -50,23 +53,23 @@ export const GameMenu = (props) => {
                 disabled={props.isLoadingSave}
                 onClick={() => props.createLobby("individual")}
               >
-                Clásico
+                {t("pages.lobby.game-settings.classic-button-label")}
               </ButtonAnt>
             </div>
           </div>
         )}
 
         <Collapse defaultActiveKey={["1"]} accordion className="border-none">
-          <Panel header="Opciones del juego" key="1">
+          <Panel header={t("pages.lobby.game-settings.options-game-title")} key="1">
             <div className="options">
               <div className="mb-3 py-3 text-center font-bold bg-whiteLight rounded-[2px] shadow-[0px_4px_0px_rgb(196,196,196)]">
-                Recomendado
+                {t("pages.lobby.game-settings.recommended")}
               </div>
 
               <div className="grid grid-cols-[6fr_2fr] items-center mx-auto my-[2px] px-[10px] py-[5px] text-[13px] leading-[16px] bg-primaryDarken rounded-[2px] text-whiteLight">
                 <div>
-                  <div className="font-bold">Identificador de jugador</div>
-                  <span>Conoce el nombre de la persona atrás del nickname</span>
+                  <div className="font-bold">{t("pages.lobby.game-settings.identify-players-label")}</div>
+                  <span>{t("pages.lobby.game-settings.identify-players-description")}</span>
                 </div>
                 <div className="justify-self-end mt-4">
                   <Switch defaultChecked={userIdentity} onChange={() => setUserIdentity(!userIdentity)} />
@@ -74,12 +77,12 @@ export const GameMenu = (props) => {
               </div>
 
               <div className="mt-3 mb-3 py-3 text-center font-bold bg-whiteLight rounded-[2px] shadow-[0px_4px_0px_rgb(196,196,196)]">
-                General
+                {t("pages.lobby.game-settings.general")}
               </div>
 
               <div className="grid grid-cols-[5fr_3fr] items-center mx-auto my-[2px] px-[10px] py-[5px] text-[13px] leading-[16px] bg-primaryDarken rounded-[2px] text-whiteLight">
                 <div>
-                  <div className="font-bold">Idioma</div>
+                  <div className="font-bold">{t("pages.lobby.game-settings.language")}</div>
                 </div>
                 <Select
                   defaultValue={props.settings?.language ?? languages[0].name}
@@ -95,7 +98,7 @@ export const GameMenu = (props) => {
 
               <div className="grid grid-cols-[5fr_3fr] items-center mx-auto my-[2px] px-[10px] py-[5px] text-[13px] leading-[16px] bg-primaryDarken rounded-[2px] text-whiteLight">
                 <div>
-                  <div className="font-bold">Música en el Lobby</div>
+                  <div className="font-bold">{t("pages.lobby.game-settings.lobby-music-title")}</div>
                 </div>
                 <Select
                   defaultValue={props.game?.audio?.id ?? props.audios[0]?.id}
@@ -111,7 +114,7 @@ export const GameMenu = (props) => {
 
               <div className="grid grid-cols-[5fr_3fr] items-center mx-auto my-[2px] px-[10px] py-[5px] text-[13px] leading-[16px] bg-primaryDarken rounded-[2px] text-whiteLight">
                 <div>
-                  <div className="font-bold">Premio</div>
+                  <div className="font-bold">{t("pages.lobby.game-settings.prize")}</div>
                 </div>
                 <div className="justify-self-end mt-4">
                   <Switch defaultChecked={showAwards} onChange={() => setShowAwards(!showAwards)} />
@@ -171,7 +174,7 @@ export const GameMenu = (props) => {
                       ]);
                     }}
                   >
-                    Agregar
+                    {t("pages.lobby.game-settings.add-button-label")}
                   </ButtonAnt>
                 </div>
               )}

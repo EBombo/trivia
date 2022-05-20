@@ -7,11 +7,14 @@ import styled from "styled-components";
 import { object, string } from "yup";
 import { useUser } from "../../hooks";
 import { ValidateNickname } from "./ValidateNickname";
+import { useTranslation } from "../../hooks";
 
 export const NicknameStep = (props) => {
   const [, setAuthUserLs] = useUser();
 
   const [authUser, setAuthUser] = useGlobal("user");
+
+  const { t } = useTranslation();
 
   const validationSchema = object().shape({
     nickname: string().required(),
@@ -53,7 +56,7 @@ export const NicknameStep = (props) => {
         />
 
         <ButtonLobby width="100%" disabled={props.isLoading} loading={props.isLoading} htmlType="submit">
-          Ingresar
+          {t("ingress-button-label")}
         </ButtonLobby>
       </div>
     </NicknameForm>

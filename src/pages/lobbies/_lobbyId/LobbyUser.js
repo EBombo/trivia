@@ -15,6 +15,7 @@ import { Image } from "../../../components/common/Image";
 import debounce from "lodash/debounce";
 import moment from "moment";
 import { UserLayout } from "./userLayout";
+import { useTranslation } from "../../../hooks";
 
 const userListSizeRatio = 50;
 const currentTime = moment().format("x");
@@ -22,6 +23,8 @@ const currentTime = moment().format("x");
 export const LobbyUser = (props) => {
   const router = useRouter();
   const { lobbyId } = router.query;
+
+  const { t } = useTranslation();
 
   const [authUser] = useGlobal("user");
 
@@ -171,15 +174,17 @@ export const LobbyUser = (props) => {
         <div className="px-[15px] py-[10px] md: px-[5px]">
           {!authUser?.isAdmin && (
             <div className="notification-joint-user font-bold text-white bg-green-800 text-center sm:text-lg py-2">
-              Entró correctamente al juego.
-              <div className="inline-block bg-primary p-2 m-2 rounded shadow-xl">{authUser.nickname} (Tú)</div>
+              {t("pages.login.player-in-lobby-label")}
+              <div className="inline-block bg-primary p-2 m-2 rounded shadow-xl">
+                {authUser.nickname} ({t("pages.login.you")})
+              </div>
             </div>
           )}
 
           <Tablet>
             {!authUser?.isAdmin && (
               <div className="font-bold text-white text-lg text-center my-4">
-                El administrador iniciará el juego pronto
+                {t("pages.login.admin-would-start-the-game-soon")}
               </div>
             )}
             <div className="user-count bg-primaryDark text-white font-bold rounded m-4 py-2 px-4 self-end w-min">

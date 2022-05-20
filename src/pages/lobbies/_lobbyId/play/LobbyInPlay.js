@@ -20,12 +20,14 @@ import {
   QUESTION_TIMEOUT,
   RANKING,
 } from "../../../../components/common/DataList";
-import { useSendError } from "../../../../hooks";
+import { useSendError, useTranslation } from "../../../../hooks";
 
 export const LobbyInPlay = (props) => {
   const router = useRouter();
 
   const { lobbyId } = router.query;
+
+  const { t } = useTranslation();
 
   const [authUser] = useGlobal("user");
 
@@ -155,8 +157,7 @@ export const LobbyInPlay = (props) => {
           <div className="my-4">
             <InPlaySpinLoader />
           </div>
-
-          <div className="font-bold text-whiteLight text-xl">¿Te sientes confiado?</div>
+          <div className="font-bold text-whiteLight text-xl">{t("pages.lobby.in-play.waiting-label")}</div>
         </div>
       </div>
     );
@@ -224,7 +225,7 @@ export const LobbyInPlay = (props) => {
         {props.lobby.game.state === QUESTION_TIMEOUT && (
           <div>
             <span className="cursor-pointer underline" onClick={() => setShowImage((oldValue) => !oldValue)}>
-              Mostrar imagen
+              {t("pages.lobby.in-play.show-image")}
             </span>
           </div>
         )}
@@ -234,7 +235,7 @@ export const LobbyInPlay = (props) => {
         <div className="text-center self-end py-4">
           {props.lobby.game.state === QUESTION_TIMEOUT && authUser?.isAdmin && (
             <span className="text-whiteLight text-lg cursor-pointer" onClick={() => !isGameLoading && closeLobby()}>
-              Finalizar
+              {t("pages.lobby.in-play.finish")}
             </span>
           )}
         </div>
@@ -261,7 +262,7 @@ export const LobbyInPlay = (props) => {
                 }
                 onClick={() => !isGameLoading && invalidateQuestion()}
               >
-                Invalidar pregunta
+                {t("pages.lobby.in-play.header-invalidate-question-button-label")}
               </ButtonAnt>
             </div>
           )}
