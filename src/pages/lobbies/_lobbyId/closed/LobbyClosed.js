@@ -1,17 +1,17 @@
-import React, { useEffect, useGlobal, useMemo, useState } from "reactn";
-import styled, { keyframes } from "styled-components";
-import { useRouter } from "next/router";
-import { timeoutPromise } from "../../../../utils/promised";
-import { Desktop, mediaQuery, Tablet } from "../../../../constants";
-import { Winner } from "./Winner";
-import { ButtonAnt } from "../../../../components/form";
+import React, {useEffect, useGlobal, useMemo, useState} from "reactn";
+import styled, {keyframes} from "styled-components";
+import {useRouter} from "next/router";
+import {timeoutPromise} from "../../../../utils/promised";
+import {Desktop, mediaQuery, Tablet} from "../../../../constants";
+import {Winner} from "./Winner";
+import {ButtonAnt} from "../../../../components/form";
 import {
-  fadeInLeftBig,
-  fadeInRightBig,
-  fadeInUp,
-  fadeOutLeftBig,
-  fadeOutRightBig,
-  fadeOutUpBig,
+    fadeInLeftBig,
+    fadeInRightBig,
+    fadeInUp,
+    fadeOutLeftBig,
+    fadeOutRightBig,
+    fadeOutUpBig,
 } from "react-animations";
 import { config, firestore } from "../../../../firebase";
 import { Image } from "../../../../components/common/Image";
