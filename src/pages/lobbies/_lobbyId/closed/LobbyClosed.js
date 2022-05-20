@@ -136,7 +136,7 @@ export const LobbyClosed = (props) => {
         <div className="grid grid-cols-[1fr_2fr] w-full">
           <Image src={`${config.storageUrl}/resources/attendees.png`} width="55px" desktopWidth="75px" />
           <div className="self-center justify-self-start">
-            <div className="text-3xl md:text-4xl text-left">{users.length}</div>
+            <div className="text-3xl md:text-4xl text-left">{users?.length}</div>
             <div className="text-xl md:text-3xl">{t("pages.lobby.closed.assistants")}</div>
           </div>
         </div>
