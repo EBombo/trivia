@@ -96,7 +96,7 @@ export const LobbyHeader = (props) => {
             .doc(lobbyId)
             .collection("users")
             .doc(user.id)
-            .set({ ...user, option: user.username })
+            .set({ ...user, option: user.username }, { merge: true })
       );
 
       await Promise.all(promisesUsers);
