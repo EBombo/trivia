@@ -163,8 +163,7 @@ export const LobbyUser = (props) => {
   const reserveLobbySeat = async (lobbyId, userId, newUser) => {
     try {
       const fetchProps = {
-        // url: `${config.serverUrlLocal}/${gameName}/lobbies/${lobbyId}/seat`,
-        url: `http://localhost:3002/api/trivia/lobbies/${lobbyId}/seat`,
+        url: `${config.serverUrlBomboGames}/${gameName}/lobbies/${lobbyId}/seat`,
         method: "PUT",
       };
 
