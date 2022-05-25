@@ -129,7 +129,7 @@ export const LobbyInPlay = (props) => {
         updateAt: endTime,
       });
 
-      const bomboGamesCloseLobbyPromise = firestoreBomboGames.doc(`lobbies/${props.lobby.id}`).set(
+      const bomboGamesCloseLobbyPromise = firestoreBomboGames.doc(`lobbies/${lobbyId}`).set(
         {
           ...props.lobby,
           isClosed: true,
