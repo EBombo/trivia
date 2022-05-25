@@ -192,7 +192,7 @@ const Login = (props) => {
       <div className="absolute top-4 right-4 lg:top-10 lg:right-10">
         <SwitchTranslation />
       </div>
-      
+
       <div className="p-[10px] max-w-[400px] my-0 mx-auto">
         {!authUser?.lobby && (
           <>

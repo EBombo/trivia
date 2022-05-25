@@ -42,24 +42,27 @@ export const useTranslation = (path) => {
     [TRANSLATIONS, locale, path]
   );
 
-  const SwitchTranslation = useCallback(() => (
-    <StyledSwitch onClick={() => inputRef?.current?.click()}>
-      <input
-        ref={inputRef}
-        id="language-toggle"
-        className="check-toggle check-toggle-round-flat"
-        type="checkbox"
-        checked={locale === locales[1] ? true : false}
-        onChange={(event) => {
-          event.preventDefault();
-          setLocale(event.target.checked ? locales[1] : locales[0]);
-        }}
-      />
-      <label htmlFor="language-toggle" />
-      <span className="on">EN</span>
-      <span className="off">ES</span>
-    </StyledSwitch>
-  ), [locale]);
+  const SwitchTranslation = useCallback(
+    () => (
+      <StyledSwitch onClick={() => inputRef?.current?.click()}>
+        <input
+          ref={inputRef}
+          id="language-toggle"
+          className="check-toggle check-toggle-round-flat"
+          type="checkbox"
+          checked={locale === locales[1] ? true : false}
+          onChange={(event) => {
+            event.preventDefault();
+            setLocale(event.target.checked ? locales[1] : locales[0]);
+          }}
+        />
+        <label htmlFor="language-toggle" />
+        <span className="on">EN</span>
+        <span className="off">ES</span>
+      </StyledSwitch>
+    ),
+    [locale]
+  );
 
   return { t, locales, locale, setLocale, SwitchTranslation };
 };
