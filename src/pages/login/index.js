@@ -120,7 +120,11 @@ const Login = (props) => {
       // Check if seat was granted.
       if (!success) {
         // Lobby is full. User cannot get into the lobby.
-        props.showNotification("Lobby lleno!", "No se puede ingresar debido a que el límite de lobby ha sido superado", "error");
+        props.showNotification(
+          "Lobby lleno!",
+          "No se puede ingresar debido a que el límite de lobby ha sido superado",
+          "error"
+        );
 
         return setAuthUser({
           id: firestore.collection("users").doc().id,
@@ -205,7 +209,7 @@ const Login = (props) => {
       <div className="absolute top-4 right-4 lg:top-10 lg:right-10">
         <SwitchTranslation />
       </div>
-      
+
       <div className="p-[10px] max-w-[400px] my-0 mx-auto">
         {!authUser?.lobby && (
           <>

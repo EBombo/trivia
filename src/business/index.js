@@ -4,7 +4,7 @@ import {
   OPEN_QUESTION_TYPE,
   TRUE_FALSE_QUESTION_TYPE,
 } from "../components/common/DataList";
-import { config } from "../firebase"
+import { config } from "../firebase";
 
 export const ANIMATION = {
   min: 4,
