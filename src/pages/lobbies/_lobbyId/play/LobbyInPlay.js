@@ -1,7 +1,7 @@
 import React, { useEffect, useGlobal, useMemo, useState } from "reactn";
 import { UserLayout } from "../userLayout";
 import { useRouter } from "next/router";
-import { config, firestore } from "../../../../firebase";
+import { config, firestore, firestoreBomboGames } from "../../../../firebase";
 import isEmpty from "lodash/isEmpty";
 import { Image } from "../../../../components/common/Image";
 import { ButtonAnt } from "../../../../components/form";
