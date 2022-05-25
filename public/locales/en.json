@@ -1,0 +1,105 @@
+{
+  "en": "English",
+  "es": "Spanish",
+  "language": "Language",
+  "ingress": "Continue",
+  "ingress-button-label": "Continue",
+  "ok-button-label": "Ok",
+  "next-button-label": "Next",
+  "of-step": "out of",
+  "website": "ebombo.io",
+  "www-website": "www.ebombo.io",
+  "nav": {
+    "exit": "Exit",
+    "copy-link-label": "Click here to copy game link with PIN",
+    "link-copied": "Link copiado!"
+  },
+  "footer": {
+    "visit-label": "Visit"
+  },
+  "pages": {
+    "register": {
+      "title": "Sign up",
+      "register-button-label": "Register"
+    },
+    "login": {
+      "copy-link-label": "Click here to copy game link with PIN",
+      "link-copied": "Link copied!",
+      "game-is-blocked": "This game is blocked",
+      "game-is-closed": "This game is closed",
+      "game-not-found": "Lobby not found, try again",
+      "lobby-is-over": "This lobby is finished",
+      "visit": "Visit",
+      "pin-step-label": "Pin of the game",
+      "start-button-label": "Empezar",
+      "player-in-lobby-label": "You are in the lobby!",
+      "you": "You",
+      "admin-would-start-the-game-soon": "Admin will start the game in a moment",
+      "remove-email-nickname": "Remove email and nickname",
+      "go-back": "Go back",
+      "email-step": {
+        "subtitle": "Add player identification",
+        "description": "El anfitrión del juego ha pedido que coloques tu mail cómo una medida de identificación para entrar al juego",
+        "placeholder-email-input": "Fill in your email"
+      },
+      "modal-container-title": "Identificación del jugador grabada",
+      "modal-container-description": "",
+      "nickname-step-input-placeholder": "Nickname",
+      "already-registered-nikname-error-message": "nickname already registered",
+      "pin-step-input-placeholder": "Pin of the game",
+      "verify-nickname-title": "Verifying your nickname"
+    },
+    "lobby": {
+      "closed": {
+        "assistants": "Assistants",
+        "play-again-label": "Had you all have fun?",
+        "answers-label": "Correct",
+        "corrects-label": "answers",
+        "play-again-button-label": "Play again",
+        "messages-label": "messages",
+        "see-full-report-button-label": "See full report",
+        "go-back-button-label": "Go back",
+        "log-out-button-label": "Log out",
+        "go-back-to-podium-button-label": "Go back to podium",
+        "see-all-positions-label": "See all positions"
+      },
+      "login": {},
+      "game-settings": {
+        "players-vs-players": "Players vs Players",
+        "one-one-devices": "1:1 devices",
+        "classic-button-label": "Classic",
+        "recommended": "Recommended",
+        "identify-players-label": "Players ID",
+        "identify-players-description": "Know name's person besides his/her nickname",
+        "options-game-title": "Game options",
+        "general": "General",
+        "lobby-music-title": "Music on the Lobby",
+        "prize": "Prize",
+        "add-button-label": "Add"
+      },
+      "loading": {
+        "get-into-ebombo": "Visit www.ebombo.io",
+        "get-ready": "Get Ready!"
+      },
+      "in-play": {
+        "header-invalidate-question-button-label": "Invalidate question",
+        "header-answers": "answers",
+        "waiting-label": "Do you feel confident?",
+        "show-image": "Show Image",
+        "finish": "Finish",
+        "send-button-label": "Enviar",
+        "seconds": "seconds",
+        "correct-answer": "Correct answer",
+        "incorrect-answer": "Incorrect answer",
+        "answers-streak": "Answers streak",
+        "points": "points",
+        "rank": "Rank",
+        "help-phrase-after-fail": "¡Keep going!",
+        "current-score": "Current score",
+        "your-rank": "Your rank",
+        "true": "True",
+        "false": "False"
+      }
+    }
+  }
+}

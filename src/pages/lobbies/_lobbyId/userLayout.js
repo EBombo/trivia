@@ -6,10 +6,13 @@ import { config, firestore, firestoreBomboGames, hostName } from "../../../fireb
 import { Image } from "../../../components/common/Image";
 import { LoadingOutlined, MessageOutlined } from "@ant-design/icons";
 import { ButtonAnt } from "../../../components/form";
+import { useTranslation } from "../../../hooks";
 
 export const UserLayout = (props) => {
   const [authUser] = useGlobal("user");
   const [audios] = useGlobal("audios");
+
+  const { t } = useTranslation();
 
   const [volume, setVolume] = useState(30);
   const [isPlay, setIsPlay] = useState(true);
@@ -151,16 +154,16 @@ export const UserLayout = (props) => {
           </div>
         )}
         <div className="title no-wrap">
-          <Tooltip placement="bottom" title="Click aquí para copiar el link de ebombo con pin">
+          <Tooltip placement="bottom" title={t("pages.login.copy-link-label")}>
             <div
               className="label"
               onClick={() => {
                 navigator.clipboard.writeText(`${hostName}/?pin=${props.lobby?.pin}`);
-                props.showNotification("OK", "Link copiado!", "success");
+                props.showNotification("OK", t("pages.login.link-copied"), "success");
               }}
             >
               {props.lobby.isLocked ? (
-                "Este juego esta bloqueado"
+                t("pages.login.game-is-blocked")
               ) : (
                 <>
                   <span className="font-black">
@@ -207,7 +210,7 @@ export const UserLayout = (props) => {
                   }}
                   style={{ cursor: "pointer" }}
                 >
-                  Salir
+                  {t("nav.exit")}
                 </div>
               </div>
             }
