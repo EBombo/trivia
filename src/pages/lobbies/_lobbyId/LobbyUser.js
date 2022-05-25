@@ -16,6 +16,7 @@ import debounce from "lodash/debounce";
 import moment from "moment";
 import { UserLayout } from "./userLayout";
 import { useFetch } from "../../../hooks/useFetch";
+import { reserveLobbySeat } from "../../../business";
 
 const userListSizeRatio = 50;
 const currentTime = moment().format("x");
@@ -120,7 +121,7 @@ export const LobbyUser = (props) => {
         const verifyLobbyAvailability = async () => {
           setIsPageLoading(true);
 
-          const result = await reserveLobbySeat(props.lobby.id, authUser.id, null);
+          const result = await reserveLobbySeat(Fetch, props.lobby.id, authUser.id, null);
 
           if (!result.success) {
             props.logout();
@@ -159,27 +160,6 @@ export const LobbyUser = (props) => {
       userRef.current?.off("value", unSub.current);
     };
   }, [authUser]);
-
-  const reserveLobbySeat = async (lobbyId, userId, newUser) => {
-    try {
-      const fetchProps = {
-        url: `${config.serverUrlBomboGames}/${gameName}/lobbies/${lobbyId}/seat`,
-        method: "PUT",
-      };
-
-      const { error, response } = await Fetch(fetchProps.url, fetchProps.method, {
-        userId,
-        newUser,
-      });
-
-      if (error) throw new Error(error);
-
-      return response;
-    } catch (error) {
-      console.error(error, "reserveLobbySeat");
-      return error;
-    }
-  };
 
   const btnExit = useMemo(() => {
     if (!authUser) return null;

@@ -13,6 +13,7 @@ import { saveMembers } from "../../constants/saveMembers";
 import { fetchUserByEmail } from "./fetchUserByEmail";
 import { Tooltip } from "antd";
 import { useFetch } from "../../hooks/useFetch";
+import { reserveLobbySeat } from "../../business";
 
 const Login = (props) => {
   const router = useRouter();
@@ -25,27 +26,6 @@ const Login = (props) => {
   const [authUser, setAuthUser] = useGlobal("user");
 
   const [isLoading, setIsLoading] = useState(false);
-
-  const reserveLobbySeat = async (gameName, lobbyId, userId, newUser) => {
-    try {
-      const fetchProps = {
-        url: `${config.serverUrlBomboGames}/${gameName}/lobbies/${lobbyId}/seat`,
-        method: "PUT",
-      };
-
-      const { error, response } = await Fetch(fetchProps.url, fetchProps.method, {
-        userId,
-        newUser,
-      });
-
-      if (error) throw new Error(error);
-
-      return response;
-    } catch (error) {
-      sendError(error, "reserveLobbySeat");
-      return error;
-    }
-  };
 
   const fetchLobby = async (pin, avatar = avatars[0]) => {
     try {
@@ -133,7 +113,7 @@ const Login = (props) => {
         lobby,
       };
 
-      const { success } = await reserveLobbySeat("trivia", authUser.lobby.id, userId, newUser);
+      const { success } = await reserveLobbySeat(Fetch, "trivia", authUser.lobby.id, userId, newUser);
 
       // Check if seat was granted.
       if (!success) {

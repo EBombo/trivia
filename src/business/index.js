@@ -44,8 +44,7 @@ export const checkIsCorrect = (question, answer) => {
   return answer === question.answer;
 };
 
-
-export const reserveLobbySeat = async (lobbyId, userId, newUser) => {
+export const reserveLobbySeat = async (Fetch, lobbyId, userId, newUser) => {
   const GAME_NAME = "trivia";
 
   try {
