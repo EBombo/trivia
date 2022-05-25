@@ -122,9 +122,21 @@ export const LobbyInPlay = (props) => {
     setIsGameLoading(true);
 
     try {
-      await firestore.doc(`lobbies/${lobbyId}`).update({
+      const endTime = new Date();
+
+      const triviaCloseLobbyPromise = firestore.doc(`lobbies/${lobbyId}`).update({
         isClosed: true,
+        updateAt: endTime,
       });
+
+      const bomboGamesCloseLobbyPromise = firestoreBomboGames.doc(`lobbies/${props.lobby.id}`).set({
+        ...props.lobby,
+        isClosed: true,
+        updateAt: endTime,
+      }, {merge: true})
+
+      await Promise.all([triviaCloseLobbyPromise, bomboGamesCloseLobbyPromise])
+
     } catch (error) {
       sendError(error, "closeLobby");
     }
