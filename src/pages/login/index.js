@@ -12,15 +12,40 @@ import { firebase } from "../../firebase/config";
 import { saveMembers } from "../../constants/saveMembers";
 import { fetchUserByEmail } from "./fetchUserByEmail";
 import { Tooltip } from "antd";
+import { useFetch } from "../../hooks/useFetch";
 
 const Login = (props) => {
   const router = useRouter();
   const { pin } = router.query;
 
+  const { Fetch } = useFetch();
+
   const [, setAuthUserLs] = useUser();
+
   const [authUser, setAuthUser] = useGlobal("user");
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const reserveLobbySeat = async (gameName, lobbyId, userId, newUser) => {
+    try {
+      const fetchProps = {
+        url: `${config.serverUrlBomboGames}/${gameName}/lobbies/${lobbyId}/seat`,
+        method: "PUT",
+      };
+
+      const { error, response } = await Fetch(fetchProps.url, fetchProps.method, {
+        userId,
+        newUser,
+      });
+
+      if (error) throw new Error(error);
+
+      return response;
+    } catch (error) {
+      sendError(error, "reserveLobbySeat");
+      return error;
+    }
+  };
 
   const fetchLobby = async (pin, avatar = avatars[0]) => {
     try {
@@ -104,27 +129,35 @@ const Login = (props) => {
         email: authUser?.email ?? null,
         nickname: authUser.nickname,
         avatar: authUser?.avatar ?? null,
-        lobbyId: lobby.id,
+        lobbyId: lobby?.id,
         lobby,
       };
+
+      const { success } = await reserveLobbySeat("trivia", authUser.lobby.id, userId, newUser);
+
+      // Check if seat was granted.
+      if (!success) {
+        // Lobby is full. User cannot get into the lobby.
+        props.showNotification("Lobby lleno!", "No se puede ingresar debido a que el límite de lobby ha sido superado", "error");
+
+        return setAuthUser({
+          id: firestore.collection("users").doc().id,
+          lobby: null,
+          isAdmin: false,
+          email: authUser.email,
+          nickname: authUser.nickname,
+        });
+      }
 
       // Update metrics.
       const promiseMetric = firestore.doc(`games/${lobby.gameId}`).update({
         countPlayers: firebase.firestore.FieldValue.increment(1),
       });
 
-      // Register user in lobby.
-      const promiseUser = firestore
-        .collection("lobbies")
-        .doc(lobby.id)
-        .collection("users")
-        .doc(authUser.id)
-        .set(newUser);
-
       // Register user as a member in company.
       const promiseMember = saveMembers(authUser.lobby, [newUser]);
 
-      await Promise.all([promiseMetric, promiseUser, promiseMember]);
+      await Promise.all([promiseMetric, promiseMember]);
 
       await setAuthUser(newUser);
       setAuthUserLs(newUser);

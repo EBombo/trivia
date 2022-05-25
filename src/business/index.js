@@ -4,6 +4,7 @@ import {
   OPEN_QUESTION_TYPE,
   TRUE_FALSE_QUESTION_TYPE,
 } from "../components/common/DataList";
+import { config } from "../firebase"
 
 export const ANIMATION = {
   min: 4,
@@ -41,4 +42,28 @@ export const checkIsCorrect = (question, answer) => {
   /** By default, it will be TRUE_FALSE_QUESTION_TYPE. **/
   //if (question.type === TRUE_FALSE_QUESTION_TYPE)
   return answer === question.answer;
+};
+
+
+export const reserveLobbySeat = async (lobbyId, userId, newUser) => {
+  const GAME_NAME = "trivia";
+
+  try {
+    const fetchProps = {
+      url: `${config.serverUrlBomboGames}/${GAME_NAME}/lobbies/${lobbyId}/seat`,
+      method: "PUT",
+    };
+
+    const { error, response } = await Fetch(fetchProps.url, fetchProps.method, {
+      userId,
+      newUser,
+    });
+
+    if (error) throw new Error(error);
+
+    return response;
+  } catch (error) {
+    console.error(error, "reserveLobbySeat");
+    throw error;
+  }
 };

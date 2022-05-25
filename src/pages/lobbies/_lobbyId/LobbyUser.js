@@ -176,7 +176,7 @@ export const LobbyUser = (props) => {
 
       return response;
     } catch (error) {
-      sendError(error, "reserveLobbySeat");
+      console.error(error, "reserveLobbySeat");
       return error;
     }
   };
