@@ -73,8 +73,7 @@ auth = firebase.auth();
 
 if (typeof window !== "undefined") analytics = firebase.analytics();
 
-firestore.settings({ ignoreUndefinedProperties: true, merge: true  });
-
+firestore.settings({ ignoreUndefinedProperties: true, merge: true });
 
 // Setting Up Firebase Events.
 firestoreEvents = firebase.app("events").firestore();
@@ -85,13 +84,12 @@ if (typeof window !== "undefined") {
   analyticsEvents = firebase.app("events").analytics();
 }
 
-firestoreEvents.settings({ ignoreUndefinedProperties: true, merge: true  });
-
+firestoreEvents.settings({ ignoreUndefinedProperties: true, merge: true });
 
 // Setting Up Firebase Bombo Games.
 firestoreBomboGames = firebase.app("bombo-games").firestore();
 
-firestoreBomboGames.settings({ ignoreUndefinedProperties: true, merge: true  });
+firestoreBomboGames.settings({ ignoreUndefinedProperties: true, merge: true });
 
 if (DOMAIN?.includes("localhost")) {
   //config.serverUrl = config.serverUrlLocal;
