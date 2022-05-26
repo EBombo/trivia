@@ -42,72 +42,56 @@ let authEvents: firebase.auth.Auth;
 
 let firestoreBomboGames: firebase.firestore.Firestore;
 
+// If it is empty, then it firebase projects should be initialized.
 if (isEmpty(firebase.apps)) {
   // Default connection.
   try {
     console.log("initializeApp", isEmpty(firebase.apps));
     firebase.initializeApp(config.firebase);
-
-    firestore = firebase.firestore();
-    database = firebase.database();
-    storage = firebase.storage();
-    auth = firebase.auth();
-
-    if (typeof window !== "undefined") analytics = firebase.analytics();
-
-    firestore.settings({ ignoreUndefinedProperties: true });
   } catch (error) {
     console.error("error initializeApp", error);
   }
   // Events connection.
   try {
     firebase.initializeApp(config.firebaseEvents, "events");
-    firestoreEvents = firebase.app("events").firestore();
-    storageEvents = firebase.app("events").storage();
-    authEvents = firebase.app("events").auth();
-
-    if (typeof window !== "undefined") {
-      analyticsEvents = firebase.app("events").analytics();
-    }
-
-    firestoreEvents.settings({ ignoreUndefinedProperties: true });
   } catch (error) {
     console.error("error initializeApp", error);
   }
-  // Allow connection with bombo-games firebase
+  // Bombo Games connection.
   try {
     firebase.initializeApp(config.firebaseBomboGames, "bombo-games");
-    firestoreBomboGames = firebase.app("bombo-games").firestore();
-
-    firestoreBomboGames.settings({ ignoreUndefinedProperties: true });
   } catch (error) {
     console.error("error initializeApp", error);
   }
-} else {
-  firestore = firebase.firestore();
-
-  database = firebase.database();
-  storage = firebase.storage();
-  auth = firebase.auth();
-
-  if (typeof window !== "undefined") analytics = firebase.analytics();
-
-  // firestore.settings({ ignoreUndefinedProperties: true });
-
-  firestoreEvents = firebase.app("events").firestore();
-  storageEvents = firebase.app("events").storage();
-  authEvents = firebase.app("events").auth();
-
-  if (typeof window !== "undefined") {
-    analyticsEvents = firebase.app("events").analytics();
-  }
-
-  // firestoreEvents.settings({ ignoreUndefinedProperties: true });
-
-  firestoreBomboGames = firebase.app("bombo-games").firestore();
-
-  // firestoreBomboGames.settings({ ignoreUndefinedProperties: true });
 }
+
+// Setting Up Firebase.
+firestore = firebase.firestore();
+database = firebase.database();
+storage = firebase.storage();
+auth = firebase.auth();
+
+if (typeof window !== "undefined") analytics = firebase.analytics();
+
+firestore.settings({ ignoreUndefinedProperties: true, merge: true  });
+
+
+// Setting Up Firebase Events.
+firestoreEvents = firebase.app("events").firestore();
+storageEvents = firebase.app("events").storage();
+authEvents = firebase.app("events").auth();
+
+if (typeof window !== "undefined") {
+  analyticsEvents = firebase.app("events").analytics();
+}
+
+firestoreEvents.settings({ ignoreUndefinedProperties: true, merge: true  });
+
+
+// Setting Up Firebase Bombo Games.
+firestoreBomboGames = firebase.app("bombo-games").firestore();
+
+firestoreBomboGames.settings({ ignoreUndefinedProperties: true, merge: true  });
 
 if (DOMAIN?.includes("localhost")) {
   //config.serverUrl = config.serverUrlLocal;
