@@ -72,7 +72,7 @@ export const GameMenu = (props) => {
                   <span>{t("pages.lobby.game-settings.identify-players-description")}</span>
                 </div>
                 <div className="justify-self-end mt-4">
-                  <Switch defaultChecked={userIdentity} onChange={() => setUserIdentity(!userIdentity)} />
+                  <Switch checked={userIdentity} onChange={() => setUserIdentity(!userIdentity)} />
                 </div>
               </div>
 
@@ -117,7 +117,7 @@ export const GameMenu = (props) => {
                   <div className="font-bold">{t("pages.lobby.game-settings.prize")}</div>
                 </div>
                 <div className="justify-self-end mt-4">
-                  <Switch defaultChecked={showAwards} onChange={() => setShowAwards(!showAwards)} />
+                  <Switch checked={showAwards} onChange={() => setShowAwards(!showAwards)} />
                 </div>
               </div>
 
