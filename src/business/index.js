@@ -47,22 +47,17 @@ export const checkIsCorrect = (question, answer) => {
 export const reserveLobbySeat = async (Fetch, lobbyId, userId, newUser) => {
   const GAME_NAME = "trivia";
 
-  try {
-    const fetchProps = {
-      url: `${config.serverUrlBomboGames}/${GAME_NAME}/lobbies/${lobbyId}/seat`,
-      method: "PUT",
-    };
+  const fetchProps = {
+    url: `${config.serverUrlBomboGames}/${GAME_NAME}/lobbies/${lobbyId}/seat`,
+    method: "PUT",
+  };
 
-    const { error, response } = await Fetch(fetchProps.url, fetchProps.method, {
-      userId,
-      newUser,
-    });
+  const { error, response } = await Fetch(fetchProps.url, fetchProps.method, {
+    userId,
+    newUser,
+  });
 
-    if (error) throw new Error(error);
+  if (error) throw new Error(error?.error.message || error.message);
 
-    return response;
-  } catch (error) {
-    console.error(error, "reserveLobbySeat");
-    throw error;
-  }
+  return response;
 };

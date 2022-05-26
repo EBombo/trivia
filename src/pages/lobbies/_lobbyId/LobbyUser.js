@@ -17,7 +17,7 @@ import moment from "moment";
 import { UserLayout } from "./userLayout";
 import { useFetch } from "../../../hooks/useFetch";
 import { reserveLobbySeat } from "../../../business";
-import { useTranslation } from "../../../hooks";
+import { useSendError, useTranslation } from "../../../hooks";
 
 const userListSizeRatio = 50;
 const currentTime = moment().format("x");
@@ -29,6 +29,8 @@ export const LobbyUser = (props) => {
   const { Fetch } = useFetch();
 
   const { t } = useTranslation();
+
+  const { sendError } = useSendError();
 
   const [authUser] = useGlobal("user");
 
@@ -125,18 +127,18 @@ export const LobbyUser = (props) => {
           setIsPageLoading(true);
 
           try {
-            const result = await reserveLobbySeat(Fetch, props.lobby.id, authUser.id, null);
-
-            if (!result.success) {
-              props.logout();
-              return;
-            }
+            await reserveLobbySeat(Fetch, props.lobby.id, authUser.id, null);
 
             await userRef.current.set(isOnlineForDatabase);
-            setIsPageLoading(false);
           } catch (e) {
-            props.showNotification(t("verify-lobby-availability-error-title"), `${t("verify-lobby-availability-error-message")} Error: ${e?.message || JSON.stringify(e)}`, "warning");
+            sendError(e, "verifyLobbyAvailability");
+
+            props.showNotification(t("verify-lobby-availability-error-title"), e?.message);
+
+            props.logout();
           }
+
+          setIsPageLoading(false);
         };
 
         verifyLobbyAvailability();
