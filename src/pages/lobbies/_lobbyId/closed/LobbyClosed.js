@@ -441,11 +441,14 @@ const LobbyWinnersCss = styled.div`
   display: flex;
   height: 100vh;
   display: grid;
-  grid-template-rows: 1fr 6fr;
+  grid-template-rows: 72px calc(100vh - 72px);
   background: ${(props) => props.theme.basic.secondary};
 
   .list {
     width: 90%;
+    height: 100%;
+    padding: 0 0.5rem;
+    overflow-y: auto;
     margin: auto;
     animation: 2s ${(props) => (props.showResumeAnimation ? fadeOutLeftBigAnimation : fadeInLeftBigAnimation)};
 
