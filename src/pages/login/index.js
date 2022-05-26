@@ -115,41 +115,45 @@ const Login = (props) => {
         lobby,
       };
 
-      const { success } = await reserveLobbySeat(Fetch, "trivia", authUser.lobby.id, userId, newUser);
+      try {
+        const { success } = await reserveLobbySeat(Fetch, "trivia", authUser.lobby.id, userId, newUser);
 
-      // Check if seat was granted.
-      if (!success) {
-        // Lobby is full. User cannot get into the lobby.
-        props.showNotification(
-          "Lobby lleno!",
-          "No se puede ingresar debido a que el límite de lobby ha sido superado",
-          "error"
-        );
+        // Check if seat was granted.
+        if (!success) {
+          // Lobby is full. User cannot get into the lobby.
+          props.showNotification(
+            "Lobby lleno!",
+            "No se puede ingresar debido a que el límite de lobby ha sido superado",
+            "error"
+          );
 
-        return setAuthUser({
-          id: firestore.collection("users").doc().id,
-          lobby: null,
-          isAdmin: false,
-          email: authUser.email,
-          nickname: authUser.nickname,
+          return setAuthUser({
+            id: firestore.collection("users").doc().id,
+            lobby: null,
+            isAdmin: false,
+            email: authUser.email,
+            nickname: authUser.nickname,
+          });
+        }
+
+        // Update metrics.
+        const promiseMetric = firestore.doc(`games/${lobby.gameId}`).update({
+          countPlayers: firebase.firestore.FieldValue.increment(1),
         });
+
+        // Register user as a member in company.
+        const promiseMember = saveMembers(authUser.lobby, [newUser]);
+
+        await Promise.all([promiseMetric, promiseMember]);
+
+        await setAuthUser(newUser);
+        setAuthUserLs(newUser);
+
+        // Redirect to lobby.
+        await router.push(`/trivia/lobbies/${authUser.lobby.id}`);
+      } catch (e) {
+        props.showNotification(t("verify-lobby-availability-error-title"), `${t("verify-lobby-availability-error-message")} Error: ${e?.message || JSON.stringify(e)}`, "warning");
       }
-
-      // Update metrics.
-      const promiseMetric = firestore.doc(`games/${lobby.gameId}`).update({
-        countPlayers: firebase.firestore.FieldValue.increment(1),
-      });
-
-      // Register user as a member in company.
-      const promiseMember = saveMembers(authUser.lobby, [newUser]);
-
-      await Promise.all([promiseMetric, promiseMember]);
-
-      await setAuthUser(newUser);
-      setAuthUserLs(newUser);
-
-      // Redirect to lobby.
-      await router.push(`/trivia/lobbies/${authUser.lobby.id}`);
     };
 
     initialize();

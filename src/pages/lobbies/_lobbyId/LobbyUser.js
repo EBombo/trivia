@@ -124,16 +124,19 @@ export const LobbyUser = (props) => {
         const verifyLobbyAvailability = async () => {
           setIsPageLoading(true);
 
-          const result = await reserveLobbySeat(Fetch, props.lobby.id, authUser.id, null);
+          try {
+            const result = await reserveLobbySeat(Fetch, props.lobby.id, authUser.id, null);
 
-          if (!result.success) {
-            props.logout();
-            return;
+            if (!result.success) {
+              props.logout();
+              return;
+            }
+
+            await userRef.current.set(isOnlineForDatabase);
+            setIsPageLoading(false);
+          } catch (e) {
+            props.showNotification(t("verify-lobby-availability-error-title"), `${t("verify-lobby-availability-error-message")} Error: ${e?.message || JSON.stringify(e)}`, "warning");
           }
-
-          setIsPageLoading(false);
-
-          await userRef.current.set(isOnlineForDatabase);
         };
 
         verifyLobbyAvailability();
