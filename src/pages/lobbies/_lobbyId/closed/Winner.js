@@ -400,6 +400,7 @@ export const Winner = (props) => {
           zIndex="2"
           innerRef={firstPlaceBgRef}
           style={{ position: "absolute", top: "0", left: "0", bottom: "0", opacity: "0" }}
+          noImgTag
         />
       )}
     </WinnerCss>
