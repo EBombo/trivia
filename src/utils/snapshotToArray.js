@@ -3,3 +3,5 @@ export const snapshotToArray = (snapshot) => {
   snapshot.forEach((childSnapshot) => returnArray.push(childSnapshot.data()));
   return returnArray;
 };
+
+export const snapshotToArrayWithId = (snapshot) => snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
