@@ -54,10 +54,13 @@ export const LobbyInPlay = (props) => {
   }, [props.lobby.game, questions]);
 
   useEffect(() => {
+    if (!props.lobby) return;
     if (!authUser) return;
-    if (authUser?.isAdmin) return;
 
-    const verifyUserInLobby = async () => {
+    // AuthUser is admin.
+    if (props.lobby.game.usersIds.includes(authUser.id)) return;
+
+    const verifyUserAccount = async () => {
       const lobbyUserSnapshot = await firestore
         .collection(`lobbies/${lobbyId}/users`)
         .doc(authUser.id)
@@ -69,7 +72,7 @@ export const LobbyInPlay = (props) => {
       return props.logout();
     };
 
-    verifyUserInLobby();
+    verifyUserAccount();
   }, [authUser?.id]);
 
   useEffect(() => {
