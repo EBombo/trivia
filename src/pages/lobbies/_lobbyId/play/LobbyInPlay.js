@@ -21,6 +21,8 @@ import {
   RANKING,
 } from "../../../../components/common/DataList";
 import { useSendError, useTranslation } from "../../../../hooks";
+import { snapshotToArrayWithId } from "../../../../utils";
+import difference from "lodash/difference";
 
 export const LobbyInPlay = (props) => {
   const router = useRouter();
@@ -120,6 +122,49 @@ export const LobbyInPlay = (props) => {
 
   const closeLobby = async () => {
     setIsGameLoading(true);
+
+    const computeLobbyUserStats = async () => {
+      const answersSnapshot = await firestore.collection(`lobbies/${lobbyId}/answers`).get();
+
+      const answers = snapshotToArrayWithId(answersSnapshot);
+
+      // Group correct and wrongs answers by UserId.
+      const userStatsAnswersMap = answers.reduce((acc, answer) => {
+        if (!acc[answer.userId]) acc[answer.userId] = { corrects: [], wrongs: [], noAnswers: [] };
+
+        if (answer.points === 0) {
+          acc[answer.userId].wrongs.push(answer.id);
+        } else {
+          acc[answer.userId].corrects.push(answer.id);
+        }
+
+        return acc;
+      }, {});
+
+      // Calculate no-answered questions for each user.
+      Object.keys(userStatsAnswersMap).forEach((userId) => {
+        const userStat = userStatsAnswersMap[userId];
+
+        const questionIds = questions.map((question) => question.id);
+
+        let leftQuestions = difference(questionIds, userStat.corrects);
+
+        leftQuestions = difference(leftQuestions, userStat.wrongs);
+
+        userStatsAnswersMap[userId]["noAnswers"] = leftQuestions || [];
+      });
+
+      // Generate list of promises of User updates in Firestore.
+      const updateUserStatsPromises = Object.keys(userStatsAnswersMap).map((userId) => {
+        const userStat = userStatsAnswersMap[userId];
+
+        return firestore.doc(`lobbies/${lobbyId}/users/${userId}`).update({
+          stats: { ...userStat },
+        });
+      });
+
+      await Promise.allSettled([...updateUserStatsPromises]);
+    };
 
     try {
       const endTime = new Date();
