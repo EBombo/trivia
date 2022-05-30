@@ -55,16 +55,21 @@ export const LobbyInPlay = (props) => {
 
   useEffect(() => {
     if (!authUser) return;
+    if (authUser?.isAdmin) return;
 
-    const lobbyUserSnapshot = await firestore
-      .collection(`lobbies/${lobbyId}/users`)
-      .doc(authUser.id)
-      .get();
+    const verifyUserInLobby = async () => {
+      const lobbyUserSnapshot = await firestore
+        .collection(`lobbies/${lobbyId}/users`)
+        .doc(authUser.id)
+        .get();
 
-    // If user exists then do nothing.
-    if (lobbyUserSnapshot.exists) return;
+      // If user exists then do nothing.
+      if (lobbyUserSnapshot.exists) return;
 
-    return props.logout();
+      return props.logout();
+    };
+
+    verifyUserInLobby();
   }, [authUser?.id]);
 
   useEffect(() => {
