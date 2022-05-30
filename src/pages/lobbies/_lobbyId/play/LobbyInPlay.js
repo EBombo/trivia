@@ -54,6 +54,20 @@ export const LobbyInPlay = (props) => {
   }, [props.lobby.game, questions]);
 
   useEffect(() => {
+    if (!authUser) return;
+
+    const lobbyUserSnapshot = await firestore
+      .collection(`lobbies/${lobbyId}/users`)
+      .doc(authUser.id)
+      .get();
+
+    // If user exists then do nothing.
+    if (lobbyUserSnapshot.exists) return;
+
+    return props.logout();
+  }, [authUser?.id]);
+
+  useEffect(() => {
     if (props.lobby.game.state === QUESTION_TIMEOUT) setShowImage(false);
   }, [props.lobby.game.state]);
 
