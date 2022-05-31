@@ -57,7 +57,7 @@ export const reserveLobbySeat = async (Fetch, lobbyId, userId, newUser) => {
     newUser,
   });
 
-  if (error) throw new Error(error?.error.message || error.message);
+  if (error) throw new Error(error?.error || error);
 
   return response;
 };
