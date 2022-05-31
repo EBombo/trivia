@@ -123,7 +123,7 @@ export const LobbyInPlay = (props) => {
   const closeLobby = async () => {
     setIsGameLoading(true);
 
-    const computeLobbyUserStats = async () => {
+    const computePlayerStats = async () => {
       const answersSnapshot = await firestore.collection(`lobbies/${lobbyId}/answers`).get();
 
       const answers = snapshotToArrayWithId(answersSnapshot);
@@ -183,7 +183,7 @@ export const LobbyInPlay = (props) => {
         { merge: true }
       );
 
-      await Promise.all([triviaCloseLobbyPromise, bomboGamesCloseLobbyPromise]);
+      await Promise.all([triviaCloseLobbyPromise, bomboGamesCloseLobbyPromise, computePlayerStats()]);
     } catch (error) {
       sendError(error, "closeLobby");
     }
