@@ -152,12 +152,12 @@ export const LobbyInPlay = (props) => {
 
       // Group correct and wrongs answers by UserId.
       const userStatsAnswersMap = answers.reduce((acc, answer) => {
-        if (!acc[answer.userId]) acc[answer.userId] = { corrects: [], wrongs: [], noAnswers: [] };
+        if (!acc[answer.userId]) acc[answer.userId] = { correct: [], incorrect: [], noAnswer: [] };
 
         if (answer.points === 0) {
-          acc[answer.userId].wrongs.push(answer.questionId);
+          acc[answer.userId].incorrect.push(answer.questionId);
         } else {
-          acc[answer.userId].corrects.push(answer.questionId);
+          acc[answer.userId].correct.push(answer.questionId);
         }
 
         return acc;
@@ -169,11 +169,11 @@ export const LobbyInPlay = (props) => {
 
         const questionIds = questions.map((question) => question.id);
 
-        let leftQuestions = difference(questionIds, userStat.corrects);
+        let leftQuestions = difference(questionIds, userStat.correct);
 
-        leftQuestions = difference(leftQuestions, userStat.wrongs);
+        leftQuestions = difference(leftQuestions, userStat.incorrect);
 
-        userStatsAnswersMap[userId]["noAnswers"] = leftQuestions || [];
+        userStatsAnswersMap[userId]["noAnswer"] = leftQuestions || [];
       });
 
       // Generate list of promises of User updates in Firestore.
