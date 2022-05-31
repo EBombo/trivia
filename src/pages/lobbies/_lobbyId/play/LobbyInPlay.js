@@ -123,7 +123,7 @@ export const LobbyInPlay = (props) => {
   const closeLobby = async () => {
     setIsGameLoading(true);
 
-    const computePlayerStats = async () => {
+    const computePlayersStats = async () => {
       const answersSnapshot = await firestore.collection(`lobbies/${lobbyId}/answers`).get();
 
       const answers = snapshotToArrayWithId(answersSnapshot);
@@ -133,9 +133,9 @@ export const LobbyInPlay = (props) => {
         if (!acc[answer.userId]) acc[answer.userId] = { corrects: [], wrongs: [], noAnswers: [] };
 
         if (answer.points === 0) {
-          acc[answer.userId].wrongs.push(answer.id);
+          acc[answer.userId].wrongs.push(answer.questionId);
         } else {
-          acc[answer.userId].corrects.push(answer.id);
+          acc[answer.userId].corrects.push(answer.questionId);
         }
 
         return acc;
@@ -183,7 +183,7 @@ export const LobbyInPlay = (props) => {
         { merge: true }
       );
 
-      await Promise.all([triviaCloseLobbyPromise, bomboGamesCloseLobbyPromise, computePlayerStats()]);
+      await Promise.all([triviaCloseLobbyPromise, bomboGamesCloseLobbyPromise, computePlayersStats()]);
     } catch (error) {
       sendError(error, "closeLobby");
     }
