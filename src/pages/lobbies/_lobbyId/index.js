@@ -118,7 +118,7 @@ export const Lobby = (props) => {
   if (lobby?.isPlaying) return <LobbyInPlay {...additionalProps} />;
 
   /** Loading page. **/
-  if (lobby?.game.state === INITIALIZING) return <LobbyLoading {...additionalProps} />;
+  if (lobby?.startAt) return <LobbyLoading {...additionalProps} />;
 
   /** Before starting the game. **/
   return <LobbyUser {...additionalProps} />;
