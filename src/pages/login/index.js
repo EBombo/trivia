@@ -94,7 +94,7 @@ const Login = (props) => {
       }
 
       // If lobby is awaiting for players then redirect to lobby.
-      if (!lobby?.isPlaying) return router.push(`/trivia/lobbies/${authUser.lobby.id}`);
+      if (!(!!lobby?.startAt || lobby?.isPlaying)) return router.push(`/trivia/lobbies/${authUser.lobby.id}`);
 
       // Else if lobby is playing then register user in firestore. This skips
       // Realtime Database registration flow

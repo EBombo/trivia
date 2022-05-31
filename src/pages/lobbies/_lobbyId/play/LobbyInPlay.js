@@ -56,6 +56,28 @@ export const LobbyInPlay = (props) => {
   }, [props.lobby.game, questions]);
 
   useEffect(() => {
+    if (!props.lobby) return;
+    if (!authUser) return;
+
+    // AuthUser is admin.
+    if (props.lobby.game.usersIds.includes(authUser.id)) return;
+
+    const verifyUserAccount = async () => {
+      const lobbyUserSnapshot = await firestore
+        .collection(`lobbies/${lobbyId}/users`)
+        .doc(authUser.id)
+        .get();
+
+      // If user exists then do nothing.
+      if (lobbyUserSnapshot.exists) return;
+
+      return props.logout();
+    };
+
+    verifyUserAccount();
+  }, [authUser?.id]);
+
+  useEffect(() => {
     if (props.lobby.game.state === QUESTION_TIMEOUT) setShowImage(false);
   }, [props.lobby.game.state]);
 
