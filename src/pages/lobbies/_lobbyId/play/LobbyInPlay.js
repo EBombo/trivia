@@ -21,6 +21,8 @@ import {
   RANKING,
 } from "../../../../components/common/DataList";
 import { useSendError, useTranslation } from "../../../../hooks";
+import { snapshotToArrayWithId } from "../../../../utils";
+import difference from "lodash/difference";
 
 export const LobbyInPlay = (props) => {
   const router = useRouter();
@@ -52,6 +54,28 @@ export const LobbyInPlay = (props) => {
 
     return getCurrentQuestion(questions, currentQuestionNumber);
   }, [props.lobby.game, questions]);
+
+  useEffect(() => {
+    if (!props.lobby) return;
+    if (!authUser) return;
+
+    // AuthUser is admin.
+    if (props.lobby.game.usersIds.includes(authUser.id)) return;
+
+    const verifyUserAccount = async () => {
+      const lobbyUserSnapshot = await firestore
+        .collection(`lobbies/${lobbyId}/users`)
+        .doc(authUser.id)
+        .get();
+
+      // If user exists then do nothing.
+      if (lobbyUserSnapshot.exists) return;
+
+      return props.logout();
+    };
+
+    verifyUserAccount();
+  }, [authUser?.id]);
 
   useEffect(() => {
     if (props.lobby.game.state === QUESTION_TIMEOUT) setShowImage(false);
@@ -121,6 +145,49 @@ export const LobbyInPlay = (props) => {
   const closeLobby = async () => {
     setIsGameLoading(true);
 
+    const computePlayersStats = async () => {
+      const answersSnapshot = await firestore.collection(`lobbies/${lobbyId}/answers`).get();
+
+      const answers = snapshotToArrayWithId(answersSnapshot);
+
+      // Group correct and wrongs answers by UserId.
+      const userStatsAnswersMap = answers.reduce((acc, answer) => {
+        if (!acc[answer.userId]) acc[answer.userId] = { correct: [], incorrect: [], noAnswer: [] };
+
+        if (answer.points === 0) {
+          acc[answer.userId].incorrect.push(answer.questionId);
+        } else {
+          acc[answer.userId].correct.push(answer.questionId);
+        }
+
+        return acc;
+      }, {});
+
+      // Calculate no-answered questions for each user.
+      Object.keys(userStatsAnswersMap).forEach((userId) => {
+        const userStat = userStatsAnswersMap[userId];
+
+        const questionIds = questions.map((question) => question.id);
+
+        let leftQuestions = difference(questionIds, userStat.correct);
+
+        leftQuestions = difference(leftQuestions, userStat.incorrect);
+
+        userStatsAnswersMap[userId]["noAnswer"] = leftQuestions || [];
+      });
+
+      // Generate list of promises of User updates in Firestore.
+      const updateUserStatsPromises = Object.keys(userStatsAnswersMap).map((userId) => {
+        const userStat = userStatsAnswersMap[userId];
+
+        return firestore.doc(`lobbies/${lobbyId}/users/${userId}`).update({
+          stats: { ...userStat },
+        });
+      });
+
+      await Promise.allSettled([...updateUserStatsPromises]);
+    };
+
     try {
       const endTime = new Date();
 
@@ -138,7 +205,7 @@ export const LobbyInPlay = (props) => {
         { merge: true }
       );
 
-      await Promise.all([triviaCloseLobbyPromise, bomboGamesCloseLobbyPromise]);
+      await Promise.all([triviaCloseLobbyPromise, bomboGamesCloseLobbyPromise, computePlayersStats()]);
     } catch (error) {
       sendError(error, "closeLobby");
     }
