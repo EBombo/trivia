@@ -24,8 +24,11 @@ exports.presenceOnUpdate = functions.database
       log("userOlder", userOlder);
       log("user updated", user);
 
-      // User gets disconnected.
-      if (get(user, "state") !== isOnline) {
+      const lobbySnapshot = await firestore.doc(`lobbies/${lobbyId}`).get();
+      const lobby = lobbySnapshot.data();
+
+      // Check if user gets disconnected while lobby is awaiting for users.
+      if (get(user, "state") !== isOnline && !(lobby.isPlaying || !!lobby.startAt)) {
         await firestore.doc(`lobbies/${lobbyId}`).update({ countPlayers: adminFirestore.FieldValue.increment(-1) });
       }
     } catch (error_) {
