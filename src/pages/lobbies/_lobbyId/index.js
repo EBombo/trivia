@@ -31,10 +31,10 @@ export const Lobby = (props) => {
   }, [authUser]);
 
   const logout = async () => {
-    const userId = firestore.collection("users").doc().id;
+    const newUserId = firestore.collection("users").doc().id;
 
     const userMapped = {
-      id: userId,
+      id: authUserLs?.id ?? newUserId,
       email: authUserLs?.email,
       avatar: authUserLs?.avatar,
       nickname: authUserLs?.nickname,

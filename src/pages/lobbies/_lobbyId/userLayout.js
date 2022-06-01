@@ -201,12 +201,13 @@ export const UserLayout = (props) => {
                 <div
                   onClick={async () => {
                     props.logout();
+
                     await firestore
                       .collection("lobbies")
                       .doc(props.lobby.id)
                       .collection("users")
                       .doc(authUser.id)
-                      .delete();
+                      .update({ hasExited: true })
                   }}
                   style={{ cursor: "pointer" }}
                 >
