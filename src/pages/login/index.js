@@ -45,8 +45,8 @@ const Login = (props) => {
           id: firestore.collection("users").doc().id,
           lobby: null,
           isAdmin: false,
-          email: authUser.email,
-          nickname: authUser.nickname,
+          email: authUser.email || null,
+          nickname: authUser.nickname || null,
         });
 
         throw Error(t("pages.login.lobby-is-over"));
@@ -54,8 +54,8 @@ const Login = (props) => {
 
       const isAdmin = !!currentLobby?.game?.usersIds?.includes(authUser.id);
 
-      await setAuthUser({ avatar, ...authUser, lobby: currentLobby, isAdmin });
-      setAuthUserLs({ avatar, ...authUser, lobby: currentLobby, isAdmin });
+      await setAuthUser({ avatar, ...authUser, email: authUser.email || null, lobby: currentLobby, isAdmin });
+      setAuthUserLs({ avatar, ...authUser, email: authUser.email || null, lobby: currentLobby, isAdmin });
     } catch (error) {
       props.showNotification("UPS", error.message, "warning");
     }
@@ -137,7 +137,7 @@ const Login = (props) => {
         props.showNotification(t("verify-lobby-availability-error-title"), e?.message);
 
         return setAuthUser({
-          id: firestore.collection("users").doc().id,
+          id: authUser.id || firestore.collection("users").doc().id,
           lobby: null,
           isAdmin: false,
           email: authUser.email,
@@ -147,7 +147,7 @@ const Login = (props) => {
     };
 
     initialize();
-  }, [authUser]);
+  }, [authUser.id, authUser?.lobby?.id, authUser?.nickname, authUser?.email]);
 
   // Fetch lobby to auto login.
   useEffect(() => {
