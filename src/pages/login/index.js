@@ -116,7 +116,7 @@ const Login = (props) => {
       };
 
       try {
-        await reserveLobbySeat(Fetch, "trivia", authUser.lobby.id, userId, newUser);
+        await reserveLobbySeat(Fetch, authUser.lobby.id, userId, newUser);
 
         // Update metrics.
         const promiseMetric = firestore.doc(`games/${lobby.gameId}`).update({
