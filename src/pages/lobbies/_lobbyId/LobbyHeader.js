@@ -82,7 +82,6 @@ export const LobbyHeader = (props) => {
       let newLobby = {
         startAt: gameStarted,
         updateAt: new Date(),
-        playersCount: usersFiltered.length,
         game: { ...props.lobby.game, state: INITIALIZING },
       };
 
