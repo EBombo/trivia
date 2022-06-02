@@ -78,7 +78,7 @@ const putRanking = async (req: NextApiRequest, res: NextApiResponse) => {
     const response = await Promise.all([answersPromise, usersPromise, lobbyPromise]);
 
     const answers = response[0];
-    const { usersSize, users } = response[1];
+    const { users } = response[1];
     const lobby = response[2];
 
     const invalidQuestions = lobby?.game?.invalidQuestions || [];
@@ -97,12 +97,7 @@ const putRanking = async (req: NextApiRequest, res: NextApiResponse) => {
       usersRef.doc(rankingUser.userId).update({ rank: rankingUser.rank, score: rankingUser.score })
     );
 
-    // Update lobby.
-    const updateLobbyPromise = firestore.doc(`lobbies/${lobbyId}`).update({
-      playersCount: usersSize,
-    });
-
-    await Promise.allSettled([...updateRankingListPromise, ...updateUserScoringListPromise, updateLobbyPromise]);
+    await Promise.allSettled([...updateRankingListPromise, ...updateUserScoringListPromise]);
 
     return res.send({ success: true });
   } catch (error) {
