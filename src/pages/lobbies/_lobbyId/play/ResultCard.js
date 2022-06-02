@@ -25,8 +25,8 @@ export const ResultCard = (props) => {
   const [isCorrect, setIsCorrect] = useState(null);
 
   const usersSize = useMemo(() => {
-    return props.lobby?.playersCount ?? 0;
-  }, [props.lobby?.playersCount]);
+    return props.lobby?.countPlayers ?? 0;
+  }, [props.lobby?.countPlayers]);
 
   useEffect(() => {
     const fetchUsers = async () => {
