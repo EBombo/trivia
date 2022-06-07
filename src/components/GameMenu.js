@@ -82,7 +82,7 @@ export const GameMenu = (props) => {
 
               <div className="grid grid-cols-[5fr_3fr] items-center mx-auto my-[2px] px-[10px] py-[5px] text-[13px] leading-[16px] bg-primaryDarken rounded-[2px] text-whiteLight">
                 <div>
-                  <div className="font-bold">{t("pages.lobby.game-settings.language")}</div>
+                  <div className="font-bold">{t("language")}</div>
                 </div>
                 <Select
                   defaultValue={props.settings?.language ?? languages[0].name}
