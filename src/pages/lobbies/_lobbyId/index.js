@@ -34,7 +34,7 @@ export const Lobby = (props) => {
     const newUserId = firestore.collection("users").doc().id;
 
     const userMapped = {
-      id: authUserLs?.id ?? newUserId,
+      id: newUserId,
       email: authUserLs?.email,
       avatar: authUserLs?.avatar,
       nickname: authUserLs?.nickname,
@@ -112,7 +112,7 @@ export const Lobby = (props) => {
   const lobbyIsClosed = lobby?.isClosed && authUser?.isAdmin;
 
   /** Game report. **/
-  if (lobbyIsClosed) return <LobbyClosed {...additionalProps} onLogout={() => logout()} />;
+  if (lobbyIsClosed) return <LobbyClosed {...additionalProps} />;
 
   /** The game is playing. **/
   if (lobby?.isPlaying) return <LobbyInPlay {...additionalProps} />;
