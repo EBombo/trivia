@@ -73,10 +73,10 @@ export const InPlayHeader = (props) => {
     if (!authUser?.isAdmin) return;
     if (props.lobby.game.state === QUESTION_TIMEOUT) return;
     if (props.lobby.game.state !== ANSWERING_QUESTION) return;
-    if ((props.lobby.answersCount ?? 0) < props.lobby.playersCount) return;
+    if ((props.lobby.answersCount ?? 0) < props.lobby.countPlayers) return;
 
     finishAnswerTime();
-  }, [props.lobby.answersCount, props.lobby.playersCount, props.lobby.game.state]);
+  }, [props.lobby.answersCount, props.lobby.countPlayers, props.lobby.game.state]);
 
   const goToRanking = async () => {
     props.setIsGameLoading(true);

@@ -24,29 +24,13 @@ exports.presenceOnUpdate = functions.database
       log("userOlder", userOlder);
       log("user updated", user);
 
-      await firestore
-        .doc(`lobbies/${lobbyId}`)
-        .update({ countPlayers: adminFirestore.FieldValue.increment(user.state === isOnline ? 1 : -1) });
-    } catch (error_) {
-      error(error_);
-    }
-  });
+      const lobbySnapshot = await firestore.doc(`lobbies/${lobbyId}`).get();
+      const lobby = lobbySnapshot.data();
 
-exports.presenceOnCreate = functions.database
-  .ref("/lobbies/{lobbyId}/users/{userId}")
-  .onCreate(async (change, context) => {
-    try {
-      const lobbyId = context.params.lobbyId;
-      const userId = context.params.userId;
-      const user = change.val();
-
-      log({ lobbyId });
-      log({ userId });
-      log("user created", user);
-
-      await firestore
-        .doc(`lobbies/${lobbyId}`)
-        .update({ countPlayers: adminFirestore.FieldValue.increment(user.state === isOnline ? 1 : -1) });
+      // Check if user gets disconnected while lobby is awaiting for users.
+      if (get(user, "state") !== isOnline && !(lobby.isPlaying || !!lobby.startAt)) {
+        await firestore.doc(`lobbies/${lobbyId}`).update({ countPlayers: adminFirestore.FieldValue.increment(-1) });
+      }
     } catch (error_) {
       error(error_);
     }

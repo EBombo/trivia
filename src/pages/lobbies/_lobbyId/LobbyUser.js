@@ -9,13 +9,15 @@ import { LobbyHeader } from "./LobbyHeader";
 import { TransitionGroup, CSSTransition } from "react-transition-group";
 import { Popover } from "antd";
 import { useMemo } from "react";
-import { spinLoaderMin } from "../../../components/common/loader";
+import { spinLoaderMin, spinLoader } from "../../../components/common/loader";
 import { Tablet } from "../../../constants";
 import { Image } from "../../../components/common/Image";
 import debounce from "lodash/debounce";
 import moment from "moment";
 import { UserLayout } from "./userLayout";
-import { useTranslation } from "../../../hooks";
+import { useFetch } from "../../../hooks/useFetch";
+import { reserveLobbySeat } from "../../../business";
+import { useSendError, useTranslation } from "../../../hooks";
 
 const userListSizeRatio = 50;
 const currentTime = moment().format("x");
@@ -24,12 +26,17 @@ export const LobbyUser = (props) => {
   const router = useRouter();
   const { lobbyId } = router.query;
 
+  const { Fetch } = useFetch();
+
   const { t } = useTranslation();
+
+  const { sendError } = useSendError();
 
   const [authUser] = useGlobal("user");
 
   const [users, setUsers] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isPageLoading, setIsPageLoading] = useState(false);
+  const [isFetchUsersLoading, setIsFetchUsersLoading] = useState(true);
   const [userListSize, setUserListSize] = useState(0);
   const { ref: scrollTriggerRef, inView } = useInView({ threshold: 0 });
 
@@ -41,7 +48,7 @@ export const LobbyUser = (props) => {
     if (!props.lobby) return;
     if (!inView) return;
 
-    setIsLoading(true);
+    setIsFetchUsersLoading(true);
     const newUserListSizeRatio = userListSize + userListSizeRatio;
 
     // Realtime database cannot sort descending.
@@ -64,7 +71,7 @@ export const LobbyUser = (props) => {
           });
 
           setUserListSize(newUserListSizeRatio);
-          setIsLoading(false);
+          setIsFetchUsersLoading(false);
           setUsers(users_);
         }, 100)
       );
@@ -115,15 +122,34 @@ export const LobbyUser = (props) => {
         // Reference: https://firebase.google.com/docs/reference/node/firebase.database.OnDisconnect
         await userRef.current.onDisconnect().set(isOfflineForDatabase);
 
-        userRef.current.set(isOnlineForDatabase);
+        // Verifies if lobby can let user in.
+        const verifyLobbyAvailability = async () => {
+          setIsPageLoading(true);
+
+          try {
+            await reserveLobbySeat(Fetch, props.lobby.id, authUser.id, null);
+
+            await userRef.current.set(isOnlineForDatabase);
+          } catch (error) {
+            sendError(error, "verifyLobbyAvailability");
+
+            props.showNotification(t("verify-lobby-availability-error-title"), error?.message);
+
+            props.logout();
+          }
+
+          setIsPageLoading(false);
+        };
+
+        verifyLobbyAvailability();
       });
 
     unSub.current = createPresence();
 
     return () => userRef.current?.off("value", unSub.current);
-  }, [authUser]);
+  }, [authUser?.id]);
 
-  // Disconnect presence.
+  // Disconnect presence when there is an unmounting task (tab closing on browser).
   useEffect(() => {
     // Update to offline when user doesn't have LOBBY and is not ADMIN.
     if (authUser?.lobby || authUser?.isAdmin) return;
@@ -164,6 +190,8 @@ export const LobbyUser = (props) => {
       </Popover>
     );
   }, [authUser]);
+
+  if (isPageLoading) return spinLoader();
 
   return (
     <LobbyUserCss>
@@ -218,7 +246,7 @@ export const LobbyUser = (props) => {
           </TransitionGroup>
         </div>
 
-        {isLoading && spinLoaderMin()}
+        {isFetchUsersLoading && spinLoaderMin()}
         <div ref={scrollTriggerRef} className="h-[20px]" />
       </div>
     </LobbyUserCss>

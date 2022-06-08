@@ -118,6 +118,7 @@ export const CreateLobby = (props) => {
         isClosed: false,
         deleteDuplicated: false,
         notDoublePrice: true,
+        countPlayers: 0,
         settings: {
           ...settings,
           audio: settings.audio ?? { id: audios[0]?.id },

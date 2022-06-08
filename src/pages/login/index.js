@@ -12,14 +12,19 @@ import { firebase } from "../../firebase/config";
 import { saveMembers } from "../../constants/saveMembers";
 import { fetchUserByEmail } from "./fetchUserByEmail";
 import { Tooltip } from "antd";
+import { useFetch } from "../../hooks/useFetch";
+import { reserveLobbySeat } from "../../business";
 
 const Login = (props) => {
   const router = useRouter();
   const { pin } = router.query;
 
+  const { Fetch } = useFetch();
+
   const { t, SwitchTranslation } = useTranslation();
 
   const [, setAuthUserLs] = useUser();
+
   const [authUser, setAuthUser] = useGlobal("user");
 
   const [isLoading, setIsLoading] = useState(false);
@@ -40,8 +45,8 @@ const Login = (props) => {
           id: firestore.collection("users").doc().id,
           lobby: null,
           isAdmin: false,
-          email: authUser.email,
-          nickname: authUser.nickname,
+          email: authUser.email || null,
+          nickname: authUser.nickname || null,
         });
 
         throw Error(t("pages.login.lobby-is-over"));
@@ -49,8 +54,8 @@ const Login = (props) => {
 
       const isAdmin = !!currentLobby?.game?.usersIds?.includes(authUser.id);
 
-      await setAuthUser({ avatar, ...authUser, lobby: currentLobby, isAdmin });
-      setAuthUserLs({ avatar, ...authUser, lobby: currentLobby, isAdmin });
+      await setAuthUser({ avatar, ...authUser, email: authUser.email || null, lobby: currentLobby, isAdmin });
+      setAuthUserLs({ avatar, ...authUser, email: authUser.email || null, lobby: currentLobby, isAdmin });
     } catch (error) {
       props.showNotification("UPS", error.message, "warning");
     }
@@ -106,37 +111,43 @@ const Login = (props) => {
         email: authUser?.email ?? null,
         nickname: authUser.nickname,
         avatar: authUser?.avatar ?? null,
-        lobbyId: lobby.id,
+        lobbyId: lobby?.id,
         lobby,
       };
 
-      // Update metrics.
-      const promiseMetric = firestore.doc(`games/${lobby.gameId}`).update({
-        countPlayers: firebase.firestore.FieldValue.increment(1),
-      });
+      try {
+        await reserveLobbySeat(Fetch, authUser.lobby.id, userId, newUser);
 
-      // Register user in lobby.
-      const promiseUser = firestore
-        .collection("lobbies")
-        .doc(lobby.id)
-        .collection("users")
-        .doc(authUser.id)
-        .set(newUser);
+        // Update metrics.
+        const promiseMetric = firestore.doc(`games/${lobby.gameId}`).update({
+          countPlayers: firebase.firestore.FieldValue.increment(1),
+        });
 
-      // Register user as a member in company.
-      const promiseMember = saveMembers(authUser.lobby, [newUser]);
+        // Register user as a member in company.
+        const promiseMember = saveMembers(authUser.lobby, [newUser]);
 
-      await Promise.all([promiseMetric, promiseUser, promiseMember]);
+        await Promise.all([promiseMetric, promiseMember]);
 
-      await setAuthUser(newUser);
-      setAuthUserLs(newUser);
+        await setAuthUser(newUser);
+        setAuthUserLs(newUser);
 
-      // Redirect to lobby.
-      await router.push(`/trivia/lobbies/${authUser.lobby.id}`);
+        // Redirect to lobby.
+        await router.push(`/trivia/lobbies/${authUser.lobby.id}`);
+      } catch (e) {
+        props.showNotification(t("verify-lobby-availability-error-title"), e?.message);
+
+        return setAuthUser({
+          id: authUser.id || firestore.collection("users").doc().id,
+          lobby: null,
+          isAdmin: false,
+          email: authUser.email,
+          nickname: authUser.nickname,
+        });
+      }
     };
 
     initialize();
-  }, [authUser]);
+  }, [authUser.id, authUser?.lobby?.id, authUser?.nickname, authUser?.email]);
 
   // Fetch lobby to auto login.
   useEffect(() => {

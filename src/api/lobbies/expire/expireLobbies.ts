@@ -13,7 +13,6 @@ export type Lobby = {
   isPlaying: boolean;
   notDoublePrice: boolean;
   pin: string;
-  playersCount: number;
   updateAt: Date;
   createAt: Date;
   isClosed: boolean;
