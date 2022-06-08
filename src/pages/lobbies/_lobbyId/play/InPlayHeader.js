@@ -4,7 +4,7 @@ import { Timer } from "./Timer";
 import { QuestionStep } from "./QuestionStep";
 import { ButtonAnt } from "../../../../components/form";
 import { config, firestore } from "../../../../firebase";
-import { ANSWERING_QUESTION, QUESTION_TIMEOUT, RANKING } from "../../../../components/common/DataList";
+import { ANSWERING_QUESTION, COMPUTING_RANKING, QUESTION_TIMEOUT, RANKING } from "../../../../components/common/DataList";
 import { useFetch } from "../../../../hooks/useFetch";
 import { useSendError, useTranslation } from "../../../../hooks";
 
@@ -40,11 +40,11 @@ export const InPlayHeader = (props) => {
 
   useEffect(() => {
     if (!authUser?.isAdmin) return;
-    if (props.lobby.game.state === QUESTION_TIMEOUT) return;
-    if (props.lobby.game.state !== ANSWERING_QUESTION) return;
-    if ((props.lobby.answersCount ?? 0) < props.lobby.playersCount) return;
+    if (!props.lobby) return;
+    
+    if (props.lobby.game.state !== COMPUTING_RANKING) return;
 
-    const finishAnswerTime = async () => {
+    const computeRankingOfUsers = async () => {
       props.setIsGameLoading(true);
 
       await putRankingUsers(lobbyId);
@@ -56,17 +56,32 @@ export const InPlayHeader = (props) => {
       props.setIsGameLoading(false);
     };
 
+    computeRankingOfUsers();
+  }, [props.lobby?.game?.state]);
+
+  const finishAnswerTime = async () => {
+    props.setIsGameLoading(true);
+
+    await firestore.doc(`lobbies/${lobbyId}`).update({
+      "game.state": COMPUTING_RANKING,
+    });
+
+    props.setIsGameLoading(false);
+  };
+
+  useEffect(() => {
+    if (!authUser?.isAdmin) return;
+    if (props.lobby.game.state === QUESTION_TIMEOUT) return;
+    if (props.lobby.game.state !== ANSWERING_QUESTION) return;
+    if ((props.lobby.answersCount ?? 0) < props.lobby.playersCount) return;
+
     finishAnswerTime();
   }, [props.lobby.answersCount, props.lobby.playersCount, props.lobby.game.state]);
 
   const goToRanking = async () => {
     props.setIsGameLoading(true);
 
-    try {
-      await putRankingUsers(lobbyId);
-    } catch (e) {
-      sendError(e, "goToRanking");
-    }
+    await putRankingUsers(lobbyId);
 
     await firestore.doc(`lobbies/${lobbyId}`).update({
       "game.state": RANKING,
@@ -103,7 +118,7 @@ export const InPlayHeader = (props) => {
             </div>
           )}
 
-          <Timer {...props} lobbyId={lobbyId} putRankingUsers={putRankingUsers} />
+          <Timer {...props} lobbyId={lobbyId} putRankingUsers={putRankingUsers} finishAnswerTime={finishAnswerTime} />
         </div>
 
         <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:row-start-1 md:row-end-2 md:col-start-2 md:col-end-3 mx-4 text-center">
