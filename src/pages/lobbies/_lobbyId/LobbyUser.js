@@ -122,7 +122,7 @@ export const LobbyUser = (props) => {
         // Reference: https://firebase.google.com/docs/reference/node/firebase.database.OnDisconnect
         await userRef.current.onDisconnect().set(isOfflineForDatabase);
 
-        // verifies if lobby can let user in
+        // Verifies if lobby can let user in.
         const verifyLobbyAvailability = async () => {
           setIsPageLoading(true);
 
@@ -130,10 +130,10 @@ export const LobbyUser = (props) => {
             await reserveLobbySeat(Fetch, props.lobby.id, authUser.id, null);
 
             await userRef.current.set(isOnlineForDatabase);
-          } catch (e) {
-            sendError(e, "verifyLobbyAvailability");
+          } catch (error) {
+            sendError(error, "verifyLobbyAvailability");
 
-            props.showNotification(t("verify-lobby-availability-error-title"), e?.message);
+            props.showNotification(t("verify-lobby-availability-error-title"), error?.message);
 
             props.logout();
           }
