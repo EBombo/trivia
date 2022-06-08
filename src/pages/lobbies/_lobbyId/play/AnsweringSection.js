@@ -4,6 +4,7 @@ import { checkIsCorrect, computePointsEarned } from "../../../../business";
 import { firebase, firestore } from "../../../../firebase";
 import {
   ALTERNATIVES_QUESTION_TYPE,
+  COMPUTING_RANKING,
   DEFAULT_POINTS,
   OPEN_QUESTION_TYPE,
   QUESTION_TIMEOUT,
@@ -55,6 +56,7 @@ export const AnsweringSection = (props) => {
 
     const updateScorePromise = firestore.collection(`lobbies/${lobbyId}/users`).doc(authUser.id).update({
       lastPointsEarned: points,
+      lastPointsEarnedFromQuestionNumber: question.questionNumber,
       streak: newStreak,
       isLastAnswerCorrect: isCorrectAnswer,
     });
@@ -68,6 +70,8 @@ export const AnsweringSection = (props) => {
     await Promise.all([addAnswerPromise, updateScorePromise, updateAnswersCount]);
   };
 
+  const shouldBeDisabled = () => (userHasAnswered || props.lobby?.game?.state === COMPUTING_RANKING);
+
   return (
     <>
       {question?.type === ALTERNATIVES_QUESTION_TYPE ? (
@@ -77,7 +81,7 @@ export const AnsweringSection = (props) => {
             label={option}
             onClick={() => onAnswering(option)}
             color={i === 0 ? "red" : i === 1 ? "green" : i === 2 ? "yellow" : i === 3 ? "blue" : "primary"}
-            disabled={userHasAnswered}
+            disabled={shouldBeDisabled()}
             enableOpacity={
               props.lobby.game.state === QUESTION_TIMEOUT &&
               !question.answer.map((answerIndex) => question?.options[answerIndex])?.includes(option)
@@ -89,21 +93,21 @@ export const AnsweringSection = (props) => {
           <TrueFalseAnswerCard
             color="red"
             value={true}
-            disabled={userHasAnswered}
+            disabled={shouldBeDisabled()}
             enableOpacity={props.lobby.game.state === QUESTION_TIMEOUT && !question.answer}
             onClick={() => onAnswering(true)}
           />
           <TrueFalseAnswerCard
             color="green"
             value={false}
-            disabled={userHasAnswered}
+            disabled={shouldBeDisabled()}
             enableOpacity={props.lobby.game.state === QUESTION_TIMEOUT && question.answer}
             onClick={() => onAnswering(false)}
           />
         </>
       ) : question?.type === OPEN_QUESTION_TYPE && !authUser.isAdmin ? (
         <div className="col-start-1 col-end-3">
-          <OpenAnswerCard disabled={userHasAnswered} onSubmit={(data) => onAnswering(data)} />
+          <OpenAnswerCard disabled={shouldBeDisabled()} onSubmit={(data) => onAnswering(data)} />
         </div>
       ) : (
         <div />

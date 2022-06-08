@@ -24,6 +24,10 @@ export const ResultCard = (props) => {
 
   const [isCorrect, setIsCorrect] = useState(null);
 
+  const currentQuestionNumber = useMemo(() => {
+    return props.lobby.game.currentQuestionNumber ?? 1;
+  }, [props.lobby.game]);
+
   const usersSize = useMemo(() => {
     return props.lobby?.playersCount ?? 0;
   }, [props.lobby?.playersCount]);
@@ -33,11 +37,17 @@ export const ResultCard = (props) => {
       const userSnapshot = await firestore.doc(`lobbies/${lobbyId}/users/${authUser.id}`).get();
       const user = userSnapshot.data();
 
+      const lastPointsEarnedFromQuestionNumber = user.lastPointsEarnedFromQuestionNumber;
+
       setPointsEarned(user.lastPointsEarned ?? 0);
+
       setStreakCount(user.streak ?? 0);
+
       setUserScore(user.score ?? 0);
       setUserRank(user.rank ?? 0);
 
+      if (lastPointsEarnedFromQuestionNumber !== currentQuestionNumber) return setIsCorrect(false);
+      
       setIsCorrect(user.isLastAnswerCorrect);
     };
 
