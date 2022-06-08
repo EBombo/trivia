@@ -47,19 +47,7 @@ export const Timer = (props) => {
 
     if (props.lobby.game.state !== ANSWERING_QUESTION) return;
 
-    const finishAnswerTime = async () => {
-      props.setIsGameLoading(true);
-
-      await props.putRankingUsers(props.lobbyId);
-
-      await firestore.doc(`lobbies/${props.lobbyId}`).update({
-        "game.state": QUESTION_TIMEOUT,
-      });
-
-      props.setIsGameLoading(false);
-    };
-
-    finishAnswerTime();
+    props.finishAnswerTime?.();
   }, 1000);
 
   return (

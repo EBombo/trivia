@@ -69,17 +69,18 @@ const putRanking = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { lobbyId } = req.query as { [key: string]: string };
 
+    const { lobby, alreadyComputed } = await checkLastRankingCompute(lobbyId);
+
+    if (alreadyComputed) return res.send({ success: true, message: "ranking for the current question was already computed" });
+
     const answersPromise = fetchAnswers(lobbyId);
 
     const usersPromise = fetchUsers(lobbyId);
 
-    const lobbyPromise = fetchLobby(lobbyId);
-
-    const response = await Promise.all([answersPromise, usersPromise, lobbyPromise]);
+    const response = await Promise.all([answersPromise, usersPromise]);
 
     const answers = response[0];
-    const { users } = response[1];
-    const lobby = response[2];
+    const { usersSize, users } = response[1];
 
     const invalidQuestions = lobby?.game?.invalidQuestions || [];
 
@@ -97,7 +98,13 @@ const putRanking = async (req: NextApiRequest, res: NextApiResponse) => {
       usersRef.doc(rankingUser.userId).update({ rank: rankingUser.rank, score: rankingUser.score })
     );
 
-    await Promise.allSettled([...updateRankingListPromise, ...updateUserScoringListPromise]);
+    // Update lobby.
+    const updateLobbyPromise = firestore.doc(`lobbies/${lobbyId}`).update({
+      playersCount: usersSize,
+      lastRankingComputeQuestion: lobby.game.currentQuestionNumber,
+    });
+
+    await Promise.allSettled([...updateRankingListPromise, ...updateUserScoringListPromise, updateLobbyPromise]);
 
     return res.send({ success: true });
   } catch (error) {
@@ -121,7 +128,17 @@ const fetchUsers = async (lobbyId: string) => {
 
 const fetchLobby = async (lobbyId: string) => {
   const lobbySnapshot = await firestore.doc(`lobbies/${lobbyId}`).get();
-  return lobbySnapshot.data();
+  return lobbySnapshot.data()!;
+};
+
+const checkLastRankingCompute = async (lobbyId : string) => {
+  const lobby = await fetchLobby(lobbyId);
+
+  if (!lobby.lastRankingComputeQuestion) return { lobby, alreadyComputed: false };
+
+  if (lobby.lastRankingComputeQuestion !== lobby.game.currentQuestionNumber) return { lobby, alreadyComputed: false };
+
+  return { lobby, alreadyComputed: true };
 };
 
 export default putRanking;
