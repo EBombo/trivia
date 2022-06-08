@@ -34,6 +34,14 @@ module.exports = withBundleAnalyzer({
     return config;
   },
   assetPrefix: process.env.NEXT_PUBLIC_DOMAIN ?? "",
+  async rewrites() {
+    return [
+      {
+        source: "/lobbies/:path*",
+        destination: "https://red.ebombo.io/lobbies/:path*",
+      },
+    ];
+  },
   async headers() {
     return [
       {
