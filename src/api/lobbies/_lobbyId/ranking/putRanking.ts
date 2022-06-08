@@ -77,13 +77,10 @@ const putRanking = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const usersPromise = fetchUsers(lobbyId);
 
-    // const lobbyPromise = fetchLobby(lobbyId);
-
     const response = await Promise.all([answersPromise, usersPromise]);
 
     const answers = response[0];
     const { usersSize, users } = response[1];
-    // const lobby = response[2];
 
     const invalidQuestions = lobby?.game?.invalidQuestions || [];
 
