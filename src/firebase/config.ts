@@ -95,7 +95,7 @@ if (DOMAIN?.includes("localhost")) {
   //config.serverUrl = config.serverUrlLocal;
   //firestore.useEmulator("localhost", 8080);
   //auth.useEmulator("http://localhost:9099/");
-  config.serverUrlBomboGames = config.serverUrlBomboGamesLocal;
+  // config.serverUrlBomboGames = config.serverUrlBomboGamesLocal;
 }
 
 export {
