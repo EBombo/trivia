@@ -69,7 +69,7 @@ const putRanking = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { lobbyId } = req.query as { [key: string]: string };
 
-    const { lobby, alreadyComputed } = await checkLastRankingCompute(lobbyId);
+    const { lobby, alreadyComputed } = await fetchLobbyAndCheckLastRankingCompute(lobbyId);
 
     if (alreadyComputed) return res.send({ success: true, message: "ranking for the current question was already computed" });
 
@@ -80,7 +80,7 @@ const putRanking = async (req: NextApiRequest, res: NextApiResponse) => {
     const response = await Promise.all([answersPromise, usersPromise]);
 
     const answers = response[0];
-    const { usersSize, users } = response[1];
+    const { users } = response[1];
 
     const invalidQuestions = lobby?.game?.invalidQuestions || [];
 
@@ -100,7 +100,6 @@ const putRanking = async (req: NextApiRequest, res: NextApiResponse) => {
 
     // Update lobby.
     const updateLobbyPromise = firestore.doc(`lobbies/${lobbyId}`).update({
-      playersCount: usersSize,
       lastRankingComputeQuestion: lobby.game.currentQuestionNumber,
     });
 
@@ -131,7 +130,7 @@ const fetchLobby = async (lobbyId: string) => {
   return lobbySnapshot.data()!;
 };
 
-const checkLastRankingCompute = async (lobbyId : string) => {
+const fetchLobbyAndCheckLastRankingCompute = async (lobbyId : string) => {
   const lobby = await fetchLobby(lobbyId);
 
   if (!lobby.lastRankingComputeQuestion) return { lobby, alreadyComputed: false };

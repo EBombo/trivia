@@ -17,6 +17,9 @@
   "footer": {
     "visit-label": "Visit"
   },
+  "errors": {
+    "verify-lobby-availability-error-title": "Joining to lobby is not possible."
+  },
   "pages": {
     "register": {
       "title": "Sign up",

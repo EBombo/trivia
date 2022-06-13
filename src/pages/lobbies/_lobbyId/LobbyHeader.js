@@ -82,7 +82,6 @@ export const LobbyHeader = (props) => {
       let newLobby = {
         startAt: gameStarted,
         updateAt: new Date(),
-        playersCount: usersFiltered.length,
         game: { ...props.lobby.game, state: INITIALIZING, currentQuestionNumber: 1 },
       };
 
@@ -98,7 +97,7 @@ export const LobbyHeader = (props) => {
             .doc(lobbyId)
             .collection("users")
             .doc(user.id)
-            .set({ ...user, option: user.username })
+            .set({ ...user, option: user.username }, { merge: true })
       );
 
       await Promise.all(promisesUsers);

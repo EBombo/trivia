@@ -17,6 +17,9 @@
   "footer": {
     "visit-label": "Entra a"
   },
+  "errors": {
+    "verify-lobby-availability-error-title": "No es posible unirse a lobby."
+  },
   "pages": {
     "register": {
       "title": "Regístrate",
