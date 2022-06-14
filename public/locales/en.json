@@ -101,7 +101,10 @@
         "current-score": "Current score",
         "your-rank": "Your rank",
         "true": "True",
-        "false": "False"
+        "false": "False",
+        "introducing-quiz-question": "Quiz",
+        "introducing-true-false-question": "True or False",
+        "introducing-short-answer-question": "Write your answer"
       }
     }
   }

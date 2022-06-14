@@ -100,7 +100,10 @@
         "current-score": "Puntaje actual",
         "your-rank": "Tu puesto",
         "true": "Verdadero",
-        "false": "Falso"
+        "false": "Falso",
+        "introducing-quiz-question": "Quiz",
+        "introducing-true-false-question": "Verdadero o Falso",
+        "introducing-short-answer-question": "Escribe tu respuesta"
       }
     }
   }
