@@ -30,7 +30,7 @@ if (DOMAIN?.includes("local") || DOMAIN?.includes("red") || DOMAIN?.includes("de
   bomboGamesDomain= "http://red.ebombo.io"
 } else {
   console.log("prod", version);
-  bomboGamesDomain= "http://.ebombo.io"
+  bomboGamesDomain= "http://ebombo.io"
 }
 
 let firestore: firebase.firestore.Firestore;
