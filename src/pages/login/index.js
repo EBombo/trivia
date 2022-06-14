@@ -133,8 +133,8 @@ const Login = (props) => {
 
         // Redirect to lobby.
         await router.push(`/trivia/lobbies/${authUser.lobby.id}`);
-      } catch (e) {
-        props.showNotification(t("verify-lobby-availability-error-title"), e?.message);
+      } catch (error) {
+        props.showNotification(t("verify-lobby-availability-error-title"), error?.message);
 
         return setAuthUser({
           id: authUser.id || firestore.collection("users").doc().id,
