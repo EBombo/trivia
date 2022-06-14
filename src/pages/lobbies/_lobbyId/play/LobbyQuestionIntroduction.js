@@ -12,11 +12,14 @@ import { timeoutPromise } from "../../../../utils/promised";
 import styled from "styled-components";
 import { animate } from "popmotion";
 import { QuestionStep } from "./QuestionStep";
+import { useTranslation } from "../../../../hooks";
 
 const TOTAL_ANIMATION_DURATION = 6000;
 
 export const LobbyQuestionIntroduction = (props) => {
   const imgSizeRef = useRef(null);
+
+  const { t } = useTranslation("pages.lobby.in-play");
 
   const [question, setQuestion] = useState(props.question);
 
@@ -98,7 +101,7 @@ export const LobbyQuestionIntroduction = (props) => {
               desktopHeight="250px"
             />
             <div className="relative min-h-[320px]">
-              {questionLabel("Quiz")}
+              {questionLabel(t("introducing-quiz-question"))}
               {showQuestion(question.question)}
             </div>
           </>
@@ -114,7 +117,7 @@ export const LobbyQuestionIntroduction = (props) => {
               desktopHeight="250px"
             />
             <div className="relative min-h-[320px]">
-              {questionLabel("Verdadero o Falso")}
+              {questionLabel(t("introducing-true-false-question"))}
               {showQuestion(question.question)}
             </div>
           </>
@@ -130,7 +133,7 @@ export const LobbyQuestionIntroduction = (props) => {
               desktopHeight="250px"
             />
             <div className="relative min-h-[320px]">
-              {questionLabel("Escribe tu respuesta")}
+              {questionLabel(t("introducing-short-answer-question"))}
               {showQuestion(question.question)}
             </div>
           </>
