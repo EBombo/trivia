@@ -19,7 +19,7 @@ const TOTAL_ANIMATION_DURATION = 6000;
 export const LobbyQuestionIntroduction = (props) => {
   const imgSizeRef = useRef(null);
 
-  const { t } = useTranslation();
+  const { t } = useTranslation("pages.lobby.in-play");
 
   const [question, setQuestion] = useState(props.question);
 
