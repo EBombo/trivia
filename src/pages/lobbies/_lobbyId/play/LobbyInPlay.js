@@ -16,6 +16,7 @@ import { LobbyQuestionIntroduction } from "./LobbyQuestionIntroduction";
 import { getCurrentQuestion } from "../../../../business";
 import {
   ANSWERING_QUESTION,
+  COMPUTING_RANKING,
   INTRODUCING_QUESTION,
   QUESTION_TIMEOUT,
   RANKING,
@@ -229,7 +230,7 @@ export const LobbyInPlay = (props) => {
     return <LobbyQuestionIntroduction question={currentQuestion} {...props} />;
 
   /** If user has already answered. **/
-  if (!authUser.isAdmin && props.lobby.game?.state === ANSWERING_QUESTION && userHasAnswered)
+  if (!authUser.isAdmin && (props.lobby.game?.state === ANSWERING_QUESTION || props.lobby.game?.state === COMPUTING_RANKING) && userHasAnswered)
     return (
       <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto text-center grid grid-rows-[50px-auto]">
         <UserLayout musicPickerSetting volumeSetting lockSetting {...props} />
