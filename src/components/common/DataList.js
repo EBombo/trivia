@@ -77,8 +77,8 @@ export const defaultHandMan = {
 export const limbsOrder = Object.keys(defaultHandMan);
 
 export const languages = [
-  { key: "spanish", value: "spanish", name: "Español" },
-  { key: "english", value: "english", name: "Inglés" },
+  { key: "spanish", value: "es", name: "Español" },
+  { key: "english", value: "en", name: "Inglés" },
 ];
 
 // Game states.

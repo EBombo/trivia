@@ -90,7 +90,7 @@ export const GameMenu = (props) => {
                   optionsdom={languages.map((language) => ({
                     key: language.key,
                     code: language.value,
-                    name: language.name,
+                    name: t(language.value),
                   }))}
                   onChange={(value) => props.onLanguageChange?.(value)}
                 />

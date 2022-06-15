@@ -3,7 +3,7 @@ import React, { useEffect, useGlobal, useState } from "reactn";
 import { config, firestore, firestoreBomboGames } from "../../../firebase";
 import { useFetch } from "../../../hooks/useFetch";
 import { useRouter } from "next/router";
-import { useSendError, useUser } from "../../../hooks";
+import { useSendError, useTranslation, useUser } from "../../../hooks";
 import { GameMenu } from "../../../components/GameMenu";
 import { snapshotToArray } from "../../../utils";
 
@@ -17,6 +17,8 @@ export const CreateLobby = (props) => {
 
   const [, setLSAuthUser] = useUser();
 
+  const { locale, setLocale } = useTranslation();
+
   const [audios] = useGlobal("audios");
   const [, setAuthUser] = useGlobal("user");
 
@@ -25,7 +27,7 @@ export const CreateLobby = (props) => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingSave, setIsLoadingSave] = useState(false);
-  const [settings, setSettings] = useState({});
+  const [settings, setSettings] = useState({ language: locale });
 
   useEffect(() => {
     if ((!tokenId && !userId) || !gameId) return;
@@ -184,7 +186,10 @@ export const CreateLobby = (props) => {
         createLobby={createLobby}
         isLoadingSave={isLoadingSave}
         onAudioChange={(audioId) => setSettings({ ...settings, audio: { id: audioId } })}
-        onLanguageChange={(language) => setSettings({ ...settings, language })}
+        onLanguageChange={(language) => {
+          setLocale(language);
+          setSettings({ ...settings, language });
+        }}
         onUserIdentity={(userIdentity) => setSettings({ ...settings, userIdentity })}
         onAwards={(awards) => setSettings({ ...settings, awards })}
       />
