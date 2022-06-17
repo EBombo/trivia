@@ -1,12 +1,12 @@
-import React, { useGlobal, useState } from "reactn";
+import React, {useGlobal, useState} from "reactn";
 import styled from "styled-components";
-import { Popover, Slider, Spin, Tooltip } from "antd";
-import { mediaQuery, Desktop } from "../../../constants";
-import { config, firebase, firestore, firestoreBomboGames, hostName } from "../../../firebase";
-import { Image } from "../../../components/common/Image";
-import { LoadingOutlined, MessageOutlined } from "@ant-design/icons";
-import { ButtonAnt } from "../../../components/form";
-import { useTranslation } from "../../../hooks";
+import {Popover, Slider, Spin, Tooltip} from "antd";
+import {Desktop, mediaQuery} from "../../../constants";
+import {config, firebase, firestore, firestoreBomboGames, hostName} from "../../../firebase";
+import {Image} from "../../../components/common/Image";
+import {LoadingOutlined, MessageOutlined} from "@ant-design/icons";
+import {ButtonAnt} from "../../../components/form";
+import {useTranslation} from "../../../hooks";
 
 export const UserLayout = (props) => {
   const [authUser] = useGlobal("user");
@@ -177,9 +177,11 @@ export const UserLayout = (props) => {
           </Tooltip>
         </div>
       </div>
+
       <div className="text-xl font-black text-center text-ellipsis overflow-hidden whitespace-nowrap">
         {props.lobby.game.name}
       </div>
+
       <div className="right-content">
         {props.enableChat && (
           <Desktop>
@@ -238,11 +240,15 @@ export const UserLayout = (props) => {
 const UserLayoutCss = styled.div`
   width: 100%;
   display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  background: ${(props) => props.theme.basic.whiteDark};
-  padding: 0.5rem;
   height: 50px;
+  padding: 0.5rem;
+  align-items: center;
+  grid-template-columns: auto 1fr auto;
+  background: ${(props) => props.theme.basic.whiteDark};
+  
+  ${mediaQuery.afterTablet}{
+    grid-template-columns: 1fr 1fr 1fr;
+  }
 
   .title {
     text-align: center;
