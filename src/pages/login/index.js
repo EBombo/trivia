@@ -93,9 +93,28 @@ const Login = (props) => {
 
       // If user has already logged then redirect.
       if (user_) {
-        await setAuthUser(user_);
-        setAuthUserLs(user_);
-        return router.push(`/trivia/lobbies/${authUser.lobby.id}`);
+        if (user_.id !== authUser.id) {
+          await setAuthUser(user_);
+          setAuthUserLs(user_);
+
+          return;
+        }
+
+        try {
+          await reserveLobbySeat(Fetch, authUser.lobby.id, user_.id, user_);
+
+          return router.push(`/trivia/lobbies/${authUser.lobby.id}`);
+        } catch (error) {
+          props.showNotification(t("verify-lobby-availability-error-title"), error?.message);
+
+          return setAuthUser({
+            id: authUser.id || firestore.collection("users").doc().id,
+            lobby: null,
+            isAdmin: false,
+            email: authUser.email,
+            nickname: authUser.nickname,
+          });
+        }
       }
 
       // If lobby is awaiting for players then redirect to lobby.
