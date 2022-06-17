@@ -202,15 +202,15 @@ export const UserLayout = (props) => {
               <div>
                 <div
                   onClick={async () => {
-                    await firestore
-                      .collection("lobbies")
-                      .doc(props.lobby.id)
-                      .collection("users")
-                      .doc(authUser.id)
-                      .update({ hasExited: true });
+                    if (props.lobby?.isPlaying) firestore
+                        .collection("lobbies")
+                        .doc(props.lobby.id)
+                        .collection("users")
+                        .doc(authUser.id)
+                        .update({ hasExited: true });
 
                     // Reducing counter -1 if is a player.
-                    if (!authUser.isAdmin) {
+                    if (!authUser.isAdmin && props.lobby?.isPlaying) {
                       await firestore.doc(`lobbies/${props.lobby.id}`).update({
                         countPlayers: firebase.firestore.FieldValue.increment(-1),
                       });
