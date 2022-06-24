@@ -9,7 +9,7 @@ type AnswerUser = {
 };
 
 type Answer = {
-  answer: string;
+  answer: string | number;
   createAt: any;
   updateAt: any;
   points: number;
