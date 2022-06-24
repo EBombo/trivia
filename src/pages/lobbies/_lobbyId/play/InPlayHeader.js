@@ -90,6 +90,12 @@ export const InPlayHeader = (props) => {
     props.setIsGameLoading(false);
   };
 
+  const onClickNext = async () => {
+    if (props.lobby.game.state === QUESTION_TIMEOUT) return (await goToRanking());
+
+    await finishAnswerTime();
+  };
+
   return (
     <div className="grid grid-rows-[minmax(160px,min-content)_auto]">
       <div className="relative bg-whiteLight py-4 text-center text-2xl md:text-3xl font-bold flex">
@@ -133,7 +139,7 @@ export const InPlayHeader = (props) => {
                 color="success"
                 className="font-bold text-base"
                 loading={props.isGameLoading}
-                onClick={() => goToRanking()}
+                onClick={() => onClickNext()}
               >
                 {t("next-button-label")}
               </ButtonAnt>
