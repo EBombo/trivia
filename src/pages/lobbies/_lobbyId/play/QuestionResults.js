@@ -36,6 +36,8 @@ export const QuestionResults = (props) => {
           const answerCountMap_ = answersSnapshot.docs.reduce((acc, answerSnapshot) => {
             const answer = answerSnapshot.data();
 
+            // GUardar la respuesta que se guarde con el indice y no con el
+          // valor.
             if (!(answer.answer in acc)) acc[answer.answer] = { count: 0 };
 
             acc[answer.answer].count += 1;
@@ -55,16 +57,15 @@ export const QuestionResults = (props) => {
   if (props.question?.type === ALTERNATIVES_QUESTION_TYPE)
     return (
       <div>
-        {props.question.options.map((option, i) => (
+        {props.question.options.map((_, optionIndex) => (
           <AlternativeBarResult
-            key={`result-option-${i}`}
-            isCorrect={props.question?.answer.includes(i)}
-            color={i === 0 ? "red" : i === 1 ? "green" : i === 2 ? "yellow" : i === 3 ? "blue" : "primary"}
-            value={Math.ceil(((answerCountMap[option]?.count ?? 0) / totalCount) * 100)}
-            count={answerCountMap[option]?.count ?? 0}
+            key={`result-option-${optionIndex}`}
+            isCorrect={props.question?.answer.includes(optionIndex)}
+            color={optionIndex === 0 ? "red" : optionIndex === 1 ? "green" : optionIndex === 2 ? "yellow" : optionIndex === 3 ? "blue" : "primary"}
+            value={Math.ceil(((answerCountMap[optionIndex]?.count ?? 0) / totalCount) * 100)}
+            count={answerCountMap[optionIndex]?.count ?? 0}
             enableOpacity={
-              props.lobby.game.state === QUESTION_TIMEOUT &&
-              !props.question.answer.map((answerIndex) => props.question?.options[answerIndex])?.includes(option)
+              props.lobby.game.state === QUESTION_TIMEOUT && !props.question.answer?.includes(optionIndex)
             }
           />
         ))}
