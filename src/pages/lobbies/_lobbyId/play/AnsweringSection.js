@@ -75,17 +75,14 @@ export const AnsweringSection = (props) => {
   return (
     <>
       {question?.type === ALTERNATIVES_QUESTION_TYPE ? (
-        question?.options.map((option, i) => (
+        question?.options.map((option, optionIndex) => (
           <AlternativeAnswerCard
-            key={`answer-option-${i}`}
+            key={`answer-option-${optionIndex}`}
             label={option}
-            onClick={() => onAnswering(option)}
-            color={i === 0 ? "red" : i === 1 ? "green" : i === 2 ? "yellow" : i === 3 ? "blue" : "primary"}
+            onClick={() => onAnswering(optionIndex)}
+            color={optionIndex === 0 ? "red" : optionIndex === 1 ? "green" : optionIndex === 2 ? "yellow" : optionIndex === 3 ? "blue" : "primary"}
             disabled={shouldBeDisabled()}
-            enableOpacity={
-              props.lobby.game.state === QUESTION_TIMEOUT &&
-              !question.answer.map((answerIndex) => question?.options[answerIndex])?.includes(option)
-            }
+            enableOpacity={props.lobby.game.state === QUESTION_TIMEOUT && !(question.answer?.includes(optionIndex))}
           />
         ))
       ) : question?.type === TRUE_FALSE_QUESTION_TYPE ? (
