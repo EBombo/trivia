@@ -28,9 +28,7 @@ export const computePointsEarned = (timeLeft, totalTime, point) =>
 
 export const checkIsCorrect = (question, answer) => {
   if (question.type === ALTERNATIVES_QUESTION_TYPE) {
-    const answers = question.answer.map((answerIndex) => question.options[answerIndex]);
-
-    return answers.includes(answer);
+    return question.answer.includes(answer);
   }
 
   if (question.type === OPEN_QUESTION_TYPE) {
