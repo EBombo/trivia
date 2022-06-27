@@ -4,6 +4,7 @@ import { Image } from "../../components/common/Image";
 import { ButtonLobby, InputBingo } from "../../components/form";
 import { object, string } from "yup";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "../../hooks";
 import { Carousel } from "../../components/common/Carousel";
 import { avatars } from "../../components/common/DataList";
 import { darkTheme } from "../../theme";
@@ -12,6 +13,8 @@ export const PinStep = (props) => {
   const [authUser] = useGlobal("user");
 
   const [avatarIdx, setAvatarIdx] = useState(0);
+
+  const { t } = useTranslation();
 
   const validationSchema = object().shape({
     pin: string().required().min(6),
@@ -62,10 +65,10 @@ export const PinStep = (props) => {
           margin="10px auto"
           defaultValue={authUser?.lobby?.pin ?? null}
           disabled={props.isLoading}
-          placeholder="Pin del juego"
+          placeholder={t("pages.login.pin-step-input-placeholder")}
         />
         <ButtonLobby width="100%" disabled={props.isLoading} loading={props.isLoading} htmlType="submit">
-          Ingresar
+          {t("ingress-button-label")}
         </ButtonLobby>
       </div>
     </form>

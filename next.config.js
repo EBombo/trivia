@@ -5,6 +5,10 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 const isProd = process.env.NODE_ENV === "production";
 
 module.exports = withBundleAnalyzer({
+  i18n: {
+    locales: ["es", "en"],
+    defaultLocale: "es",
+  },
   webpack: (config, { webpack }) => {
     config.plugins.push(
       new webpack.IgnorePlugin({
@@ -30,6 +34,14 @@ module.exports = withBundleAnalyzer({
     return config;
   },
   assetPrefix: process.env.NEXT_PUBLIC_DOMAIN ?? "",
+  async rewrites() {
+    return [
+      {
+        source: "/lobbies/:path*",
+        destination: "https://red.ebombo.io/lobbies/:path*",
+      },
+    ];
+  },
   async headers() {
     return [
       {

@@ -1,8 +1,11 @@
 import React, { useMemo } from "reactn";
 import { config } from "../../../../firebase";
 import { Image } from "../../../../components/common/Image";
+import { useTranslation } from "../../../../hooks";
 
 export const TrueFalseAnswerCard = (props) => {
+  const { t } = useTranslation();
+
   const iconUrl = useMemo(
     () =>
       props.value === false
@@ -46,7 +49,7 @@ export const TrueFalseAnswerCard = (props) => {
         }`}
       >
         <div className="self-center bg-whiteLight font-bold text-secondaryDarken text-lg md:text-2xl">
-          {props.value ? "Verdadero" : "Falso"}
+          {props.value ? t("pages.lobby.in-play.true") : t("pages.lobby.in-play.false")}
         </div>
       </div>
       <div className="absolute w-full bottom-0 left-0 min-h-[8px] bg-black opacity-20"></div>

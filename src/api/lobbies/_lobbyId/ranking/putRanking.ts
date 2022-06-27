@@ -1,6 +1,6 @@
+import orderBy from "lodash/orderBy";
 import { firestore } from "../../../../firebase";
 import { snapshotToArray } from "../../../../utils";
-import orderBy from "lodash/orderBy";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type AnswerUser = {
@@ -34,25 +34,26 @@ type User = {
 };
 
 export const computeRanking = (users: User[], answers: Answer[], invalidQuestions: string[] = []): RankUser[] => {
-  // initialize all users for ranking
+  // Initialize all users for ranking.
   let usersPointsMap = users.reduce((acc, user) => {
     acc[user.id] = { id: user.id, nickname: user.nickname, score: 0 };
 
     return acc;
   }, {} as { [key: string]: any });
 
-  // calculates score from valid answers
+  // Calculates score from valid answers.
   usersPointsMap = answers.reduce((acc, answer) => {
-    // if answer has a non-existent user
+    // If answer has a non-existent user.
     if (!acc[answer.userId]) acc[answer.userId] = { id: answer?.userId, nickname: answer?.user?.nickname, score: 0 };
 
+    // Accumulate score just for valid answer.
     if (!invalidQuestions.includes(answer.questionId)) acc[answer.userId].score += answer.points;
 
     return acc;
   }, usersPointsMap);
 
-  // sort
-  const rankingUsers_: RankUser[] = orderBy(
+  // sort and return.
+  return orderBy(
     Object.entries(usersPointsMap).map((userPointMap) => ({
       userId: userPointMap[0],
       nickname: userPointMap[1]?.nickname,
@@ -62,41 +63,44 @@ export const computeRanking = (users: User[], answers: Answer[], invalidQuestion
     ["score"],
     ["desc"]
   ).map((userRank, i) => ({ ...userRank, rank: i + 1 }));
-
-  return rankingUsers_;
 };
 
 const putRanking = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { lobbyId } = req.query as { [key: string]: string };
 
-    const answersSnapshot = await firestore.collection(`lobbies/${lobbyId}/answers`).get();
+    const { lobby, alreadyComputed } = await fetchLobbyAndCheckLastRankingCompute(lobbyId);
 
-    const usersSnapshot = await firestore.collection(`lobbies/${lobbyId}/users`).get();
-    const usersSize = usersSnapshot.size;
-    const users = snapshotToArray(usersSnapshot);
+    if (alreadyComputed) return res.send({ success: true, message: "ranking for the current question was already computed" });
 
-    const lobbySnapshot = await firestore.doc(`lobbies/${lobbyId}`).get();
-    const lobby = lobbySnapshot.data();
+    const answersPromise = fetchAnswers(lobbyId);
+
+    const usersPromise = fetchUsers(lobbyId);
+
+    const response = await Promise.all([answersPromise, usersPromise]);
+
+    const answers = response[0];
+    const { users } = response[1];
+
     const invalidQuestions = lobby?.game?.invalidQuestions || [];
-
-    const answers = snapshotToArray(answersSnapshot);
 
     const usersRanking = computeRanking(users, answers, invalidQuestions);
 
+    // Create documents rankings.
+    const rankingRef = firestore.collection(`lobbies/${lobbyId}/ranking`);
     const updateRankingListPromise = usersRanking.map((rankingUser) =>
-      firestore.collection(`lobbies/${lobbyId}/ranking`).doc(rankingUser.userId).set(rankingUser, { merge: true })
+      rankingRef.doc(rankingUser.userId).set(rankingUser, { merge: true })
     );
 
+    // Update users with ranking and score.
+    const usersRef = firestore.collection(`lobbies/${lobbyId}/users`);
     const updateUserScoringListPromise = usersRanking.map((rankingUser) =>
-      firestore
-        .collection(`lobbies/${lobbyId}/users`)
-        .doc(rankingUser.userId)
-        .update({ rank: rankingUser.rank, score: rankingUser.score })
+      usersRef.doc(rankingUser.userId).update({ rank: rankingUser.rank, score: rankingUser.score })
     );
 
+    // Update lobby.
     const updateLobbyPromise = firestore.doc(`lobbies/${lobbyId}`).update({
-      playersCount: usersSize,
+      lastRankingComputeQuestion: lobby.game.currentQuestionNumber,
     });
 
     await Promise.allSettled([...updateRankingListPromise, ...updateUserScoringListPromise, updateLobbyPromise]);
@@ -106,6 +110,34 @@ const putRanking = async (req: NextApiRequest, res: NextApiResponse) => {
     console.error(error);
     return res.status(500).send("Something went wrong");
   }
+};
+
+const fetchAnswers = async (lobbyId: string) => {
+  const answersSnapshot = await firestore.collection(`lobbies/${lobbyId}/answers`).get();
+  return snapshotToArray(answersSnapshot);
+};
+
+const fetchUsers = async (lobbyId: string) => {
+  const usersSnapshot = await firestore.collection(`lobbies/${lobbyId}/users`).get();
+  const usersSize = usersSnapshot.size;
+  const users = snapshotToArray(usersSnapshot);
+
+  return { usersSize, users };
+};
+
+const fetchLobby = async (lobbyId: string) => {
+  const lobbySnapshot = await firestore.doc(`lobbies/${lobbyId}`).get();
+  return lobbySnapshot.data()!;
+};
+
+const fetchLobbyAndCheckLastRankingCompute = async (lobbyId : string) => {
+  const lobby = await fetchLobby(lobbyId);
+
+  if (!lobby.lastRankingComputeQuestion) return { lobby, alreadyComputed: false };
+
+  if (lobby.lastRankingComputeQuestion !== lobby.game.currentQuestionNumber) return { lobby, alreadyComputed: false };
+
+  return { lobby, alreadyComputed: true };
 };
 
 export default putRanking;

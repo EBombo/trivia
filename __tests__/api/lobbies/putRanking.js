@@ -1,74 +1,73 @@
-import { computeRanking } from "../../../src/api/lobbies/_lobbyId/ranking/putRanking"
+import { computeRanking } from "../../../src/api/lobbies/_lobbyId/ranking/putRanking";
 
-describe('Ranking sort', () => {
-  it('should return an ordered ranking list by player score', () => {
-
+describe("Ranking sort", () => {
+  it("should return an ordered ranking list by player score", () => {
     const users = [
-      {nickname: "mateo", id: "CBwynuKu6oEwHvhtmnm5"},
-      {nickname: "santi", id: "ygvhWw0WARvTCzPkyehx"},
+      { nickname: "mateo", id: "CBwynuKu6oEwHvhtmnm5" },
+      { nickname: "santi", id: "ygvhWw0WARvTCzPkyehx" },
     ];
 
     const answers = [
       {
-        "answer": true,
-        "createAt": new Date(),
-        "points": 97.5,
-        "questionId": "5VTIdUTIUcBv4iOlWxMD",
-        "questionNumber": 4,
-        "questionTime": 20,
-        "secondtLeft": 19,
-        "updateAt": new Date(),
-        "user": {
+        answer: true,
+        createAt: new Date(),
+        points: 97.5,
+        questionId: "5VTIdUTIUcBv4iOlWxMD",
+        questionNumber: 4,
+        questionTime: 20,
+        secondtLeft: 19,
+        updateAt: new Date(),
+        user: {
           id: "CBwynuKu6oEwHvhtmnm5",
           nickname: "mateo",
-        }, 
-        userId: "CBwynuKu6oEwHvhtmnm5"
+        },
+        userId: "CBwynuKu6oEwHvhtmnm5",
       },
       {
-        "answer": true,
-        "createAt": new Date(),
-        "points": 100,
-        "questionId": "5VTIdUTIUcBv4iOlWxMD",
-        "questionNumber": 4,
-        "questionTime": 20,
-        "secondtLeft": 20,
-        "updateAt": new Date(),
-        "user": {
+        answer: true,
+        createAt: new Date(),
+        points: 100,
+        questionId: "5VTIdUTIUcBv4iOlWxMD",
+        questionNumber: 4,
+        questionTime: 20,
+        secondtLeft: 20,
+        updateAt: new Date(),
+        user: {
           id: "ygvhWw0WARvTCzPkyehx",
           nickname: "santi",
         },
-        userId: "ygvhWw0WARvTCzPkyehx"
+        userId: "ygvhWw0WARvTCzPkyehx",
       },
       {
-        "answer": true,
-        "createAt": new Date(),
-        "points": 100,
-        "questionId": "5VTIdUTIUcBv4iOlWxMD",
-        "questionNumber": 4,
-        "questionTime": 20,
-        "secondtLeft": 20,
-        "updateAt": new Date(),
-        "user": {
+        answer: true,
+        createAt: new Date(),
+        points: 100,
+        questionId: "5VTIdUTIUcBv4iOlWxMD",
+        questionNumber: 4,
+        questionTime: 20,
+        secondtLeft: 20,
+        updateAt: new Date(),
+        user: {
           id: "ygvhWw0WARvTCzPkyehx",
           nickname: "santi",
         },
-        userId: "ygvhWw0WARvTCzPkyehx"
+        userId: "ygvhWw0WARvTCzPkyehx",
       },
       {
-        "answer": true,
-        "createAt": new Date(),
-        "points": 100,
-        "questionId": "5VTIdUTIUcBv4iOlWxMD",
-        "questionNumber": 4,
-        "questionTime": 20,
-        "secondtLeft": 20,
-        "updateAt": new Date(),
-        "user": {
+        answer: true,
+        createAt: new Date(),
+        points: 100,
+        questionId: "5VTIdUTIUcBv4iOlWxMD",
+        questionNumber: 4,
+        questionTime: 20,
+        secondtLeft: 20,
+        updateAt: new Date(),
+        user: {
           id: "ygvhWw0WARvTCzPkyehx",
           nickname: "santi",
         },
-        userId: "ygvhWw0WARvTCzPkyehx"
-      }
+        userId: "ygvhWw0WARvTCzPkyehx",
+      },
     ];
 
     const invalidQuestions = [];
@@ -87,89 +86,88 @@ describe('Ranking sort', () => {
     expect(secondPlace.nickname).toBe("mateo");
   });
 
-  it('when an unidentified user has an answer recorded in answers but not in users list', () => {
-
+  it("when an unidentified user has an answer recorded in answers but not in users list", () => {
     const users = [
-      {nickname: "mateo", id: "CBwynuKu6oEwHvhtmnm5"},
-      {nickname: "santi", id: "ygvhWw0WARvTCzPkyehx"},
+      { nickname: "mateo", id: "CBwynuKu6oEwHvhtmnm5" },
+      { nickname: "santi", id: "ygvhWw0WARvTCzPkyehx" },
     ];
 
     const answers = [
       {
-        "answer": true,
-        "createAt": new Date(),
-        "points": 97.5,
-        "questionId": "5VTIdUTIUcBv4iOlWxMD",
-        "questionNumber": 4,
-        "questionTime": 20,
-        "secondtLeft": 19,
-        "updateAt": new Date(),
-        "user": {
+        answer: true,
+        createAt: new Date(),
+        points: 97.5,
+        questionId: "5VTIdUTIUcBv4iOlWxMD",
+        questionNumber: 4,
+        questionTime: 20,
+        secondtLeft: 19,
+        updateAt: new Date(),
+        user: {
           id: "CBwynuKu6oEwHvhtmnm5",
           nickname: "mateo",
-        }, 
-        userId: "CBwynuKu6oEwHvhtmnm5"
+        },
+        userId: "CBwynuKu6oEwHvhtmnm5",
       },
       {
-        "answer": true,
-        "createAt": new Date(),
-        "points": 100,
-        "questionId": "5VTIdUTIUcBv4iOlWxMD",
-        "questionNumber": 4,
-        "questionTime": 20,
-        "secondtLeft": 20,
-        "updateAt": new Date(),
-        "user": {
+        answer: true,
+        createAt: new Date(),
+        points: 100,
+        questionId: "5VTIdUTIUcBv4iOlWxMD",
+        questionNumber: 4,
+        questionTime: 20,
+        secondtLeft: 20,
+        updateAt: new Date(),
+        user: {
           id: "ygvhWw0WARvTCzPkyehx",
           nickname: "santi",
         },
-        userId: "ygvhWw0WARvTCzPkyehx"
+        userId: "ygvhWw0WARvTCzPkyehx",
       },
       {
-        "answer": true,
-        "createAt": new Date(),
-        "points": 100,
-        "questionId": "5VTIdUTIUcBv4iOlWxMD",
-        "questionNumber": 4,
-        "questionTime": 20,
-        "secondtLeft": 20,
-        "updateAt": new Date(),
-        "user": {
+        answer: true,
+        createAt: new Date(),
+        points: 100,
+        questionId: "5VTIdUTIUcBv4iOlWxMD",
+        questionNumber: 4,
+        questionTime: 20,
+        secondtLeft: 20,
+        updateAt: new Date(),
+        user: {
           id: "ygvhWw0WARvTCzPkyehx",
           nickname: "santi",
         },
-        userId: "ygvhWw0WARvTCzPkyehx"
+        userId: "ygvhWw0WARvTCzPkyehx",
       },
       {
-        "answer": true,
-        "createAt": new Date(),
-        "points": 100,
-        "questionId": "5VTIdUTIUcBv4iOlWxMD",
-        "questionNumber": 4,
-        "questionTime": 20,
-        "secondtLeft": 20,
-        "updateAt": new Date(),
-        "user": {
+        answer: true,
+        createAt: new Date(),
+        points: 100,
+        questionId: "5VTIdUTIUcBv4iOlWxMD",
+        questionNumber: 4,
+        questionTime: 20,
+        secondtLeft: 20,
+        updateAt: new Date(),
+        user: {
           id: "ygvhWw0WARvTCzPkyehx",
           nickname: "santi",
         },
-        userId: "ygvhWw0WARvTCzPkyehx"
+        userId: "ygvhWw0WARvTCzPkyehx",
       },
       {
-        "answer": true,
-        "createAt": new Date(),
-        "points": 100,
-        "questionId": "5VTIdUTIUcBv4iOlWxMD",
-        "questionNumber": 4,
-        "questionTime": 20,
-        "secondtLeft": 20,
-        "updateAt": new Date(),
-        "user": {
+        answer: true,
+        createAt: new Date(),
+        points: 100,
+        questionId: "5VTIdUTIUcBv4iOlWxMD",
+        questionNumber: 4,
+        questionTime: 20,
+        secondtLeft: 20,
+        updateAt: new Date(),
+        user: {
           id: "123456789",
           nickname: "morbius",
         },
-        userId: "123456789"
-      }
+        userId: "123456789",
+      },
     ];
 
     const invalidQuestions = [];
@@ -177,6 +175,5 @@ describe('Ranking sort', () => {
     const sortedRanking = computeRanking(users, answers, invalidQuestions);
 
     expect(sortedRanking.length).toBe(3);
-
   });
 });

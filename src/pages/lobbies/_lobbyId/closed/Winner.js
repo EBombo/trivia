@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from "reactn";
+import React, { useEffect, useRef, useState } from "reactn";
 import styled from "styled-components";
 import { Image } from "../../../../components/common/Image";
 import { config } from "../../../../firebase";
@@ -65,7 +65,6 @@ export const Winner = (props) => {
 
       document.body.appendChild(prizeIconCloned);
 
-
       _animate({
         from: clonePositionStart,
         to: clonePositionMid,
@@ -121,7 +120,7 @@ export const Winner = (props) => {
     const winnerLabelNode = winnerLabelRef.current;
 
     let delayId;
-    let prizeIconCloned; 
+    let prizeIconCloned;
 
     const playAnimation = () => {
       prizeIconCloned = prizeIconNode.cloneNode();
@@ -202,128 +201,128 @@ export const Winner = (props) => {
             updatePrizeIconCloned(tween);
           },
         })
-        // shows winner name animation
-        .then(() =>
-          _animate({
-            from: { y: 0, opacity: 0 },
-            to: { y: 130 + 20, opacity: 1 },
-            duration: 1000,
-            onPlay: () => {
-              if (!firstPlaceNameNode) return;
+          // shows winner name animation
+          .then(() =>
+            _animate({
+              from: { y: 0, opacity: 0 },
+              to: { y: 130 + 20, opacity: 1 },
+              duration: 1000,
+              onPlay: () => {
+                if (!firstPlaceNameNode) return;
 
-              firstPlaceNameNode.style.opacity = "0";
-              firstPlaceNameNode.style.position = "absolute";
-              firstPlaceNameNode.style.top = `${window.innerHeight / 2 - firstPlaceNameNodeHeight / 2}px`;
-              firstPlaceNameNode.style.left = `${window.innerWidth / 2 - firstPlaceNameNodeWidth / 2}px`;
-            },
-            onUpdate: (tween) => {
-              if (!firstPlaceNameNode) return;
-              if (!prizeIconCloned) return;
+                firstPlaceNameNode.style.opacity = "0";
+                firstPlaceNameNode.style.position = "absolute";
+                firstPlaceNameNode.style.top = `${window.innerHeight / 2 - firstPlaceNameNodeHeight / 2}px`;
+                firstPlaceNameNode.style.left = `${window.innerWidth / 2 - firstPlaceNameNodeWidth / 2}px`;
+              },
+              onUpdate: (tween) => {
+                if (!firstPlaceNameNode) return;
+                if (!prizeIconCloned) return;
 
-              const prizeIconRefY = window.innerHeight / 2 - nodeHeight / 2;
+                const prizeIconRefY = window.innerHeight / 2 - nodeHeight / 2;
 
-              prizeIconCloned.style.top = `${prizeIconRefY - tween.y}px`;
+                prizeIconCloned.style.top = `${prizeIconRefY - tween.y}px`;
 
-              firstPlaceNameNode.style.opacity = tween.opacity;
-            },
+                firstPlaceNameNode.style.opacity = tween.opacity;
+              },
+            })
+          )
+          // first bounce winner's name animation
+          .then(() => {
+            if (!firstPlaceNameNode) return;
+
+            const firstPlaceNameNodeX0 = parseInt(firstPlaceNameNode.style.left);
+
+            return _animate({
+              from: { x: 0, rotate: "0deg", opacity: 0 },
+              to: { x: firstPlaceNameNodeWidth / 2, rotate: "-15deg", opacity: 1 },
+              duration: 1000,
+              onUpdate: (tween) => {
+                if (!firstPlaceNameNode) return;
+
+                firstPlaceNameNode.style.left = `${firstPlaceNameNodeX0 - tween.x}px`;
+                firstPlaceNameNode.style.transform = `rotate(${tween.rotate})`;
+              },
+            });
           })
-        )
-        // first bounce winner's name animation
-        .then(() => {
-          if (!firstPlaceNameNode) return;
+          // repetitive bounce winner's name animation
+          .then(() => {
+            if (!firstPlaceNameNode) return;
 
-          const firstPlaceNameNodeX0 = parseInt(firstPlaceNameNode.style.left);
+            const firstPlaceNameNodeX0 = parseInt(firstPlaceNameNode.style.left);
 
-          return _animate({
-            from: { x: 0, rotate: "0deg", opacity: 0 },
-            to: { x: firstPlaceNameNodeWidth / 2, rotate: "-15deg", opacity: 1 },
-            duration: 1000,
-            onUpdate: (tween) => {
-              if (!firstPlaceNameNode) return;
+            return _animate({
+              from: { x: 0, rotate: "-15deg" },
+              to: { x: firstPlaceNameNodeWidth, rotate: "15deg" },
+              repeat: 3,
+              repeatType: "reverse",
+              duration: 1000,
+              onUpdate: (tween) => {
+                if (!firstPlaceNameNode) return;
 
-              firstPlaceNameNode.style.left = `${firstPlaceNameNodeX0 - tween.x}px`;
-              firstPlaceNameNode.style.transform = `rotate(${tween.rotate})`;
-            },
-          });
-        })
-        // repetitive bounce winner's name animation
-        .then(() => {
-          if (!firstPlaceNameNode) return;
-
-          const firstPlaceNameNodeX0 = parseInt(firstPlaceNameNode.style.left);
-
-          return _animate({
-            from: { x: 0, rotate: "-15deg" },
-            to: { x: firstPlaceNameNodeWidth, rotate: "15deg" },
-            repeat: 3,
-            repeatType: "reverse",
-            duration: 1000,
-            onUpdate: (tween) => {
-              if (!firstPlaceNameNode) return;
-
-              firstPlaceNameNode.style.left = `${firstPlaceNameNodeX0 + tween.x}px`;
-              firstPlaceNameNode.style.transform = `rotate(${tween.rotate})`;
-            },
-          });
-        })
-        // back original position winner's name animation
-        .then(() => {
-          if (!firstPlaceNameNode) return;
-
-          const firstPlaceNameNodeX0 = parseInt(firstPlaceNameNode.style.left);
-
-          _animate({
-            from: { x: 0, rotate: "-15deg" },
-            to: { x: firstPlaceNameNodeWidth / 2, rotate: "0deg" },
-            duration: 1000,
-            onUpdate: (tween) => {
-              if (!firstPlaceNameNode) return;
-
-              firstPlaceNameNode.style.left = `${firstPlaceNameNodeX0 + tween.x}px`;
-              firstPlaceNameNode.style.transform = `rotate(${tween.rotate})`;
-            },
-          });
-        })
-        // close up animation
-        .then(() =>
-          _animate({
-            from: { x: 0, opacity: 1, bgScaleX: 0.5 },
-            to: { x: firstPlaceNameNodeWidth / 2, opacity: 0, bgScaleX: 0 },
-            duration: 1000,
-            onUpdate: (tween) => {
-              if (!firstPlaceNameNode) return;
-              if (!firstPlaceBgNode) return;
-              // bg vanishes
-              firstPlaceBgNode.style.transform = `scaleX(${tween.bgScaleX})`;
-
-              firstPlaceNameNode.style.opacity = tween.opacity;
-            },
+                firstPlaceNameNode.style.left = `${firstPlaceNameNodeX0 + tween.x}px`;
+                firstPlaceNameNode.style.transform = `rotate(${tween.rotate})`;
+              },
+            });
           })
-        )
-        // icon goes back original position
-        .then(() =>
-          _animate({
-            from: clonePositionStep2,
-            to: clonePositionEnd,
-            elapsed: -1000,
-            duration: 1000,
-            onUpdate: (tween) => {
-              if (!prizeIconCloned) return;
+          // back original position winner's name animation
+          .then(() => {
+            if (!firstPlaceNameNode) return;
 
-              updatePrizeIconCloned(tween);
-            },
+            const firstPlaceNameNodeX0 = parseInt(firstPlaceNameNode.style.left);
+
+            _animate({
+              from: { x: 0, rotate: "-15deg" },
+              to: { x: firstPlaceNameNodeWidth / 2, rotate: "0deg" },
+              duration: 1000,
+              onUpdate: (tween) => {
+                if (!firstPlaceNameNode) return;
+
+                firstPlaceNameNode.style.left = `${firstPlaceNameNodeX0 + tween.x}px`;
+                firstPlaceNameNode.style.transform = `rotate(${tween.rotate})`;
+              },
+            });
           })
-        )
-        .then(() => {
-          if (!winnerLabelNode) return;
-          if (!prizeIconNode) return;
+          // close up animation
+          .then(() =>
+            _animate({
+              from: { x: 0, opacity: 1, bgScaleX: 0.5 },
+              to: { x: firstPlaceNameNodeWidth / 2, opacity: 0, bgScaleX: 0 },
+              duration: 1000,
+              onUpdate: (tween) => {
+                if (!firstPlaceNameNode) return;
+                if (!firstPlaceBgNode) return;
+                // bg vanishes
+                firstPlaceBgNode.style.transform = `scaleX(${tween.bgScaleX})`;
 
-          winnerLabelNode.style.maxWidth = `1000px`;
-          winnerLabelNode.style.opacity = 1;
+                firstPlaceNameNode.style.opacity = tween.opacity;
+              },
+            })
+          )
+          // icon goes back original position
+          .then(() =>
+            _animate({
+              from: clonePositionStep2,
+              to: clonePositionEnd,
+              elapsed: -1000,
+              duration: 1000,
+              onUpdate: (tween) => {
+                if (!prizeIconCloned) return;
 
-          prizeIconNode.style.opacity = 1;
-          prizeIconCloned.remove();
-        })
+                updatePrizeIconCloned(tween);
+              },
+            })
+          )
+          .then(() => {
+            if (!winnerLabelNode) return;
+            if (!prizeIconNode) return;
+
+            winnerLabelNode.style.maxWidth = `1000px`;
+            winnerLabelNode.style.opacity = 1;
+
+            prizeIconNode.style.opacity = 1;
+            prizeIconCloned.remove();
+          })
       );
     };
 
@@ -359,11 +358,16 @@ export const Winner = (props) => {
       >
         <div
           className={`my-auto ${
-            props.isList ? "ml-0" : "ml-[-50px]"
-          } text-3xl cursor-pointer flex h-[fit-content] rounded-lg text-black bg-white py-3 pl-14 pr-3 z-[1]`}
+            props.isList
+              ? "ml-0 grid-cols-[min-content_auto_min-content_min-content]"
+              : "ml-[-50px] grid-cols-[auto_min-content_min-content]"
+          } text-3xl cursor-pointer grid h-[fit-content] rounded-lg text-black bg-white py-3 pl-14 pr-3 z-[1]`}
           onClick={() => setAward(award ? null : props.winner.award?.name)}
         >
-          {props.winner.nickname} {props.winner.award?.name && (award ? <CaretUpOutlined /> : <CaretDownOutlined />)}
+          {props.isList && <span className="whitespace-nowrap mr-4"> {props.winner.rank}.</span>}
+          <span>{props.winner.nickname}</span>
+          <span className="whitespace-nowrap"> {props.winner.score?.toFixed(1)} pts</span>
+          {props.winner.award?.name && (award ? <CaretUpOutlined /> : <CaretDownOutlined />)}
         </div>
 
         {award && (
@@ -396,6 +400,7 @@ export const Winner = (props) => {
           zIndex="2"
           innerRef={firstPlaceBgRef}
           style={{ position: "absolute", top: "0", left: "0", bottom: "0", opacity: "0" }}
+          noImgTag
         />
       )}
     </WinnerCss>

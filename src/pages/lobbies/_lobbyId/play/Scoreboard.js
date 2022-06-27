@@ -1,10 +1,11 @@
-import React, { useGlobal, useMemo, useEffect, useState } from "reactn";
+import React, { useEffect, useGlobal, useMemo, useState } from "reactn";
 import { firestore } from "../../../../firebase";
 import { ButtonAnt } from "../../../../components/form/Button";
 import { snapshotToArray } from "../../../../utils";
 import { useRouter } from "next/router";
 import isEmpty from "lodash/isEmpty";
 import { get } from "lodash";
+import { useTranslation } from "../../../../hooks";
 
 const DEFAULT_RANKING_LENGTH = 5;
 
@@ -12,6 +13,8 @@ export const Scoreboard = (props) => {
   const router = useRouter();
 
   const { lobbyId } = router.query;
+
+  const { t } = useTranslation();
 
   const [authUser, setAuthUser] = useGlobal("user");
 
@@ -68,7 +71,7 @@ export const Scoreboard = (props) => {
 
       const user_ = userSnapshot.data();
 
-      setAuthUser({ ...authUser, rank: user_.rank, score: user_.score });
+      setAuthUser({ ...authUser, rank: user_?.rank, score: user_?.score });
     };
 
     fetchUserStats();
@@ -80,7 +83,7 @@ export const Scoreboard = (props) => {
       className="grid grid-cols-[min-content_auto_min-content] bg-secondaryDark text-whiteLight py-4 w-full max-w-[1000px] md:mx-auto text-lg md:text-2xl my-4"
     >
       <div className={`px-5 self-center ${authUser?.id === user.userId ? "text-success" : "text-whiteLight"}`}>
-        {user?.rank}
+        {user?.rank}.
       </div>
       <div
         className={`px-4 self-center justify-self-start ${
@@ -104,12 +107,16 @@ export const Scoreboard = (props) => {
               className="font-bold text-xl px-8"
               onClick={() => props.onGoToNextQuestion?.()}
             >
-              Siguiente
+              {t("next-button-label")}
             </ButtonAnt>
           </div>
         )}
 
-        <div className="mb-6">{rankingUsers.map((user) => <RankingItem user={user}/>)}</div>
+        <div className="mb-6">
+          {rankingUsers.map((user) => (
+            <RankingItem user={user} key={user.userId} />
+          ))}
+        </div>
 
         {!authUser.isAdmin && authUser.rank > DEFAULT_RANKING_LENGTH && (
           <>
@@ -118,9 +125,9 @@ export const Scoreboard = (props) => {
             w-full max-w-[1000px] md:mx-auto my-4 text-xl md:text-2xl text-whiteLight text-left
             after:inline-block after:w-[82%] md:after:w-[86%] after:h-[2px] after:relative after:content-[''] after:bottom-1 after:left-6 after:ml-0.5 after:bg-whiteLight`}
             >
-              Tu puesto
+              {t("pages.lobby.in-play.your-rank")}
             </div>
-            <RankingItem user={authUser}/>
+            <RankingItem user={authUser} />
           </>
         )}
 
@@ -132,7 +139,7 @@ export const Scoreboard = (props) => {
               className="inline-block font-bold text-lg px-8"
               onClick={() => props.onCloseLobby?.()}
             >
-              Finalizar
+              {t("pages.lobby.in-play.finish")}
             </ButtonAnt>
           </div>
         )}

@@ -1,5 +1,5 @@
 import React, { useEffect, useGlobal, useRef, useState } from "reactn";
-import { firestore } from "../../../firebase";
+import { bomboGamesDomain, firestore } from "../../../firebase";
 import { useRouter } from "next/router";
 import { spinLoaderMin } from "../../../components/common/loader";
 import { LobbyUser } from "./LobbyUser";
@@ -8,7 +8,7 @@ import { LobbyClosed } from "./closed/LobbyClosed";
 import { LobbyInPlay } from "./play/LobbyInPlay";
 import { useUser } from "../../../hooks";
 import { snapshotToArray } from "../../../utils";
-import { INITIALIZING } from "../../../components/common/DataList";
+import UrlAssembler from "url-assembler";
 
 export const Lobby = (props) => {
   const router = useRouter();
@@ -22,6 +22,7 @@ export const Lobby = (props) => {
   const [lobby, setLobby] = useState(null);
   const [isLoading, setLoading] = useState(true);
   const [game, setGame] = useState(null);
+  const [feedback, setFeedback] = useState(false);
 
   const audioRef = useRef(null);
 
@@ -30,11 +31,25 @@ export const Lobby = (props) => {
     if (!authUser?.nickname && !authUser.isAdmin && typeof window !== "undefined") window.location.href = "/";
   }, [authUser]);
 
-  const logout = async () => {
-    const userId = firestore.collection("users").doc().id;
+  const logout = async (isClosed = false, _lobby = null) => {
+    let feedbackUrl = null;
+
+    console.log(isClosed, _lobby, "loggin out");
+
+    if (isClosed && _lobby) {
+      setFeedback(true);
+      
+      feedbackUrl = UrlAssembler(bomboGamesDomain)
+        .template("/lobbies/:lobbyId/users/:userId")
+        .param("lobbyId", _lobby.id)
+        .param("userId", authUser.id)
+        .toString();
+    }
+
+    const newUserId = firestore.collection("users").doc().id;
 
     const userMapped = {
-      id: userId,
+      id: newUserId,
       email: authUserLs?.email,
       avatar: authUserLs?.avatar,
       nickname: authUserLs?.nickname,
@@ -43,7 +58,12 @@ export const Lobby = (props) => {
     await setAuthUser(userMapped);
     setAuthUserLs(userMapped);
 
-    if (typeof window !== "undefined") window.location.href = "/";
+    if (feedbackUrl && typeof window !== "undefined") {
+      console.log("here");
+      return (window.location = feedbackUrl);
+    }
+
+    if (typeof window !== "undefined" && !feedback) window.location.href = "/";
   };
 
   // Fetch lobby.
@@ -67,7 +87,7 @@ export const Lobby = (props) => {
         }
 
         // If the game is closed logout user.
-        if (currentLobby?.isClosed && !authUser.isAdmin) return logout();
+        if (currentLobby?.isClosed && !authUser.isAdmin) return logout(true, currentLobby);
 
         setAuthUserLs({ ...authUser, lobby: currentLobby });
         await setAuthUser({ ...authUser, lobby: currentLobby });
@@ -82,7 +102,6 @@ export const Lobby = (props) => {
     const unSubLobby = fetchLobby();
     return () => unSubLobby && unSubLobby();
   }, [lobbyId]);
-
 
   // Fetch Game
   useEffect(() => {
@@ -113,13 +132,13 @@ export const Lobby = (props) => {
   const lobbyIsClosed = lobby?.isClosed && authUser?.isAdmin;
 
   /** Game report. **/
-  if (lobbyIsClosed) return <LobbyClosed {...additionalProps} onLogout={() => logout()} />;
+  if (lobbyIsClosed) return <LobbyClosed {...additionalProps} />;
 
   /** The game is playing. **/
   if (lobby?.isPlaying) return <LobbyInPlay {...additionalProps} />;
 
   /** Loading page. **/
-  if (lobby?.game.state === INITIALIZING) return <LobbyLoading {...additionalProps} />;
+  if (lobby?.startAt) return <LobbyLoading {...additionalProps} />;
 
   /** Before starting the game. **/
   return <LobbyUser {...additionalProps} />;

@@ -16,11 +16,14 @@ import {
 import { config, firestore } from "../../../../firebase";
 import { Image } from "../../../../components/common/Image";
 import { snapshotToArray } from "../../../../utils";
+import { useTranslation } from "../../../../hooks";
 
 export const LobbyClosed = (props) => {
   const router = useRouter();
 
   const { lobbyId } = router.query;
+
+  const { t } = useTranslation();
 
   const [authUser] = useGlobal("user");
 
@@ -123,9 +126,9 @@ export const LobbyClosed = (props) => {
     setShowWinnersAnimation(false);
   };
 
-  const winnersSize = useMemo(() => {
-    return (props.lobby?.winners?.slice(0, 3)?.length) ?? 0;
-  }, [props.lobby]);
+  // gets size of first three players in ranking. if there are lower than that,
+  // then takes all of them
+  const winnersSize = useMemo(() => rankingUsers.slice(0, 3)?.length ?? 0, [rankingUsers]);
 
   const itemAttendees = useMemo(
     () => (
@@ -133,8 +136,8 @@ export const LobbyClosed = (props) => {
         <div className="grid grid-cols-[1fr_2fr] w-full">
           <Image src={`${config.storageUrl}/resources/attendees.png`} width="55px" desktopWidth="75px" />
           <div className="self-center justify-self-start">
-            <div className="text-3xl md:text-4xl text-left">{users.length}</div>
-            <div className="text-xl md:text-3xl">Participantes</div>
+            <div className="text-3xl md:text-4xl text-left">{users?.length}</div>
+            <div className="text-xl md:text-3xl">{t("pages.lobby.closed.assistants")}</div>
           </div>
         </div>
       </div>
@@ -146,7 +149,7 @@ export const LobbyClosed = (props) => {
     () => (
       <div className="item flex">
         <div className="content-center text-lg md:text-3xl">
-          <span className="inline-block mb-4">¿Se divirtieron?</span>
+          <span className="inline-block mb-4">{t("pages.lobby.closed.play-again-label")}</span>
           <ButtonAnt
             variant="contained"
             color="success"
@@ -159,7 +162,7 @@ export const LobbyClosed = (props) => {
               window.open(redirectUrl, "_blank");
             }}
           >
-            Jugar de nuevo
+            {t("pages.lobby.closed.play-again-button-label")}
           </ButtonAnt>
         </div>
       </div>
@@ -175,8 +178,8 @@ export const LobbyClosed = (props) => {
             {correctAnswersPercentage} %
           </div>
           <div className="self-center justify-self-start">
-            <div className="text-2xl md:text-4xl">Respuestas</div>
-            <div className="text-lg md:text-3xl text-left">correctas</div>
+            <div className="text-2xl md:text-4xl">{t("pages.lobby.closed.answers-label")}</div>
+            <div className="text-lg md:text-3xl text-left">{t("pages.lobby.closed.correct-label")}</div>
           </div>
         </div>
       </div>
@@ -194,7 +197,7 @@ export const LobbyClosed = (props) => {
           width="80%"
           onClick={initializeTransitionToListWinners}
         >
-          Ver reporte completo
+          {t("pages.lobby.closed.see-full-report-button-label")}
         </ButtonAnt>
         <ButtonAnt
           variant="contained"
@@ -203,16 +206,16 @@ export const LobbyClosed = (props) => {
           width="80%"
           onClick={initializeTransitionToWinners}
         >
-          Volver al inicio
+          {t("pages.lobby.closed.go-back-button-label")}
         </ButtonAnt>
         <ButtonAnt
           variant="contained"
           color="primary"
           margin="20px auto"
           width="80%"
-          onClick={() => props.onLogout?.()}
+          onClick={() => props.logout?.()}
         >
-          Cerrar sesión
+          {t("pages.lobby.closed.log-out-button-label")}
         </ButtonAnt>
       </div>
     ),
@@ -223,13 +226,13 @@ export const LobbyClosed = (props) => {
     return (
       <LobbyWinnersCss>
         <div className="anchor-link" onClick={() => setShowWinners(false)}>
-          Volver al podio
+          {t("pages.lobby.closed.go-back-to-podium-button-label")}
         </div>
         <div className="list">
           {props.lobby.winners?.map((winner, index) => (
             <Winner winner={winner} index={index} key={index} isList />
           ))}
-          {rankingUsers.slice(props.lobby.winners.length)?.map((winner, index) => (
+          {rankingUsers.slice(props.lobby.winners?.length)?.map((winner, index) => (
             <Winner winner={winner} index={index} key={index} isList />
           ))}
         </div>
@@ -257,7 +260,7 @@ export const LobbyClosed = (props) => {
             margin="auto auto 15px auto"
             onClick={initializeTransitionToWinners}
           >
-            Volver al podio
+            {t("pages.lobby.closed.go-back-to-podium-button-label")}
           </ButtonAnt>
         </div>
         <div className="child">
@@ -288,7 +291,7 @@ export const LobbyClosed = (props) => {
       <div className="header">
         {!isVisibleTitle && (
           <ButtonAnt variant="primary" margin="10px 10px auto auto" onClick={initializeTransitionToResume}>
-            Siguiente
+            {t("next-button-label")}
           </ButtonAnt>
         )}
       </div>
@@ -297,8 +300,14 @@ export const LobbyClosed = (props) => {
 
       {!isVisibleTitle && (
         <div className="winners">
-          {props.lobby?.winners?.slice(0, 3)?.map((winner, index) => (
-            <Winner winner={winner} index={index} key={index} enableAnimation animationDelay={(winnersSize - 1) - index} />
+          {rankingUsers.slice(0, 3)?.map((winner, index) => (
+            <Winner
+              winner={winner}
+              index={index}
+              key={index}
+              enableAnimation
+              animationDelay={winnersSize - 1 - index}
+            />
           ))}
         </div>
       )}
@@ -306,7 +315,7 @@ export const LobbyClosed = (props) => {
       {!isVisibleTitle && (
         <div className="footer">
           <div className="anchor-link" onClick={initializeTransitionToListWinners}>
-            Ver todas las posiciones
+            {t("pages.lobby.closed.see-all-positions-label")}
           </div>
         </div>
       )}
@@ -432,11 +441,14 @@ const LobbyWinnersCss = styled.div`
   display: flex;
   height: 100vh;
   display: grid;
-  grid-template-rows: 1fr 6fr;
+  grid-template-rows: 72px calc(100vh - 72px);
   background: ${(props) => props.theme.basic.secondary};
 
   .list {
     width: 90%;
+    height: 100%;
+    padding: 0 0.5rem;
+    overflow-y: auto;
     margin: auto;
     animation: 2s ${(props) => (props.showResumeAnimation ? fadeOutLeftBigAnimation : fadeInLeftBigAnimation)};
 

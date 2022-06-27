@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from "reactn";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "reactn";
 import find from "lodash/find";
 import { config, firestore } from "../../../../firebase";
 import { Image } from "../../../../components/common/Image";
@@ -12,14 +12,20 @@ import { timeoutPromise } from "../../../../utils/promised";
 import styled from "styled-components";
 import { animate } from "popmotion";
 import { QuestionStep } from "./QuestionStep";
+import { useTranslation } from "../../../../hooks";
 
 const TOTAL_ANIMATION_DURATION = 6000;
 
 export const LobbyQuestionIntroduction = (props) => {
-  const currentQuestionNumber = props.lobby?.game?.currentQuestionNumber ?? 1;
+  const imgSizeRef = useRef(null);
+
+  const { t } = useTranslation("pages.lobby.in-play");
+
   const [question, setQuestion] = useState(props.question);
 
-  const imgSizeRef = useRef(null);
+  const currentQuestionNumber = useMemo(() => {
+    return props.lobby?.game?.currentQuestionNumber ?? 1;
+  }, [props.lobby?.game?.currentQuestionNumber]);
 
   const imgRef = useCallback((node) => {
     if (!node) return;
@@ -48,10 +54,12 @@ export const LobbyQuestionIntroduction = (props) => {
     };
 
     updateLobby();
-  }, []);
+  }, [props.lobby.id]);
 
   useEffect(() => {
-    const question_ = find(props.lobby?.game?.questions ?? [], (q) => q.questionNumber === currentQuestionNumber);
+    const questions = props.lobby?.game?.questions ?? [];
+    const question_ = find(questions, (q) => q.questionNumber === currentQuestionNumber);
+
     if (!question_) return;
 
     setQuestion(question_);
@@ -77,7 +85,7 @@ export const LobbyQuestionIntroduction = (props) => {
     </div>
   );
 
-  // add animation for question
+  // Add animation for question.
   return (
     <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto flex justify-center items-center">
       <LobbyQuestionIntroductionContent {...props}>
@@ -93,7 +101,7 @@ export const LobbyQuestionIntroduction = (props) => {
               desktopHeight="250px"
             />
             <div className="relative min-h-[320px]">
-              {questionLabel("Quiz")}
+              {questionLabel(t("introducing-quiz-question"))}
               {showQuestion(question.question)}
             </div>
           </>
@@ -109,7 +117,7 @@ export const LobbyQuestionIntroduction = (props) => {
               desktopHeight="250px"
             />
             <div className="relative min-h-[320px]">
-              {questionLabel("Verdadero o Falso")}
+              {questionLabel(t("introducing-true-false-question"))}
               {showQuestion(question.question)}
             </div>
           </>
@@ -125,7 +133,7 @@ export const LobbyQuestionIntroduction = (props) => {
               desktopHeight="250px"
             />
             <div className="relative min-h-[320px]">
-              {questionLabel("Escribe tu respuesta")}
+              {questionLabel(t("introducing-short-answer-question"))}
               {showQuestion(question.question)}
             </div>
           </>

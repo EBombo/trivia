@@ -77,19 +77,19 @@ export const defaultHandMan = {
 export const limbsOrder = Object.keys(defaultHandMan);
 
 export const languages = [
-  { key: "spanish", value: "spanish", name: "Español" },
-  { key: "english", value: "english", name: "Inglés" },
+  { key: "spanish", value: "es", name: "Español" },
+  { key: "english", value: "en", name: "Inglés" },
 ];
 
-// game states
+// Game states.
 export const INITIALIZING = "INITIALIZING";
 export const INTRODUCING_QUESTION = "INTRODUCING_QUESTION";
 export const ANSWERING_QUESTION = "ANSWERING_QUESTION";
 export const QUESTION_TIMEOUT = "QUESTION_TIMEOUT";
-export const QUESTION_RESULTS = "QUESTION_RESULTS";
+export const COMPUTING_RANKING = "COMPUTING_RANKING";
 export const RANKING = "RANKING";
 
-// type questions
+// Type questions.
 export const TRUE_FALSE_QUESTION_TYPE = "trueFalse";
 export const ALTERNATIVES_QUESTION_TYPE = "quiz";
 export const OPEN_QUESTION_TYPE = "shortAnswer";

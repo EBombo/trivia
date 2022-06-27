@@ -1,11 +1,11 @@
 {
   "indexes": [
     {
-      "collectionGroup": "messages",
+      "collectionGroup": "lobbies",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "lobbyId",
+          "fieldPath": "isClosed",
           "order": "ASCENDING"
         },
         {

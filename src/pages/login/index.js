@@ -4,7 +4,7 @@ import { NicknameStep } from "./NicknameStep";
 import { snapshotToArray } from "../../utils";
 import { EmailStep } from "./EmailStep";
 import { useRouter } from "next/router";
-import { useUser } from "../../hooks";
+import { useUser, useTranslation } from "../../hooks";
 import { PinStep } from "./PinStep";
 import { avatars } from "../../components/common/DataList";
 import { Anchor } from "../../components/form";
@@ -12,12 +12,19 @@ import { firebase } from "../../firebase/config";
 import { saveMembers } from "../../constants/saveMembers";
 import { fetchUserByEmail } from "./fetchUserByEmail";
 import { Tooltip } from "antd";
+import { useFetch } from "../../hooks/useFetch";
+import { reserveLobbySeat } from "../../business";
 
 const Login = (props) => {
   const router = useRouter();
   const { pin } = router.query;
 
+  const { Fetch } = useFetch();
+
+  const { t, SwitchTranslation } = useTranslation();
+
   const [, setAuthUserLs] = useUser();
+
   const [authUser, setAuthUser] = useGlobal("user");
 
   const [isLoading, setIsLoading] = useState(false);
@@ -27,28 +34,28 @@ const Login = (props) => {
       // Fetch lobby.
       const lobbyRef = await firestore.collection("lobbies").where("pin", "==", pin.toString()).limit(1).get();
 
-      if (lobbyRef.empty) throw Error("No encontramos tu sala, intenta nuevamente");
+      if (lobbyRef.empty) throw Error(t("pages.login.game-not-found"));
 
       const currentLobby = snapshotToArray(lobbyRef)[0];
 
-      if (currentLobby?.isLocked) throw Error("Este juego esta cerrado");
+      if (currentLobby?.isLocked) throw Error(t("pages.login.game-is-closed"));
 
       if (currentLobby?.isClosed) {
         await setAuthUser({
           id: firestore.collection("users").doc().id,
           lobby: null,
           isAdmin: false,
-          email: authUser.email,
-          nickname: authUser.nickname,
+          email: authUser.email || null,
+          nickname: authUser.nickname || null,
         });
 
-        throw Error("Esta sala ha concluido");
+        throw Error(t("pages.login.lobby-is-over"));
       }
 
       const isAdmin = !!currentLobby?.game?.usersIds?.includes(authUser.id);
 
-      await setAuthUser({ avatar, ...authUser, lobby: currentLobby, isAdmin });
-      setAuthUserLs({ avatar, ...authUser, lobby: currentLobby, isAdmin });
+      await setAuthUser({ avatar, ...authUser, email: authUser.email || null, lobby: currentLobby, isAdmin });
+      setAuthUserLs({ avatar, ...authUser, email: authUser.email || null, lobby: currentLobby, isAdmin });
     } catch (error) {
       props.showNotification("UPS", error.message, "warning");
     }
@@ -86,13 +93,32 @@ const Login = (props) => {
 
       // If user has already logged then redirect.
       if (user_) {
-        await setAuthUser(user_);
-        setAuthUserLs(user_);
-        return router.push(`/trivia/lobbies/${authUser.lobby.id}`);
+        if (user_.id !== authUser.id) {
+          await setAuthUser(user_);
+          setAuthUserLs(user_);
+
+          return;
+        }
+
+        try {
+          await reserveLobbySeat(Fetch, authUser.lobby.id, user_.id, user_);
+
+          return router.push(`/trivia/lobbies/${authUser.lobby.id}`);
+        } catch (error) {
+          props.showNotification(t("verify-lobby-availability-error-title"), error?.message);
+
+          return setAuthUser({
+            id: authUser.id || firestore.collection("users").doc().id,
+            lobby: null,
+            isAdmin: false,
+            email: authUser.email,
+            nickname: authUser.nickname,
+          });
+        }
       }
 
       // If lobby is awaiting for players then redirect to lobby.
-      if (!lobby?.isPlaying) return router.push(`/trivia/lobbies/${authUser.lobby.id}`);
+      if (!(!!lobby?.startAt || lobby?.isPlaying)) return router.push(`/trivia/lobbies/${authUser.lobby.id}`);
 
       // Else if lobby is playing then register user in firestore. This skips
       // Realtime Database registration flow
@@ -104,37 +130,43 @@ const Login = (props) => {
         email: authUser?.email ?? null,
         nickname: authUser.nickname,
         avatar: authUser?.avatar ?? null,
-        lobbyId: lobby.id,
+        lobbyId: lobby?.id,
         lobby,
       };
 
-      // Update metrics.
-      const promiseMetric = firestore.doc(`games/${lobby.gameId}`).update({
-        countPlayers: firebase.firestore.FieldValue.increment(1),
-      });
+      try {
+        await reserveLobbySeat(Fetch, authUser.lobby.id, userId, newUser);
 
-      // Register user in lobby.
-      const promiseUser = firestore
-        .collection("lobbies")
-        .doc(lobby.id)
-        .collection("users")
-        .doc(authUser.id)
-        .set(newUser);
+        // Update metrics.
+        const promiseMetric = firestore.doc(`games/${lobby.gameId}`).update({
+          countPlayers: firebase.firestore.FieldValue.increment(1),
+        });
 
-      // Register user as a member in company.
-      const promiseMember = saveMembers(authUser.lobby, [newUser]);
+        // Register user as a member in company.
+        const promiseMember = saveMembers(authUser.lobby, [newUser]);
 
-      await Promise.all([promiseMetric, promiseUser, promiseMember]);
+        await Promise.all([promiseMetric, promiseMember]);
 
-      await setAuthUser(newUser);
-      setAuthUserLs(newUser);
+        await setAuthUser(newUser);
+        setAuthUserLs(newUser);
 
-      // Redirect to lobby.
-      await router.push(`/trivia/lobbies/${authUser.lobby.id}`);
+        // Redirect to lobby.
+        await router.push(`/trivia/lobbies/${authUser.lobby.id}`);
+      } catch (error) {
+        props.showNotification(t("verify-lobby-availability-error-title"), error?.message);
+
+        return setAuthUser({
+          id: authUser.id || firestore.collection("users").doc().id,
+          lobby: null,
+          isAdmin: false,
+          email: authUser.email,
+          nickname: authUser.nickname,
+        });
+      }
     };
 
     initialize();
-  }, [authUser]);
+  }, [authUser.id, authUser?.lobby?.id, authUser?.nickname, authUser?.email]);
 
   // Fetch lobby to auto login.
   useEffect(() => {
@@ -178,7 +210,7 @@ const Login = (props) => {
             });
           }}
         >
-          Volver
+          {t("pages.login.go-back")}
         </Anchor>
       </div>
     ),
@@ -186,7 +218,11 @@ const Login = (props) => {
   );
 
   return (
-    <div className="bg-secondary w-full h-screen bg-center bg-contain bg-lobby-pattern">
+    <div className="relative bg-secondary w-full h-screen bg-center bg-contain bg-lobby-pattern">
+      <div className="absolute top-4 right-4 lg:top-10 lg:right-10">
+        <SwitchTranslation />
+      </div>
+
       <div className="p-[10px] max-w-[400px] my-0 mx-auto">
         {!authUser?.lobby && (
           <>
@@ -215,7 +251,7 @@ const Login = (props) => {
                         });
                       }}
                     >
-                      Remover email y nickname
+                      {t("pages.login.remove-email-nickname")}
                     </Anchor>
                   </Tooltip>
                 </div>
