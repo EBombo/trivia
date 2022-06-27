@@ -78,6 +78,7 @@ export const AnsweringSection = (props) => {
         question?.options.map((option, optionIndex) => (
           <AlternativeAnswerCard
             key={`answer-option-${optionIndex}`}
+            index={optionIndex + 1}
             label={option}
             onClick={() => onAnswering(optionIndex)}
             color={optionIndex === 0 ? "red" : optionIndex === 1 ? "green" : optionIndex === 2 ? "yellow" : optionIndex === 3 ? "blue" : "primary"}
