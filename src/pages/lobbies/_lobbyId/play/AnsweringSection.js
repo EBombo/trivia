@@ -70,7 +70,7 @@ export const AnsweringSection = (props) => {
     await Promise.all([addAnswerPromise, updateScorePromise, updateAnswersCount]);
   };
 
-  const shouldBeDisabled = () => (userHasAnswered || props.lobby?.game?.state === COMPUTING_RANKING);
+  const shouldBeDisabled = () => userHasAnswered || props.lobby?.game?.state === COMPUTING_RANKING;
 
   return (
     <>
@@ -90,6 +90,7 @@ export const AnsweringSection = (props) => {
           <TrueFalseAnswerCard
             color="red"
             value={true}
+            index={1}
             disabled={shouldBeDisabled()}
             enableOpacity={props.lobby.game.state === QUESTION_TIMEOUT && !question.answer}
             onClick={() => onAnswering(true)}
@@ -97,6 +98,7 @@ export const AnsweringSection = (props) => {
           <TrueFalseAnswerCard
             color="green"
             value={false}
+            index={2}
             disabled={shouldBeDisabled()}
             enableOpacity={props.lobby.game.state === QUESTION_TIMEOUT && question.answer}
             onClick={() => onAnswering(false)}
@@ -104,7 +106,7 @@ export const AnsweringSection = (props) => {
         </>
       ) : question?.type === OPEN_QUESTION_TYPE && !authUser.isAdmin ? (
         <div className="col-start-1 col-end-3">
-          <OpenAnswerCard disabled={shouldBeDisabled()} onSubmit={(data) => onAnswering(data)} />
+          <OpenAnswerCard index={1} disabled={shouldBeDisabled()} onSubmit={(data) => onAnswering(data)} />
         </div>
       ) : (
         <div />
