@@ -32,9 +32,15 @@ export const checkIsCorrect = (question, answer) => {
   }
 
   if (question.type === OPEN_QUESTION_TYPE) {
-    const answers = question.answer.map((answer) => answer.toLowerCase().replaceAll(" ", ""));
+    const correctAnswers = question.answerPattern || question.answer;
 
-    return answers.includes(answer.toLowerCase().replaceAll(" ", ""));
+    for (let i = 0; i < correctAnswers.length; i++) {
+      const answerPattern = new RegExp(correctAnswers[i], "gi");
+
+      if (answer.match(answerPattern) !== null) return true;
+    }
+
+    return false;
   }
 
   /** By default, it will be TRUE_FALSE_QUESTION_TYPE. **/
