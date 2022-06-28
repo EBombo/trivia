@@ -60,6 +60,9 @@ export const LobbyInPlay = (props) => {
     if (!props.lobby) return;
     if (!authUser) return;
 
+    // Avoid calling logout multiple times when the lobby is close
+    if (props.lobby?.isClosed) return;
+
     // AuthUser is admin.
     if (props.lobby.game.usersIds.includes(authUser.id)) return;
 
