@@ -60,14 +60,14 @@ export const LobbyInPlay = (props) => {
     if (!props.lobby) return;
     if (!authUser) return;
 
+    // Avoid calling logout multiple times when the lobby is close
+    if (props.lobby?.isClosed) return;
+
     // AuthUser is admin.
     if (props.lobby.game.usersIds.includes(authUser.id)) return;
 
     const verifyUserAccount = async () => {
-      const lobbyUserSnapshot = await firestore
-        .collection(`lobbies/${lobbyId}/users`)
-        .doc(authUser.id)
-        .get();
+      const lobbyUserSnapshot = await firestore.collection(`lobbies/${lobbyId}/users`).doc(authUser.id).get();
 
       // If user exists then do nothing.
       if (lobbyUserSnapshot.exists) return;
@@ -230,7 +230,11 @@ export const LobbyInPlay = (props) => {
     return <LobbyQuestionIntroduction question={currentQuestion} {...props} />;
 
   /** If user has already answered. **/
-  if (!authUser.isAdmin && (props.lobby.game?.state === ANSWERING_QUESTION || props.lobby.game?.state === COMPUTING_RANKING) && userHasAnswered)
+  if (
+    !authUser.isAdmin &&
+    (props.lobby.game?.state === ANSWERING_QUESTION || props.lobby.game?.state === COMPUTING_RANKING) &&
+    userHasAnswered
+  )
     return (
       <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto text-center grid grid-rows-[50px-auto]">
         <UserLayout musicPickerSetting volumeSetting lockSetting {...props} />
@@ -322,7 +326,7 @@ export const LobbyInPlay = (props) => {
           )}
         </div>
 
-        <div className="grid md:grid-cols-2 md:col-start-2 md:col-end-3">
+        <div className="grid md:grid-cols-2 md:col-start-2 md:col-end-3 test-question-for-trivia">
           <AnsweringSection
             setUserHasAnswered={setUserHasAnswered}
             userHasAnswered={userHasAnswered}

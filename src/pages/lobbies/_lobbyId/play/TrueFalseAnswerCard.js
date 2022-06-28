@@ -30,7 +30,7 @@ export const TrueFalseAnswerCard = (props) => {
       }
       ${props.enableOpacity && "opacity-20"}
       cursor-pointer
-      overflow-hidden rounded`}
+      overflow-hidden rounded test-select-${props.index}`}
       {...props}
     >
       <div
