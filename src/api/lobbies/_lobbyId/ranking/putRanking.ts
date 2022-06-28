@@ -71,7 +71,8 @@ const putRanking = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const { lobby, alreadyComputed } = await fetchLobbyAndCheckLastRankingCompute(lobbyId);
 
-    if (alreadyComputed) return res.send({ success: true, message: "ranking for the current question was already computed" });
+    if (alreadyComputed)
+      return res.send({ success: true, message: "ranking for the current question was already computed" });
 
     const answersPromise = fetchAnswers(lobbyId);
 
@@ -130,7 +131,7 @@ const fetchLobby = async (lobbyId: string) => {
   return lobbySnapshot.data()!;
 };
 
-const fetchLobbyAndCheckLastRankingCompute = async (lobbyId : string) => {
+const fetchLobbyAndCheckLastRankingCompute = async (lobbyId: string) => {
   const lobby = await fetchLobby(lobbyId);
 
   if (!lobby.lastRankingComputeQuestion) return { lobby, alreadyComputed: false };

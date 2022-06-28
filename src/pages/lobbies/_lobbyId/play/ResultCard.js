@@ -47,7 +47,7 @@ export const ResultCard = (props) => {
       setUserRank(user.rank ?? 0);
 
       if (lastPointsEarnedFromQuestionNumber !== currentQuestionNumber) return setIsCorrect(false);
-      
+
       setIsCorrect(user.isLastAnswerCorrect);
     };
 
