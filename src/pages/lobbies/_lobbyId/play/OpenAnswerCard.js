@@ -27,7 +27,7 @@ export const OpenAnswerCard = (props) => {
       <form onSubmit={handleSubmit(submitAnswer)}>
         <div className={`mx-5 py-5 relative`}>
           <Input
-            className="font-bold text-lg md:text-2xl"
+            className={`font-bold text-lg md:text-2xl test-input-${1}`}
             fontSize="18px"
             fontSizeDesktop="24px"
             type="text"
@@ -45,7 +45,7 @@ export const OpenAnswerCard = (props) => {
         </div>
         <div className="self-center text-center md:text-left">
           <ButtonAnt
-            className="justify-center"
+            className="justify-center test-btn-1"
             width="150px"
             display="inline-block"
             htmlType="submit"

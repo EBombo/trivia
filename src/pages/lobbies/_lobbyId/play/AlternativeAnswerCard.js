@@ -26,7 +26,7 @@ export const AlternativeAnswerCard = (props) => {
       min-h-[70px] md:min-h-[80px]
       grid grid-cols-[min-content_auto] overflow-hidden rounded
       cursor-pointer
-      ${props.enableOpacity && "opacity-20"}`}
+      test-select-${props.index} ${props.enableOpacity && "opacity-20"}`}
       {...props}
     >
       <div className={`${colorClass} inline-block w-[70px] p-5`}>

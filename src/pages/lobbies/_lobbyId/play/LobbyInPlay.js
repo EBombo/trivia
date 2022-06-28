@@ -326,7 +326,7 @@ export const LobbyInPlay = (props) => {
           )}
         </div>
 
-        <div className="grid md:grid-cols-2 md:col-start-2 md:col-end-3">
+        <div className="grid md:grid-cols-2 md:col-start-2 md:col-end-3 test-question-for-trivia">
           <AnsweringSection
             setUserHasAnswered={setUserHasAnswered}
             userHasAnswered={userHasAnswered}
