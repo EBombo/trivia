@@ -1,8 +1,7 @@
 import get from "lodash/get";
-import { useCallback, useRef } from "reactn";
-import { useRouter } from "next/router";
-import styled from "styled-components";
-import { Switch } from "../components/form/Switch";
+import {useCallback, useRef} from "reactn";
+import {useRouter} from "next/router";
+import {Switch} from "../components/form";
 
 import en from "../../public/locales/en.json";
 import es from "../../public/locales/es.json";
