@@ -153,6 +153,7 @@ export const UserLayout = (props) => {
             )}
           </div>
         )}
+
         <div className="title no-wrap">
           <Tooltip placement="bottom" title={t("pages.login.copy-link-label")}>
             <div
