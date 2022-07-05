@@ -30,7 +30,8 @@ export const CreateLobby = (props) => {
   const [settings, setSettings] = useState({ language: locale });
 
   useEffect(() => {
-    if ((!tokenId && !userId) || !gameId) return;
+    if (!gameId) return;
+    if (!tokenId && !userId) return;
 
     const verifyUser = async () => {
       try {
