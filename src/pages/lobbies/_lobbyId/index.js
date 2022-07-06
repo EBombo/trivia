@@ -34,8 +34,6 @@ export const Lobby = (props) => {
   const logout = async (isClosed = false, _lobby = null) => {
     let feedbackUrl = null;
 
-    console.log(isClosed, _lobby, "loggin out");
-
     if (isClosed && _lobby) {
       setFeedback(true);
 

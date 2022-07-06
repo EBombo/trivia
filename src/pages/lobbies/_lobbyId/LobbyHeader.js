@@ -33,9 +33,7 @@ export const LobbyHeader = (props) => {
 
     const currentAudioToPlay = props.game?.audio?.audioUrl ?? audios[0]?.audioUrl;
 
-    const currentAudio = props.audioRef.current ?? new Audio(currentAudioToPlay);
-
-    props.audioRef.current = currentAudio;
+    props.audioRef.current = props.audioRef.current ?? new Audio(currentAudioToPlay);
     props.audioRef.current.play();
   }, []);
 

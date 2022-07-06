@@ -70,71 +70,52 @@ const Login = (props) => {
 
     // Determine is necessary create a user.
     const initialize = async () => {
-      // Fetch lobby.
-      const lobbyRef = await firestore.doc(`lobbies/${authUser.lobby.id}`).get();
-      const lobby = lobbyRef.data();
+      try {
+        // Fetch lobby.
+        const lobbyRef = await firestore.doc(`lobbies/${authUser.lobby.id}`).get();
+        const lobby = lobbyRef.data();
 
-      if (lobby?.isClosed) {
-        return setAuthUser({
-          id: firestore.collection("users").doc().id,
-          lobby: null,
-          isAdmin: false,
-          email: authUser.email,
-          nickname: authUser.nickname,
-        });
-      }
-
-      // AuthUser is admin.
-      if (authUser.lobby?.game?.usersIds?.includes(authUser.id))
-        return router.push(`/trivia/lobbies/${authUser.lobby.id}`);
-
-      // Replace "newUser" if user has already logged in before with the same email.
-      const user_ = authUser?.email ? await fetchUserByEmail(authUser.email, authUser.lobby.id) : null;
-
-      // If user has already logged then redirect.
-      if (user_) {
-        if (user_.id !== authUser.id) {
-          await setAuthUser(user_);
-          setAuthUserLs(user_);
-
-          return;
-        }
-
-        try {
-          await reserveLobbySeat(Fetch, authUser.lobby.id, user_.id, user_);
-
-          return router.push(`/trivia/lobbies/${authUser.lobby.id}`);
-        } catch (error) {
-          props.showNotification(t("verify-lobby-availability-error-title"), error?.message);
-
+        if (lobby?.isClosed) {
           return setAuthUser({
-            id: authUser.id || firestore.collection("users").doc().id,
+            id: firestore.collection("users").doc().id,
             lobby: null,
             isAdmin: false,
             email: authUser.email,
             nickname: authUser.nickname,
           });
         }
-      }
 
-      // If lobby is awaiting for players then redirect to lobby.
-      if (!(!!lobby?.startAt || lobby?.isPlaying)) return router.push(`/trivia/lobbies/${authUser.lobby.id}`);
+        // AuthUser is admin.
+        if (authUser.lobby?.game?.usersIds?.includes(authUser.id))
+          return router.push(`/trivia/lobbies/${authUser.lobby.id}`);
 
-      // Else if lobby is playing then register user in firestore. This skips
-      // Realtime Database registration flow
-      const userId = authUser?.id ?? firestore.collection("users").doc().id;
+        // Replace "newUser" if user has already logged in before with the same email.
+        const user_ = authUser?.email ? await fetchUserByEmail(authUser.email, authUser.lobby.id) : null;
 
-      let newUser = {
-        id: userId,
-        userId,
-        email: authUser?.email ?? null,
-        nickname: authUser.nickname,
-        avatar: authUser?.avatar ?? null,
-        lobbyId: lobby?.id,
-        lobby,
-      };
+        // If user has already logged then redirect.
+        if (user_) {
+          await reserveLobbySeat(Fetch, authUser.lobby.id, user_.id, user_);
 
-      try {
+          await setAuthUser(user_);
+          setAuthUserLs(user_);
+
+          return router.push(`/trivia/lobbies/${authUser.lobby.id}`);
+        }
+
+        // Else if lobby is playing then register user in firestore. This skips
+        // Realtime Database registration flow
+        const userId = authUser?.id ?? firestore.collection("users").doc().id;
+
+        let newUser = {
+          id: userId,
+          userId,
+          email: authUser?.email ?? null,
+          nickname: authUser.nickname,
+          avatar: authUser?.avatar ?? null,
+          lobbyId: lobby?.id,
+          lobby,
+        };
+
         await reserveLobbySeat(Fetch, authUser.lobby.id, userId, newUser);
 
         // Update metrics.
@@ -153,6 +134,8 @@ const Login = (props) => {
         // Redirect to lobby.
         await router.push(`/trivia/lobbies/${authUser.lobby.id}`);
       } catch (error) {
+        console.error(error);
+        sendError(error, "initialize");
         props.showNotification(t("verify-lobby-availability-error-title"), error?.message);
 
         return setAuthUser({
