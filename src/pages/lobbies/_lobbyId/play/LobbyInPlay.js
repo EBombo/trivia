@@ -1,7 +1,7 @@
 import React, { useEffect, useGlobal, useMemo, useState } from "reactn";
 import { UserLayout } from "../userLayout";
 import { useRouter } from "next/router";
-import { config, firestore, firestoreBomboGames } from "../../../../firebase";
+import { config, firestore, firestoreBomboGames, firebase } from "../../../../firebase";
 import isEmpty from "lodash/isEmpty";
 import { Image } from "../../../../components/common/Image";
 import { ButtonAnt } from "../../../../components/form";
@@ -127,12 +127,9 @@ export const LobbyInPlay = (props) => {
 
       await firestore.doc(`lobbies/${lobbyId}`).update({
         answersCount: 0,
-        game: {
-          ...props.lobby.game,
-          currentQuestionNumber: newCurrentQuestionNumber,
-          state: INTRODUCING_QUESTION,
-          secondsLeft: parseInt(nextQuestion.time),
-        },
+        "game.currentQuestionNumber": firebase.firestore.FieldValue.increment(1),
+        "game.state": INTRODUCING_QUESTION,
+        "game.secondsLeft": parseInt(nextQuestion.time),
       });
     } catch (error) {
       sendError(error, "goToNextQuestion");
