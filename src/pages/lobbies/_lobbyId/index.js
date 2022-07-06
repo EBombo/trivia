@@ -38,7 +38,7 @@ export const Lobby = (props) => {
 
     if (isClosed && _lobby) {
       setFeedback(true);
-      
+
       feedbackUrl = UrlAssembler(bomboGamesDomain)
         .template("/lobbies/:lobbyId/users/:userId")
         .param("lobbyId", _lobby.id)

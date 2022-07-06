@@ -4,7 +4,12 @@ import { Timer } from "./Timer";
 import { QuestionStep } from "./QuestionStep";
 import { ButtonAnt } from "../../../../components/form";
 import { config, firestore } from "../../../../firebase";
-import { ANSWERING_QUESTION, COMPUTING_RANKING, QUESTION_TIMEOUT, RANKING } from "../../../../components/common/DataList";
+import {
+  ANSWERING_QUESTION,
+  COMPUTING_RANKING,
+  QUESTION_TIMEOUT,
+  RANKING,
+} from "../../../../components/common/DataList";
 import { useFetch } from "../../../../hooks/useFetch";
 import { useSendError, useTranslation } from "../../../../hooks";
 
@@ -41,7 +46,7 @@ export const InPlayHeader = (props) => {
   useEffect(() => {
     if (!authUser?.isAdmin) return;
     if (!props.lobby) return;
-    
+
     if (props.lobby.game.state !== COMPUTING_RANKING) return;
 
     const computeRankingOfUsers = async () => {
@@ -91,7 +96,7 @@ export const InPlayHeader = (props) => {
   };
 
   const onClickNext = async () => {
-    if (props.lobby.game.state === QUESTION_TIMEOUT) return (await goToRanking());
+    if (props.lobby.game.state === QUESTION_TIMEOUT) return await goToRanking();
 
     await finishAnswerTime();
   };

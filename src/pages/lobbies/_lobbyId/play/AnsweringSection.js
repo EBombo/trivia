@@ -81,9 +81,19 @@ export const AnsweringSection = (props) => {
             index={optionIndex + 1}
             label={option}
             onClick={() => onAnswering(optionIndex)}
-            color={optionIndex === 0 ? "red" : optionIndex === 1 ? "green" : optionIndex === 2 ? "yellow" : optionIndex === 3 ? "blue" : "primary"}
+            color={
+              optionIndex === 0
+                ? "red"
+                : optionIndex === 1
+                ? "green"
+                : optionIndex === 2
+                ? "yellow"
+                : optionIndex === 3
+                ? "blue"
+                : "primary"
+            }
             disabled={shouldBeDisabled()}
-            enableOpacity={props.lobby.game.state === QUESTION_TIMEOUT && !(question.answer?.includes(optionIndex))}
+            enableOpacity={props.lobby.game.state === QUESTION_TIMEOUT && !question.answer?.includes(optionIndex)}
           />
         ))
       ) : question?.type === TRUE_FALSE_QUESTION_TYPE ? (

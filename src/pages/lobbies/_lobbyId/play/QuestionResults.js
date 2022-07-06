@@ -37,7 +37,7 @@ export const QuestionResults = (props) => {
             const answer = answerSnapshot.data();
 
             // GUardar la respuesta que se guarde con el indice y no con el
-          // valor.
+            // valor.
             if (!(answer.answer in acc)) acc[answer.answer] = { count: 0 };
 
             acc[answer.answer].count += 1;
@@ -61,12 +61,20 @@ export const QuestionResults = (props) => {
           <AlternativeBarResult
             key={`result-option-${optionIndex}`}
             isCorrect={props.question?.answer.includes(optionIndex)}
-            color={optionIndex === 0 ? "red" : optionIndex === 1 ? "green" : optionIndex === 2 ? "yellow" : optionIndex === 3 ? "blue" : "primary"}
+            color={
+              optionIndex === 0
+                ? "red"
+                : optionIndex === 1
+                ? "green"
+                : optionIndex === 2
+                ? "yellow"
+                : optionIndex === 3
+                ? "blue"
+                : "primary"
+            }
             value={Math.ceil(((answerCountMap[optionIndex]?.count ?? 0) / totalCount) * 100)}
             count={answerCountMap[optionIndex]?.count ?? 0}
-            enableOpacity={
-              props.lobby.game.state === QUESTION_TIMEOUT && !props.question.answer?.includes(optionIndex)
-            }
+            enableOpacity={props.lobby.game.state === QUESTION_TIMEOUT && !props.question.answer?.includes(optionIndex)}
           />
         ))}
       </div>
