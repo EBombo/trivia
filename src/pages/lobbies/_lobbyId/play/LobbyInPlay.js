@@ -127,12 +127,9 @@ export const LobbyInPlay = (props) => {
 
       await firestore.doc(`lobbies/${lobbyId}`).update({
         answersCount: 0,
-        game: {
-          ...props.lobby.game,
-          currentQuestionNumber: firebase.firestore.FieldValue.increment(1),
-          state: INTRODUCING_QUESTION,
-          secondsLeft: parseInt(nextQuestion.time),
-        },
+        "game.currentQuestionNumber": firebase.firestore.FieldValue.increment(1),
+        "game.state": INTRODUCING_QUESTION,
+        "game.secondsLeft": parseInt(nextQuestion.time),
       });
     } catch (error) {
       sendError(error, "goToNextQuestion");

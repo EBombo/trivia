@@ -19,7 +19,7 @@ export const LobbyLoading = (props) => {
       await timeoutPromise(10000);
 
       await firestore.doc(`lobbies/${props.lobby.id}`).update({
-        game: { ...props.lobby.game, state: INTRODUCING_QUESTION },
+        "game.state": INTRODUCING_QUESTION,
         isPlaying: true,
       });
     };
