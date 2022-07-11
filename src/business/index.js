@@ -1,9 +1,5 @@
 import find from "lodash/find";
-import {
-  ALTERNATIVES_QUESTION_TYPE,
-  OPEN_QUESTION_TYPE,
-  TRUE_FALSE_QUESTION_TYPE,
-} from "../components/common/DataList";
+import { ALTERNATIVES_QUESTION_TYPE, OPEN_QUESTION_TYPE } from "../components/common/DataList";
 import { config } from "../firebase";
 
 export const ANIMATION = {
@@ -61,7 +57,7 @@ export const reserveLobbySeat = async (Fetch, lobbyId, userId, newUser) => {
     newUser,
   });
 
-  if (error) throw new Error(error?.error || error);
+  if (error) throw new Error(error?.message);
 
   return response;
 };
