@@ -3,7 +3,7 @@ const functions = require("firebase-functions");
 const { log, error } = require("firebase-functions/lib/logger");
 const get = require("lodash/get");
 
-const isOnline = "online";
+const isOffLine = "offline";
 
 // Reference:
 // https://firebase.google.com/docs/functions/database-events
@@ -37,7 +37,7 @@ exports.presenceOnUpdate = functions.database
       if (userState !== isOffLine) return;
 
       await firestore.doc(`lobbies/${lobbyId}`).update({ countPlayers: adminFirestore.FieldValue.increment(-1) });
-    } catch (error) {
-      error(error);
+    } catch (err) {
+      error(err);
     }
   });

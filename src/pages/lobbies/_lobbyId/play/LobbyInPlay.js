@@ -1,7 +1,7 @@
 import React, { useEffect, useGlobal, useMemo, useState } from "reactn";
 import { UserLayout } from "../userLayout";
 import { useRouter } from "next/router";
-import { config, firestore, firestoreBomboGames, firebase } from "../../../../firebase";
+import { config, firebase, firestore, firestoreBomboGames } from "../../../../firebase";
 import isEmpty from "lodash/isEmpty";
 import { Image } from "../../../../components/common/Image";
 import { ButtonAnt } from "../../../../components/form";
@@ -40,11 +40,11 @@ export const LobbyInPlay = (props) => {
 
   const [userHasAnswered, setUserHasAnswered] = useState(null);
 
-  const [showImage, setShowImage] = useState(!(props.lobby.game.state === QUESTION_TIMEOUT));
+  const [showImage, setShowImage] = useState(props.lobby.game.state !== QUESTION_TIMEOUT);
 
   const currentQuestionNumber = useMemo(() => {
     return props.lobby.game.currentQuestionNumber ?? 1;
-  }, [props.lobby.game]);
+  }, [props.lobby.game.currentQuestionNumber]);
 
   const questions = useMemo(() => {
     return props.lobby.gameQuestions ?? [];
@@ -57,8 +57,8 @@ export const LobbyInPlay = (props) => {
   }, [props.lobby.game, questions]);
 
   useEffect(() => {
-    if (!props.lobby) return;
     if (!authUser) return;
+    if (!props.lobby) return;
 
     // Avoid calling logout multiple times when the lobby is close
     if (props.lobby?.isClosed) return;
