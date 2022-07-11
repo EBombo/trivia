@@ -208,13 +208,7 @@ export const LobbyClosed = (props) => {
         >
           {t("pages.lobby.closed.go-back-button-label")}
         </ButtonAnt>
-        <ButtonAnt
-          variant="contained"
-          color="primary"
-          margin="20px auto"
-          width="80%"
-          onClick={() => props.logout?.()}
-        >
+        <ButtonAnt variant="contained" color="primary" margin="20px auto" width="80%" onClick={() => props.logout?.()}>
           {t("pages.lobby.closed.log-out-button-label")}
         </ButtonAnt>
       </div>

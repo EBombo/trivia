@@ -1,12 +1,12 @@
-import React, {useGlobal, useState} from "reactn";
+import React, { useGlobal, useState } from "reactn";
 import styled from "styled-components";
-import {Popover, Slider, Spin, Tooltip} from "antd";
-import {Desktop, mediaQuery} from "../../../constants";
-import {config, firebase, firestore, firestoreBomboGames, hostName} from "../../../firebase";
-import {Image} from "../../../components/common/Image";
-import {LoadingOutlined, MessageOutlined} from "@ant-design/icons";
-import {ButtonAnt} from "../../../components/form";
-import {useTranslation} from "../../../hooks";
+import { Popover, Slider, Spin, Tooltip } from "antd";
+import { Desktop, mediaQuery } from "../../../constants";
+import { config, firebase, firestore, firestoreBomboGames, hostName } from "../../../firebase";
+import { Image } from "../../../components/common/Image";
+import { LoadingOutlined, MessageOutlined } from "@ant-design/icons";
+import { ButtonAnt } from "../../../components/form";
+import { useTranslation } from "../../../hooks";
 
 export const UserLayout = (props) => {
   const [authUser] = useGlobal("user");
@@ -153,6 +153,7 @@ export const UserLayout = (props) => {
             )}
           </div>
         )}
+
         <div className="title no-wrap">
           <Tooltip placement="bottom" title={t("pages.login.copy-link-label")}>
             <div
@@ -202,7 +203,8 @@ export const UserLayout = (props) => {
               <div>
                 <div
                   onClick={async () => {
-                    if (props.lobby?.isPlaying) firestore
+                    if (props.lobby?.isPlaying)
+                      firestore
                         .collection("lobbies")
                         .doc(props.lobby.id)
                         .collection("users")
@@ -245,8 +247,8 @@ const UserLayoutCss = styled.div`
   align-items: center;
   grid-template-columns: auto 1fr auto;
   background: ${(props) => props.theme.basic.whiteDark};
-  
-  ${mediaQuery.afterTablet}{
+
+  ${mediaQuery.afterTablet} {
     grid-template-columns: 1fr 1fr 1fr;
   }
 

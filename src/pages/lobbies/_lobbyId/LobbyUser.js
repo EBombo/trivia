@@ -1,22 +1,17 @@
 import React, { useEffect, useGlobal, useRef, useState } from "reactn";
-import { database } from "../../../firebase";
+import { config, database } from "../../../firebase";
 import { useRouter } from "next/router";
 import styled from "styled-components";
-import { MoreOutlined } from "@ant-design/icons";
-import { config } from "../../../firebase/config";
 import { useInView } from "react-intersection-observer";
 import { LobbyHeader } from "./LobbyHeader";
-import { TransitionGroup, CSSTransition } from "react-transition-group";
-import { Popover } from "antd";
-import { useMemo } from "react";
-import { spinLoaderMin, spinLoader } from "../../../components/common/loader";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
+import { spinLoader, spinLoaderMin } from "../../../components/common/loader";
 import { Tablet } from "../../../constants";
 import { Image } from "../../../components/common/Image";
 import debounce from "lodash/debounce";
 import moment from "moment";
 import { UserLayout } from "./userLayout";
 import { useFetch } from "../../../hooks/useFetch";
-import { reserveLobbySeat } from "../../../business";
 import { useSendError, useTranslation } from "../../../hooks";
 
 const userListSizeRatio = 50;
@@ -103,7 +98,7 @@ export const LobbyUser = (props) => {
       last_changed: currentTime,
     };
 
-    // TODO change field last_changed to a proper name (changedAt)
+    // TODO: Change field last_changed to a proper name (changedAt).
     const isOnlineForDatabase = {
       ...mappedUser,
       state: "online",
@@ -122,6 +117,13 @@ export const LobbyUser = (props) => {
         // Reference: https://firebase.google.com/docs/reference/node/firebase.database.OnDisconnect
         await userRef.current.onDisconnect().set(isOfflineForDatabase);
 
+        setIsPageLoading(true);
+
+        await userRef.current.set(isOnlineForDatabase);
+
+        setIsPageLoading(false);
+
+        /*
         // Verifies if lobby can let user in.
         const verifyLobbyAvailability = async () => {
           setIsPageLoading(true);
@@ -135,13 +137,14 @@ export const LobbyUser = (props) => {
 
             props.showNotification(t("verify-lobby-availability-error-title"), error?.message);
 
-            props.logout();
+            await props.logout();
           }
 
           setIsPageLoading(false);
         };
 
         verifyLobbyAvailability();
+        */
       });
 
     unSub.current = createPresence();
@@ -169,34 +172,13 @@ export const LobbyUser = (props) => {
     };
   }, [authUser]);
 
-  const btnExit = useMemo(() => {
-    if (!authUser) return null;
-    if (authUser.isAdmin) return null;
-
-    return (
-      <Popover
-        trigger="click"
-        content={
-          <div>
-            <div onClick={async () => props.logout()} style={{ cursor: "pointer" }}>
-              Salir
-            </div>
-          </div>
-        }
-      >
-        <div className="icon-menu">
-          <MoreOutlined />
-        </div>
-      </Popover>
-    );
-  }, [authUser]);
-
   if (isPageLoading) return spinLoader();
 
   return (
     <LobbyUserCss>
       <div className="bg-secondary bg-secondary w-full h-screen bg-center bg-contain bg-lobby-pattern md:w-auto">
         <UserLayout {...props} />
+
         <LobbyHeader {...props} />
 
         <div className="px-[15px] py-[10px] md: px-[5px]">
@@ -235,7 +217,7 @@ export const LobbyUser = (props) => {
               <CSSTransition key={`user-${i}`} classNames="itemfade" timeout={500}>
                 <div
                   key={user.userId}
-                  className={`px-[10px] py-[8px] md:text-lg text-base text-center rounded-[5px] text-white font-bold md:py-[12px] px-[10px] ${
+                  className={`px-[10px] py-[8px] md:text-lg text-base text-center rounded-[5px] text-white font-bold md:py-[12px] px-[10px] overflow-hidden text-ellipsis ${
                     authUser.id === user.userId ? "bg-primary" : "bg-secondaryDarken"
                   }`}
                 >

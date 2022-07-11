@@ -1,7 +1,7 @@
 import React, { useEffect, useGlobal, useMemo, useState } from "reactn";
 import { UserLayout } from "../userLayout";
 import { useRouter } from "next/router";
-import { config, firestore, firestoreBomboGames } from "../../../../firebase";
+import { config, firebase, firestore, firestoreBomboGames } from "../../../../firebase";
 import isEmpty from "lodash/isEmpty";
 import { Image } from "../../../../components/common/Image";
 import { ButtonAnt } from "../../../../components/form";
@@ -40,11 +40,11 @@ export const LobbyInPlay = (props) => {
 
   const [userHasAnswered, setUserHasAnswered] = useState(null);
 
-  const [showImage, setShowImage] = useState(!(props.lobby.game.state === QUESTION_TIMEOUT));
+  const [showImage, setShowImage] = useState(props.lobby.game.state !== QUESTION_TIMEOUT);
 
   const currentQuestionNumber = useMemo(() => {
     return props.lobby.game.currentQuestionNumber ?? 1;
-  }, [props.lobby.game]);
+  }, [props.lobby.game.currentQuestionNumber]);
 
   const questions = useMemo(() => {
     return props.lobby.gameQuestions ?? [];
@@ -57,17 +57,17 @@ export const LobbyInPlay = (props) => {
   }, [props.lobby.game, questions]);
 
   useEffect(() => {
-    if (!props.lobby) return;
     if (!authUser) return;
+    if (!props.lobby) return;
+
+    // Avoid calling logout multiple times when the lobby is close
+    if (props.lobby?.isClosed) return;
 
     // AuthUser is admin.
     if (props.lobby.game.usersIds.includes(authUser.id)) return;
 
     const verifyUserAccount = async () => {
-      const lobbyUserSnapshot = await firestore
-        .collection(`lobbies/${lobbyId}/users`)
-        .doc(authUser.id)
-        .get();
+      const lobbyUserSnapshot = await firestore.collection(`lobbies/${lobbyId}/users`).doc(authUser.id).get();
 
       // If user exists then do nothing.
       if (lobbyUserSnapshot.exists) return;
@@ -127,12 +127,9 @@ export const LobbyInPlay = (props) => {
 
       await firestore.doc(`lobbies/${lobbyId}`).update({
         answersCount: 0,
-        game: {
-          ...props.lobby.game,
-          currentQuestionNumber: newCurrentQuestionNumber,
-          state: INTRODUCING_QUESTION,
-          secondsLeft: parseInt(nextQuestion.time),
-        },
+        "game.currentQuestionNumber": firebase.firestore.FieldValue.increment(1),
+        "game.state": INTRODUCING_QUESTION,
+        "game.secondsLeft": parseInt(nextQuestion.time),
       });
     } catch (error) {
       sendError(error, "goToNextQuestion");
@@ -230,7 +227,11 @@ export const LobbyInPlay = (props) => {
     return <LobbyQuestionIntroduction question={currentQuestion} {...props} />;
 
   /** If user has already answered. **/
-  if (!authUser.isAdmin && (props.lobby.game?.state === ANSWERING_QUESTION || props.lobby.game?.state === COMPUTING_RANKING) && userHasAnswered)
+  if (
+    !authUser.isAdmin &&
+    (props.lobby.game?.state === ANSWERING_QUESTION || props.lobby.game?.state === COMPUTING_RANKING) &&
+    userHasAnswered
+  )
     return (
       <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto text-center grid grid-rows-[50px-auto]">
         <UserLayout musicPickerSetting volumeSetting lockSetting {...props} />
@@ -322,7 +323,7 @@ export const LobbyInPlay = (props) => {
           )}
         </div>
 
-        <div className="grid md:grid-cols-2 md:col-start-2 md:col-end-3">
+        <div className="grid md:grid-cols-2 md:col-start-2 md:col-end-3 test-question-for-trivia">
           <AnsweringSection
             setUserHasAnswered={setUserHasAnswered}
             userHasAnswered={userHasAnswered}

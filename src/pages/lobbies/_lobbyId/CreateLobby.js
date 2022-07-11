@@ -30,7 +30,8 @@ export const CreateLobby = (props) => {
   const [settings, setSettings] = useState({ language: locale });
 
   useEffect(() => {
-    if ((!tokenId && !userId) || !gameId) return;
+    if (!gameId) return;
+    if (!tokenId && !userId) return;
 
     const verifyUser = async () => {
       try {
@@ -121,6 +122,7 @@ export const CreateLobby = (props) => {
         deleteDuplicated: false,
         notDoublePrice: true,
         countPlayers: 0,
+        deleted: false,
         settings: {
           ...settings,
           audio: settings.audio ?? { id: audios[0]?.id },

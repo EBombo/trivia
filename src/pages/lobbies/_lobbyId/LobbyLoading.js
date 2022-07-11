@@ -9,7 +9,7 @@ import { Image } from "../../../components/common/Image";
 import { useTranslation } from "../../../hooks";
 
 export const LobbyLoading = (props) => {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
 
   const [authUser] = useGlobal("user");
 
@@ -19,7 +19,7 @@ export const LobbyLoading = (props) => {
       await timeoutPromise(10000);
 
       await firestore.doc(`lobbies/${props.lobby.id}`).update({
-        game: { ...props.lobby.game, state: INTRODUCING_QUESTION },
+        "game.state": INTRODUCING_QUESTION,
         isPlaying: true,
       });
     };
@@ -63,7 +63,7 @@ export const LobbyLoading = (props) => {
         <>
           <div className="step-one-tablet">
             <div className="step-one-tablet-title">
-              <Image src={`${config.storageUrl}/resources/ready.svg`} height="150px" size="contain" />
+              <Image src={`${config.storageUrl}/resources/ready-${locale}.svg`} height="150px" size="contain" />
             </div>
 
             <Image

@@ -33,9 +33,7 @@ export const LobbyHeader = (props) => {
 
     const currentAudioToPlay = props.game?.audio?.audioUrl ?? audios[0]?.audioUrl;
 
-    const currentAudio = props.audioRef.current ?? new Audio(currentAudioToPlay);
-
-    props.audioRef.current = currentAudio;
+    props.audioRef.current = props.audioRef.current ?? new Audio(currentAudioToPlay);
     props.audioRef.current.play();
   }, []);
 
@@ -82,7 +80,8 @@ export const LobbyHeader = (props) => {
       let newLobby = {
         startAt: gameStarted,
         updateAt: new Date(),
-        game: { ...props.lobby.game, state: INITIALIZING, currentQuestionNumber: 1 },
+        "game.state": INITIALIZING,
+        "game.currentQuestionNumber": 1,
       };
 
       // Add users to lobby.

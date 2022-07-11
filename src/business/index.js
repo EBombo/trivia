@@ -1,9 +1,5 @@
 import find from "lodash/find";
-import {
-  ALTERNATIVES_QUESTION_TYPE,
-  OPEN_QUESTION_TYPE,
-  TRUE_FALSE_QUESTION_TYPE,
-} from "../components/common/DataList";
+import { ALTERNATIVES_QUESTION_TYPE, OPEN_QUESTION_TYPE } from "../components/common/DataList";
 import { config } from "../firebase";
 
 export const ANIMATION = {
@@ -28,15 +24,19 @@ export const computePointsEarned = (timeLeft, totalTime, point) =>
 
 export const checkIsCorrect = (question, answer) => {
   if (question.type === ALTERNATIVES_QUESTION_TYPE) {
-    const answers = question.answer.map((answerIndex) => question.options[answerIndex]);
-
-    return answers.includes(answer);
+    return question.answer.includes(answer);
   }
 
   if (question.type === OPEN_QUESTION_TYPE) {
-    const answers = question.answer.map((answer) => answer.toLowerCase().replaceAll(" ", ""));
+    const correctAnswers = question.answerPattern || question.answer;
 
-    return answers.includes(answer.toLowerCase().replaceAll(" ", ""));
+    for (let i = 0; i < correctAnswers.length; i++) {
+      const answerPattern = new RegExp(correctAnswers[i], "gi");
+
+      if (answer.match(answerPattern) !== null) return true;
+    }
+
+    return false;
   }
 
   /** By default, it will be TRUE_FALSE_QUESTION_TYPE. **/
@@ -57,7 +57,7 @@ export const reserveLobbySeat = async (Fetch, lobbyId, userId, newUser) => {
     newUser,
   });
 
-  if (error) throw new Error(error?.error || error);
+  if (error) throw new Error(error?.message);
 
   return response;
 };
