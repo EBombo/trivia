@@ -22,7 +22,7 @@ export const Lobby = (props) => {
   const [lobby, setLobby] = useState(null);
   const [isLoading, setLoading] = useState(true);
   const [game, setGame] = useState(null);
-  const [feedback, setFeedback] = useState(false);
+  const [isClose, setIsClose] = useState(false);
 
   const audioRef = useRef(null);
 
@@ -32,11 +32,9 @@ export const Lobby = (props) => {
   }, [authUser]);
 
   const logout = async (isClosed = false, _lobby = null) => {
-    let feedbackUrl = null;
+    let feedbackUrl;
 
     if (isClosed && _lobby) {
-      setFeedback(true);
-
       feedbackUrl = UrlAssembler(bomboGamesDomain)
         .template("/lobbies/:lobbyId/users/:userId")
         .param("lobbyId", _lobby.id)
@@ -44,10 +42,8 @@ export const Lobby = (props) => {
         .toString();
     }
 
-    const newUserId = firestore.collection("users").doc().id;
-
     const userMapped = {
-      id: newUserId,
+      id: firestore.collection("users").doc().id,
       email: authUserLs?.email,
       avatar: authUserLs?.avatar,
       nickname: authUserLs?.nickname,
@@ -56,12 +52,10 @@ export const Lobby = (props) => {
     await setAuthUser(userMapped);
     setAuthUserLs(userMapped);
 
-    if (feedbackUrl && typeof window !== "undefined") {
-      console.log("here");
-      return (window.location = feedbackUrl);
+    if (typeof window !== "undefined") {
+      window.location.href = feedbackUrl ?? "/";
+      await timeoutPromise(5000);
     }
-
-    if (typeof window !== "undefined" && !feedback) window.location.href = "/";
   };
 
   // Fetch lobby.
