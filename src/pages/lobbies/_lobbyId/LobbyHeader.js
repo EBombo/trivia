@@ -80,7 +80,8 @@ export const LobbyHeader = (props) => {
       let newLobby = {
         startAt: gameStarted,
         updateAt: new Date(),
-        game: { ...props.lobby.game, state: INITIALIZING, currentQuestionNumber: 1 },
+        "game.state": INITIALIZING,
+        "game.currentQuestionNumber": 1,
       };
 
       // Add users to lobby.

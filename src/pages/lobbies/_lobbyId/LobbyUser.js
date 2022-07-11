@@ -211,7 +211,7 @@ export const LobbyUser = (props) => {
               <CSSTransition key={`user-${i}`} classNames="itemfade" timeout={500}>
                 <div
                   key={user.userId}
-                  className={`px-[10px] py-[8px] md:text-lg text-base text-center rounded-[5px] text-white font-bold md:py-[12px] px-[10px] ${
+                  className={`px-[10px] py-[8px] md:text-lg text-base text-center rounded-[5px] text-white font-bold md:py-[12px] px-[10px] overflow-hidden text-ellipsis ${
                     authUser.id === user.userId ? "bg-primary" : "bg-secondaryDarken"
                   }`}
                 >
