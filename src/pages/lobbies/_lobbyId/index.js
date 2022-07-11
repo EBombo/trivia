@@ -9,6 +9,7 @@ import { LobbyInPlay } from "./play/LobbyInPlay";
 import { useUser } from "../../../hooks";
 import { snapshotToArray } from "../../../utils";
 import UrlAssembler from "url-assembler";
+import { timeoutPromise } from "../../../utils/promised";
 
 export const Lobby = (props) => {
   const router = useRouter();
@@ -22,7 +23,6 @@ export const Lobby = (props) => {
   const [lobby, setLobby] = useState(null);
   const [isLoading, setLoading] = useState(true);
   const [game, setGame] = useState(null);
-  const [isClose, setIsClose] = useState(false);
 
   const audioRef = useRef(null);
 
