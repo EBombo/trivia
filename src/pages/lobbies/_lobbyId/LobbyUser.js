@@ -1,8 +1,7 @@
 import React, { useEffect, useGlobal, useRef, useState } from "reactn";
-import { database } from "../../../firebase";
+import { config, database } from "../../../firebase";
 import { useRouter } from "next/router";
 import styled from "styled-components";
-import { config } from "../../../firebase/config";
 import { useInView } from "react-intersection-observer";
 import { LobbyHeader } from "./LobbyHeader";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
@@ -13,7 +12,6 @@ import debounce from "lodash/debounce";
 import moment from "moment";
 import { UserLayout } from "./userLayout";
 import { useFetch } from "../../../hooks/useFetch";
-import { reserveLobbySeat } from "../../../business";
 import { useSendError, useTranslation } from "../../../hooks";
 
 const userListSizeRatio = 50;
@@ -119,6 +117,13 @@ export const LobbyUser = (props) => {
         // Reference: https://firebase.google.com/docs/reference/node/firebase.database.OnDisconnect
         await userRef.current.onDisconnect().set(isOfflineForDatabase);
 
+        setIsPageLoading(true);
+
+        await userRef.current.set(isOnlineForDatabase);
+
+        setIsPageLoading(false);
+
+        /*
         // Verifies if lobby can let user in.
         const verifyLobbyAvailability = async () => {
           setIsPageLoading(true);
@@ -139,6 +144,7 @@ export const LobbyUser = (props) => {
         };
 
         verifyLobbyAvailability();
+        */
       });
 
     unSub.current = createPresence();
