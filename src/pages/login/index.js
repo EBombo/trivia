@@ -13,7 +13,6 @@ import { saveMembers } from "../../constants/saveMembers";
 import { fetchUserByEmail } from "./fetchUserByEmail";
 import { Tooltip } from "antd";
 import { useFetch } from "../../hooks/useFetch";
-import { reserveLobbySeat } from "../../business";
 
 const Login = (props) => {
   const router = useRouter();
@@ -30,6 +29,7 @@ const Login = (props) => {
   const [authUser, setAuthUser] = useGlobal("user");
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingLobby, setIsLoadingLobby] = useState(false);
 
   const fetchLobby = async (pin, avatar = avatars[0]) => {
     try {
@@ -66,43 +66,63 @@ const Login = (props) => {
 
   // Redirect to lobby.
   useEffect(() => {
-    if (!authUser?.lobby) return;
-    if (!authUser?.nickname) return;
-    if (authUser?.lobby?.settings?.userIdentity && !authUser?.email) return;
+    if (!authUser?.lobby) return setIsLoadingLobby(false);
+    if (!authUser?.nickname) return setIsLoadingLobby(false);
+    if (authUser?.lobby?.settings?.userIdentity && !authUser?.email) return setIsLoadingLobby(false);
 
     // Determine is necessary create a user.
     const initialize = async () => {
+      setIsLoadingLobby(true);
       try {
         // Fetch lobby.
         const lobbyRef = await firestore.doc(`lobbies/${authUser.lobby.id}`).get();
         const lobby = lobbyRef.data();
 
         if (lobby?.isClosed) {
-          return setAuthUser({
+          await setAuthUser({
             id: firestore.collection("users").doc().id,
             lobby: null,
             isAdmin: false,
             email: authUser.email,
             nickname: authUser.nickname,
           });
+
+          return setIsLoadingLobby(false);
         }
 
         // AuthUser is admin.
-        if (authUser.lobby?.game?.usersIds?.includes(authUser.id))
+        if (authUser.lobby?.game?.usersIds?.includes(authUser.id)) {
           return router.push(`/trivia/lobbies/${authUser.lobby.id}`);
+        }
+
+        /** Game is full. **/
+        if (lobby?.countPlayers >= lobby?.limitByPlan) {
+          props.showNotification("La sala llego a su limite permitido por su PLAN.");
+
+          await setAuthUser({
+            id: firestore.collection("users").doc().id,
+            lobby: null,
+            isAdmin: false,
+            email: authUser.email,
+            nickname: authUser.nickname,
+          });
+
+          return setIsLoadingLobby(false);
+        }
 
         // Replace "newUser" if user has already logged in before with the same email.
         const user_ = authUser?.email ? await fetchUserByEmail(authUser.email, authUser.lobby.id) : null;
 
         // If user has already logged then redirect.
         if (user_) {
-          await reserveLobbySeat(Fetch, authUser.lobby.id, user_.id, user_);
-
           await setAuthUser(user_);
           setAuthUserLs(user_);
 
           return router.push(`/trivia/lobbies/${authUser.lobby.id}`);
         }
+
+        // Redirect to lobby.
+        if (!lobby?.isPlaying) return router.push(`/trivia/lobbies/${authUser.lobby.id}`);
 
         // Else if lobby is playing then register user in firestore. This skips
         // Realtime Database registration flow
@@ -116,14 +136,21 @@ const Login = (props) => {
           avatar: authUser?.avatar ?? null,
           lobbyId: lobby?.id,
           lobby,
+          hasExited: false,
         };
-
-        await reserveLobbySeat(Fetch, authUser.lobby.id, userId, newUser);
 
         // Update metrics.
         const promiseMetric = firestore.doc(`games/${lobby.gameId}`).update({
           countPlayers: firebase.firestore.FieldValue.increment(1),
         });
+
+        // Register user in lobby.
+        const promiseUser = firestore
+          .collection("lobbies")
+          .doc(lobby.id)
+          .collection("users")
+          .doc(authUser.id)
+          .set(newUser);
 
         // Register user as a member in company.
         const promiseMember = saveMembers(authUser.lobby, [newUser]);
@@ -148,6 +175,7 @@ const Login = (props) => {
           nickname: authUser.nickname,
         });
       }
+      setIsLoadingLobby(false);
     };
 
     initialize();

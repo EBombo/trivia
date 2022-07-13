@@ -99,6 +99,23 @@ export const CreateLobby = (props) => {
     fetchUserByToken();
   }, [tokenId, gameId]);
 
+  const fetchLimitByPlan = async (companyId) => {
+    if (!companyId) return defaultLimitByPlan;
+
+    try {
+      const { response, error } = await Fetch(`${config.serverUrlBomboGames}/companies/${companyId}`);
+
+      if (error) {
+        throw Error(error);
+      }
+
+      return +response.limitUsersBySubscription ?? defaultLimitByPlan;
+    } catch (error) {
+      console.error(error);
+    }
+    return defaultLimitByPlan;
+  };
+
   const createLobby = async (typeOfGame) => {
     setIsLoadingSave(true);
     try {
@@ -106,13 +123,17 @@ export const CreateLobby = (props) => {
 
       const lobbiesRef = firestore.collection("lobbies");
       const lobbiesBomboGamesRef = firestoreBomboGames.collection("lobbies");
-      const lobbyId = lobbiesRef.doc().id;
 
+      /** Fetch limit by plan. **/
+      const limitByPlan = await fetchLimitByPlan(game?.user?.companyId);
+
+      const lobbyId = lobbiesRef.doc().id;
       //TODO: add roulette config
       const newLobby = {
         id: lobbyId,
         pin,
         game,
+        limitByPlan,
         gameId: game.id,
         updateAt: new Date(),
         createAt: new Date(),

@@ -2,7 +2,7 @@ import React, { useGlobal, useState } from "reactn";
 import styled from "styled-components";
 import { Popover, Slider, Spin, Tooltip } from "antd";
 import { Desktop, mediaQuery } from "../../../constants";
-import { config, firebase, firestore, firestoreBomboGames, hostName } from "../../../firebase";
+import { config, firestore, firestoreBomboGames, hostName } from "../../../firebase";
 import { Image } from "../../../components/common/Image";
 import { LoadingOutlined, MessageOutlined } from "@ant-design/icons";
 import { ButtonAnt } from "../../../components/form";
@@ -202,23 +202,21 @@ export const UserLayout = (props) => {
             content={
               <div>
                 <div
-                  onClick={async () => {
-                    if (props.lobby?.isPlaying)
-                      firestore
-                        .collection("lobbies")
-                        .doc(props.lobby.id)
-                        .collection("users")
-                        .doc(authUser.id)
-                        .update({ hasExited: true });
+                  onClick={async (e) => {
+                    e.preventDefault();
 
-                    // Reducing counter -1 if is a player.
-                    if (!authUser.isAdmin && props.lobby?.isPlaying) {
-                      await firestore.doc(`lobbies/${props.lobby.id}`).update({
-                        countPlayers: firebase.firestore.FieldValue.increment(-1),
-                      });
+                    if (authUser.isAdmin) {
+                      return await props.logout();
                     }
 
-                    props.logout();
+                    await firestore
+                      .collection("lobbies")
+                      .doc(props.lobby.id)
+                      .collection("users")
+                      .doc(authUser.id)
+                      .update({ hasExited: true });
+
+                    await props.logout();
                   }}
                   style={{ cursor: "pointer" }}
                 >
