@@ -137,7 +137,7 @@ export const GameMenu = (props) => {
                           newAwards[index].name = e.target.value;
                           setAwards([...newAwards]);
                         }}
-                        placeholder={`Premio ${index + 1}`}
+                        placeholder={`${t("pages.lobby.game-settings.prize")} ${index + 1}`}
                         className={"dark"}
                         key={`award-${index}-${award.order}`}
                       />

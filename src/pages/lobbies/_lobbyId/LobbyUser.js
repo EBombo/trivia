@@ -11,8 +11,7 @@ import { Image } from "../../../components/common/Image";
 import debounce from "lodash/debounce";
 import moment from "moment";
 import { UserLayout } from "./userLayout";
-import { useFetch } from "../../../hooks/useFetch";
-import { useSendError, useTranslation } from "../../../hooks";
+import { useTranslation } from "../../../hooks";
 
 const userListSizeRatio = 50;
 const currentTime = moment().format("x");
@@ -21,11 +20,7 @@ export const LobbyUser = (props) => {
   const router = useRouter();
   const { lobbyId } = router.query;
 
-  const { Fetch } = useFetch();
-
   const { t } = useTranslation();
-
-  const { sendError } = useSendError();
 
   const [authUser] = useGlobal("user");
 
@@ -119,32 +114,15 @@ export const LobbyUser = (props) => {
 
         setIsPageLoading(true);
 
+        if (props.lobby.countPlayers >= props.lobby.limitByPlan) {
+          props.showNotification("La sala llego a su limite permitido por su PLAN.");
+          await props.logout();
+          return;
+        }
+
         await userRef.current.set(isOnlineForDatabase);
 
         setIsPageLoading(false);
-
-        /**
-        // Verifies if lobby can let user in.
-        const verifyLobbyAvailability = async () => {
-          setIsPageLoading(true);
-
-          try {
-            await reserveLobbySeat(Fetch, props.lobby.id, authUser.id, null);
-
-            await userRef.current.set(isOnlineForDatabase);
-          } catch (error) {
-            sendError(error, "verifyLobbyAvailability");
-
-            props.showNotification(t("verify-lobby-availability-error-title"), error?.message);
-
-            await props.logout();
-          }
-
-          setIsPageLoading(false);
-        };
-
-        verifyLobbyAvailability();
-        **/
       });
 
     unSub.current = createPresence();

@@ -3,7 +3,7 @@ const functions = require("firebase-functions");
 const { log, error } = require("firebase-functions/lib/logger");
 const get = require("lodash/get");
 
-const isOffLine = "offline";
+const isOnline = "online";
 
 // Reference:
 // https://firebase.google.com/docs/functions/database-events
@@ -29,15 +29,30 @@ exports.presenceOnUpdate = functions.database
         return log("is equals", userOlder.state, user.state);
       }
 
-      const lobbySnapshot = await firestore.doc(`lobbies/${lobbyId}`).get();
-      const lobby = lobbySnapshot.data();
+      await firestore
+        .doc(`lobbies/${lobbyId}`)
+        .update({ countPlayers: adminFirestore.FieldValue.increment(userState === isOnline ? 1 : -1) });
+    } catch (error_) {
+      error(error_);
+    }
+  });
 
-      if (lobby?.isPlaying) return;
-      if (lobby.startAt !== null) return;
-      if (userState !== isOffLine) return;
+exports.presenceOnCreate = functions.database
+  .ref("/lobbies/{lobbyId}/users/{userId}")
+  .onCreate(async (change, context) => {
+    try {
+      const lobbyId = context.params.lobbyId;
+      const userId = context.params.userId;
+      const user = change.val();
 
-      await firestore.doc(`lobbies/${lobbyId}`).update({ countPlayers: adminFirestore.FieldValue.increment(-1) });
-    } catch (err) {
-      error(err);
+      log({ lobbyId });
+      log({ userId });
+      log("user created", user);
+
+      if (user?.state !== isOnline) return;
+
+      await firestore.doc(`lobbies/${lobbyId}`).update({ countPlayers: adminFirestore.FieldValue.increment(1) });
+    } catch (error_) {
+      error(error_);
     }
   });
