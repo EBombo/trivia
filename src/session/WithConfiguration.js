@@ -10,12 +10,18 @@ import { register } from "next-offline/runtime";
 import { spinLoader } from "../components/common/loader";
 import dynamic from "next/dynamic";
 import { ANIMATION, SPEED } from "../business";
+import { useRouter } from "next/router";
 
 const UpdateVersion = dynamic(() => import("../components/versions/UpdateVersion"), {
   loading: () => spinLoader(),
 });
 
 export const WithConfiguration = (props) => {
+  const router = useRouter();
+
+  const { locale, asPath } = router;
+  const { locale: defaultLocale } = router.query;
+
   const [authUser] = useGlobal("user");
   const [settings, setSettings] = useGlobal("settings");
   const [, setIsVisibleLoginModal] = useGlobal("isVisibleLoginModal");
@@ -87,6 +93,16 @@ export const WithConfiguration = (props) => {
 
     return () => unsubscribeVersion();
   }, []);
+
+  useEffect(() => {
+    if (!defaultLocale) return;
+
+    console.log(`>>> useEffect init locale ${locale} defaultLocale ${defaultLocale}`);
+    if (defaultLocale !== locale) {
+      console.log(`>>> defaultLocale ${defaultLocale}`);
+      router.push(asPath, asPath, { locale: defaultLocale });
+    }
+  }, [defaultLocale]);
 
   useEffect(() => {
     authUser && setIsVisibleLoginModal(false);

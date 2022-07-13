@@ -1,10 +1,11 @@
 import get from "lodash/get";
-import {useCallback, useRef} from "reactn";
+import {useCallback, useRef, useEffect} from "reactn";
 import {useRouter} from "next/router";
 import {Switch} from "../components/form";
 
 import en from "../../public/locales/en.json";
 import es from "../../public/locales/es.json";
+import isEmpty from "lodash/isEmpty";
 
 // TODO: Consider chunk the json files.
 const TRANSLATIONS = {
@@ -15,9 +16,7 @@ const TRANSLATIONS = {
 // TODO: Support capitalize.
 export const useTranslation = (path) => {
   const router = useRouter();
-  const { locale, asPath } = router;
-
-  const inputRef = useRef(null);
+  const { locale, asPath, pathname } = router;
 
   // Current languages.
   const locales = Object.keys(TRANSLATIONS);
@@ -25,7 +24,19 @@ export const useTranslation = (path) => {
   // Update language and redirect.
   const setLocale = useCallback(
     (locale) => {
-      router.push(asPath, asPath, { locale });
+      // TODO: Remove prints after TEST in RED with bombo-games.
+      console.log(`>>> asPath ${asPath}`);
+      console.log(`>>> pathname ${pathname}`);
+      console.log(`>>> window.location.search ${window.location.search}`);
+
+      const queryParamsString = window.location.search;
+      const queryParams =  new URLSearchParams(queryParamsString);
+      queryParams.delete("locale");
+
+      if (isEmpty(queryParams.toString())) return router.push(pathname, pathname, { locale });
+
+      const pathnameWithQueryParams = `${pathname}?${queryParams.toString()}`;
+      router.push(pathnameWithQueryParams, pathnameWithQueryParams, { locale });
     },
     [asPath, router, locale]
   );
