@@ -11,13 +11,11 @@ import { Anchor } from "../../components/form";
 import { saveMembers } from "../../constants/saveMembers";
 import { fetchUserByEmail } from "./fetchUserByEmail";
 import { Tooltip } from "antd";
-import { useFetch } from "../../hooks/useFetch";
+import { spinLoader } from "../../components/common/loader";
 
 const Login = (props) => {
   const router = useRouter();
   const { pin } = router.query;
-
-  const { Fetch } = useFetch();
 
   const { sendError } = useSendError();
 
@@ -239,6 +237,8 @@ const Login = (props) => {
       <div className="absolute top-4 right-4 lg:top-10 lg:right-10">
         <SwitchTranslation />
       </div>
+
+      {isLoadingLobby ? spinLoader() : null}
 
       <div className="p-[10px] max-w-[400px] my-0 mx-auto">
         {!authUser?.lobby && (
