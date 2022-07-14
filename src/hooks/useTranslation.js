@@ -6,6 +6,7 @@ import {Switch} from "../components/form";
 import en from "../../public/locales/en.json";
 import es from "../../public/locales/es.json";
 import isEmpty from "lodash/isEmpty";
+import { useLanguageCode } from "./useLocalStorageState";
 
 // TODO: Consider chunk the json files.
 const TRANSLATIONS = {
@@ -13,10 +14,38 @@ const TRANSLATIONS = {
   es: { ...es },
 };
 
+function setCookie(cname, cvalue, exdays) {
+  const d = new Date();
+  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+  let expires = "expires="+d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+export function getCookie(cname) {
+  let name = cname + "=";
+  let ca = document.cookie.split(';');
+  for(let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
 // TODO: Support capitalize.
 export const useTranslation = (path) => {
   const router = useRouter();
-  const { locale, asPath, pathname } = router;
+
+  const inputRef = useRef(null);
+
+  const { locale, asPath, pathname, query } = router;
+
+
+  const [, setLanguageCode] = useLanguageCode();
 
   // Current languages.
   const locales = Object.keys(TRANSLATIONS);
@@ -25,18 +54,17 @@ export const useTranslation = (path) => {
   const setLocale = useCallback(
     (locale) => {
       // TODO: Remove prints after TEST in RED with bombo-games.
+      console.log(`>>> locale ${locale}`);
       console.log(`>>> asPath ${asPath}`);
       console.log(`>>> pathname ${pathname}`);
-      console.log(`>>> window.location.search ${window.location.search}`);
 
-      const queryParamsString = window.location.search;
-      const queryParams =  new URLSearchParams(queryParamsString);
-      queryParams.delete("locale");
+      // delete query.locale;
+      console.log(`>>> query ${JSON.stringify(query, null, 2)}`);
 
-      if (isEmpty(queryParams.toString())) return router.push(pathname, pathname, { locale });
+      // setLanguageCode(locale);
+      setCookie("NEXT_LOCALE", locale);
 
-      const pathnameWithQueryParams = `${pathname}?${queryParams.toString()}`;
-      router.push(pathnameWithQueryParams, pathnameWithQueryParams, { locale });
+      router.push(asPath, asPath, { locale });
     },
     [asPath, router, locale]
   );

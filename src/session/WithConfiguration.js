@@ -1,10 +1,10 @@
 import React, { setGlobal, useEffect, useGlobal, useState } from "reactn";
-import { collectionToDate, useEnvironment, useLanguageCode, useLocation, useSettings, useUser } from "../hooks";
+import { collectionToDate, useEnvironment, useLanguageCode, useLocation, getCookie, useSettings, useTranslation, useUser } from "../hooks";
 import { config, firestore, version } from "../firebase";
 import get from "lodash/get";
 import { darkTheme, lightTheme } from "../theme";
 import moment from "moment";
-import { setLocale } from "yup";
+import { setLocale as setLocaleYup } from "yup";
 import { yup } from "../config";
 import { register } from "next-offline/runtime";
 import { spinLoader } from "../components/common/loader";
@@ -30,7 +30,8 @@ export const WithConfiguration = (props) => {
   const [settingsLS, setSettingsLocalStorage] = useSettings();
   const [environment, setEnvironment] = useEnvironment();
   const [location, setLocationLocalStorage] = useLocation();
-  const [languageCode] = useLanguageCode();
+  const [languageCode, setLanguageCode] = useLanguageCode();
+  const { setLocale } = useTranslation();
 
   const [isLoadingConfig, setIsLoadingConfig] = useState(true);
 
@@ -67,7 +68,7 @@ export const WithConfiguration = (props) => {
       });
 
       moment.locale(languageCode);
-      setLocale(yup[languageCode]);
+      setLocaleYup(yup[languageCode]);
     };
 
     const fetchVersion = () =>
@@ -95,14 +96,43 @@ export const WithConfiguration = (props) => {
   }, []);
 
   useEffect(() => {
-    if (!defaultLocale) return;
+    if (!router.isReady) return;
 
-    console.log(`>>> useEffect init locale ${locale} defaultLocale ${defaultLocale}`);
-    if (defaultLocale !== locale) {
-      console.log(`>>> defaultLocale ${defaultLocale}`);
-      router.push(asPath, asPath, { locale: defaultLocale });
-    }
-  }, [defaultLocale]);
+    const savedLocale = getCookie("NEXT_LOCALE");
+
+    if (savedLocale === locale) return;
+
+    setLocale(savedLocale);
+
+  }, [router.isReady]);
+
+  // TODO: Remove unused code after TEST.
+  // useEffect(() => {
+  //   if (!router.isReady) return;
+  //
+  //   if (defaultLocale) return;
+  //
+  //   setLocale(languageCode);
+  //
+  // }, [languageCode, defaultLocale, router.isReady]);
+
+  // useEffect(() => {
+  //   console.log(`>>> defaultLocale ${defaultLocale}, router.isReady ${router.isReady}`);
+  //
+  //   if (!router.isReady) return;
+  //
+  //   if (!defaultLocale) return;
+  //
+  //   if (defaultLocale === locale) return;
+  //
+  //   console.log(`>>> useEffect init locale ${locale} defaultLocale ${defaultLocale}`);
+  //
+  //   console.log(`>>> defaultLocale ${defaultLocale}`);
+  //
+  //   setLocale(defaultLocale);
+  //
+  //   // router.push(asPath, asPath, { locale: defaultLocale });
+  // }, [defaultLocale, router.isReady]);
 
   useEffect(() => {
     authUser && setIsVisibleLoginModal(false);
