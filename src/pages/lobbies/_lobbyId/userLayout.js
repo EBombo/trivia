@@ -221,7 +221,7 @@ export const UserLayout = (props) => {
                     }
 
                     const promiseLobby = firestore.doc(`lobbies/${props.lobby.id}`).update({
-                      countPlayers: firebase.firestore.FieldValue.increment(1),
+                      countPlayers: firebase.firestore.FieldValue.increment(-1),
                     });
 
                     await Promise.all([promiseUser, promiseLobby]);
