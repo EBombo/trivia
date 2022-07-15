@@ -209,15 +209,19 @@ export const UserLayout = (props) => {
                       return await props.logout();
                     }
 
-                    const promiseUser = firestore
-                      .collection("lobbies")
-                      .doc(props.lobby.id)
-                      .collection("users")
-                      .doc(authUser.id)
-                      .update({ hasExited: true });
+                    let promiseUser = null;
+
+                    if (props.lobby?.isPlaying) {
+                      promiseUser = firestore
+                        .collection("lobbies")
+                        .doc(props.lobby.id)
+                        .collection("users")
+                        .doc(authUser.id)
+                        .update({ hasExited: true });
+                    }
 
                     const promiseLobby = firestore.doc(`lobbies/${props.lobby.id}`).update({
-                      countPlayers: firebase.firestore.FieldValue.increment(1),
+                      countPlayers: firebase.firestore.FieldValue.increment(-1),
                     });
 
                     await Promise.all([promiseUser, promiseLobby]);
