@@ -209,16 +209,14 @@ export const UserLayout = (props) => {
                       return await props.logout();
                     }
 
-                    let promiseUser = null;
+                    if (!props.lobby?.isPlaying) return await props.logout();
 
-                    if (props.lobby?.isPlaying) {
-                      promiseUser = firestore
-                        .collection("lobbies")
-                        .doc(props.lobby.id)
-                        .collection("users")
-                        .doc(authUser.id)
-                        .update({ hasExited: true });
-                    }
+                    const promiseUser = firestore
+                      .collection("lobbies")
+                      .doc(props.lobby.id)
+                      .collection("users")
+                      .doc(authUser.id)
+                      .update({ hasExited: true });
 
                     const promiseLobby = firestore.doc(`lobbies/${props.lobby.id}`).update({
                       countPlayers: firebase.firestore.FieldValue.increment(-1),

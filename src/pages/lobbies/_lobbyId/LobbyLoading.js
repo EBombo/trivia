@@ -63,7 +63,12 @@ export const LobbyLoading = (props) => {
         <>
           <div className="step-one-tablet">
             <div className="step-one-tablet-title">
-              <Image src={`${config.storageUrl}/resources/ready-${locale}.svg`} height="150px" size="contain" />
+              <Image
+                src={`${config.storageUrl}/resources/ready-${locale}.svg`}
+                desktopHeight="150px"
+                width="90%"
+                size="contain"
+              />
             </div>
 
             <Image

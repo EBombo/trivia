@@ -19,7 +19,7 @@ const Login = (props) => {
 
   const { sendError } = useSendError();
 
-  const { t, SwitchTranslation } = useTranslation();
+  const { t, SwitchTranslation, locale } = useTranslation();
 
   const [, setAuthUserLs] = useUser();
 
@@ -229,7 +229,7 @@ const Login = (props) => {
         </Anchor>
       </div>
     ),
-    []
+    [locale]
   );
 
   return (
