@@ -273,7 +273,7 @@ export const LobbyInPlay = (props) => {
 
   /** User and Admin, answering question form. **/
   return (
-    <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto grid grid-rows-[50px_min-content_auto_60px] 2xl:grid-rows-[50px_auto_auto_75px]">
+    <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto grid grid-rows-[50px_min-content_auto_120px] lg:grid-rows-[50px_min-content_auto_75px] 2xl:grid-rows-[50px_auto_auto_75px]">
       <UserLayout musicPickerSetting volumeSetting lockSetting {...props} />
 
       <InPlayHeader
