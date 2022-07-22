@@ -20,7 +20,7 @@ export const CreateLobby = (props) => {
   const { locale, setLocale } = useTranslation();
 
   const [audios] = useGlobal("audios");
-  const [, setAuthUser] = useGlobal("user");
+  const [authUser, setAuthUser] = useGlobal("user");
 
   const [game, setGame] = useState(null);
   const [gameQuestions, setGameQuestions] = useState([]);
@@ -100,6 +100,13 @@ export const CreateLobby = (props) => {
   }, [tokenId, gameId]);
 
   const fetchLimitByPlan = async (companyId) => {
+    /** TODO: Consider remove [start]. **/
+    const maxLimit = 3000;
+    const usersWithoutLimit = ["tech@ebombo.com", "hello@ebombo.com"];
+
+    if (usersWithoutLimit.includes(authUser.email)) return maxLimit;
+    /** TODO: Consider remove [end]. **/
+
     if (!companyId) return defaultLimitByPlan;
 
     try {
