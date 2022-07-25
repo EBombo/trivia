@@ -13,18 +13,17 @@ import { timeoutPromise } from "../../../utils/promised";
 
 export const Lobby = (props) => {
   const router = useRouter();
-
   const { lobbyId } = router.query;
+
+  const audioRef = useRef(null);
 
   const [authUserLs, setAuthUserLs] = useUser();
 
   const [authUser, setAuthUser] = useGlobal("user");
 
+  const [game, setGame] = useState(null);
   const [lobby, setLobby] = useState(null);
   const [isLoading, setLoading] = useState(true);
-  const [game, setGame] = useState(null);
-
-  const audioRef = useRef(null);
 
   useEffect(() => {
     // Redirect to login.

@@ -3,16 +3,15 @@ import { useRouter } from "next/router";
 import { checkIsCorrect, computePointsEarned } from "../../../../business";
 import { firebase, firestore } from "../../../../firebase";
 import {
-  ALTERNATIVES_QUESTION_TYPE,
   COMPUTING_RANKING,
   DEFAULT_POINTS,
-  OPEN_QUESTION_TYPE,
   QUESTION_TIMEOUT,
   TRUE_FALSE_QUESTION_TYPE,
 } from "../../../../components/common/DataList";
 import { AlternativeAnswerCard } from "./AlternativeAnswerCard";
 import { TrueFalseAnswerCard } from "./TrueFalseAnswerCard";
 import { OpenAnswerCard } from "./OpenAnswerCard";
+import { triviaQuestionsTypes } from "./DataList";
 
 export const AnsweringSection = (props) => {
   const { question, userHasAnswered, setUserHasAnswered } = props;
@@ -52,14 +51,20 @@ export const AnsweringSection = (props) => {
 
     const addAnswerPromise = firestore.collection(`lobbies/${lobbyId}/answers`).add(data);
 
-    const newStreak = isCorrectAnswer ? firebase.firestore.FieldValue.increment(1) : 0;
+    const updateScorePromise = firestore
+      .collection(`lobbies/${lobbyId}/users`)
+      .doc(authUser.id)
+      .update({
+        lastPointsEarned: points,
+        lastPointsEarnedFromQuestionNumber: question.questionNumber,
+        streak: isCorrectAnswer ? firebase.firestore.FieldValue.increment(1) : 0,
+        isLastAnswerCorrect: isCorrectAnswer,
+      });
 
-    const updateScorePromise = firestore.collection(`lobbies/${lobbyId}/users`).doc(authUser.id).update({
-      lastPointsEarned: points,
-      lastPointsEarnedFromQuestionNumber: question.questionNumber,
-      streak: newStreak,
-      isLastAnswerCorrect: isCorrectAnswer,
-    });
+    const updateQuestionsPromise = firestore
+      .collection(`lobbies/${lobbyId}/gameQuestions`)
+      .doc(question.id)
+      .update({ totalAnswerSelected: { [answer]: firebase.firestore.FieldValue.increment(1) } });
 
     const updateAnswersCount = firestore.doc(`lobbies/${lobbyId}`).update({
       answersCount: firebase.firestore.FieldValue.increment(1),
@@ -67,35 +72,37 @@ export const AnsweringSection = (props) => {
 
     setUserHasAnswered(true);
 
-    await Promise.all([addAnswerPromise, updateScorePromise, updateAnswersCount]);
+    await Promise.all([addAnswerPromise, updateScorePromise, updateAnswersCount, updateQuestionsPromise]);
   };
 
   const shouldBeDisabled = () => userHasAnswered || props.lobby?.game?.state === COMPUTING_RANKING;
 
   return (
     <>
-      {question?.type === ALTERNATIVES_QUESTION_TYPE ? (
-        question?.options.map((option, optionIndex) => (
-          <AlternativeAnswerCard
-            key={`answer-option-${optionIndex}`}
-            index={optionIndex + 1}
-            label={option}
-            onClick={() => onAnswering(optionIndex)}
-            color={
-              optionIndex === 0
-                ? "red"
-                : optionIndex === 1
-                ? "green"
-                : optionIndex === 2
-                ? "yellow"
-                : optionIndex === 3
-                ? "blue"
-                : "primary"
-            }
-            disabled={shouldBeDisabled()}
-            enableOpacity={props.lobby.game.state === QUESTION_TIMEOUT && !question.answer?.includes(optionIndex)}
-          />
-        ))
+      {[triviaQuestionsTypes.quiz.key, triviaQuestionsTypes.survey.key].includes(question?.type) ? (
+        <>
+          {question?.options.map((option, optionIndex) => (
+            <AlternativeAnswerCard
+              key={`answer-option-${optionIndex}`}
+              index={optionIndex + 1}
+              label={option}
+              onClick={() => onAnswering(optionIndex)}
+              color={
+                optionIndex === 0
+                  ? "red"
+                  : optionIndex === 1
+                  ? "green"
+                  : optionIndex === 2
+                  ? "yellow"
+                  : optionIndex === 3
+                  ? "blue"
+                  : "primary"
+              }
+              disabled={shouldBeDisabled()}
+              enableOpacity={props.lobby.game.state === QUESTION_TIMEOUT && !question.answer?.includes(optionIndex)}
+            />
+          ))}
+        </>
       ) : question?.type === TRUE_FALSE_QUESTION_TYPE ? (
         <>
           <TrueFalseAnswerCard
@@ -115,7 +122,8 @@ export const AnsweringSection = (props) => {
             onClick={() => onAnswering(false)}
           />
         </>
-      ) : question?.type === OPEN_QUESTION_TYPE && !authUser.isAdmin ? (
+      ) : [triviaQuestionsTypes.shortAnswer.key, triviaQuestionsTypes.brainstorm.key].includes(question?.type) &&
+        !authUser.isAdmin ? (
         <div className="col-start-1 col-end-3">
           <OpenAnswerCard index={1} disabled={shouldBeDisabled()} onSubmit={(data) => onAnswering(data)} />
         </div>

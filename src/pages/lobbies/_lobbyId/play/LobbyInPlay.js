@@ -22,22 +22,21 @@ import {
   RANKING,
 } from "../../../../components/common/DataList";
 import { useSendError, useTranslation } from "../../../../hooks";
-import { snapshotToArrayWithId } from "../../../../utils";
+import { snapshotToArray, snapshotToArrayWithId } from "../../../../utils";
 import difference from "lodash/difference";
 
 export const LobbyInPlay = (props) => {
   const router = useRouter();
-
   const { lobbyId } = router.query;
 
   const { t } = useTranslation();
+  const { sendError } = useSendError();
 
   const [authUser] = useGlobal("user");
 
-  const { sendError } = useSendError();
-
   const [isGameLoading, setIsGameLoading] = useState(false);
 
+  const [userAnswered, setUserAnswered] = useState(null);
   const [userHasAnswered, setUserHasAnswered] = useState(null);
 
   const [showImage, setShowImage] = useState(props.lobby.game.state !== QUESTION_TIMEOUT);
@@ -96,6 +95,7 @@ export const LobbyInPlay = (props) => {
 
       const hasAnswered = !answersQuerySnapshot.empty;
 
+      setUserAnswered(snapshotToArray(answersQuerySnapshot)[0]);
       setUserHasAnswered(hasAnswered);
       setShowImage(true);
     };
@@ -111,6 +111,7 @@ export const LobbyInPlay = (props) => {
         "game.invalidQuestions": (props.lobby.game.invalidQuestions ?? []).concat([currentQuestion.id]),
       });
     } catch (error) {
+      console.error(error);
       sendError(error, "invalidateQuestion");
     }
 
@@ -132,6 +133,7 @@ export const LobbyInPlay = (props) => {
         "game.secondsLeft": parseInt(nextQuestion.time),
       });
     } catch (error) {
+      console.error(error);
       sendError(error, "goToNextQuestion");
     }
 
@@ -216,6 +218,7 @@ export const LobbyInPlay = (props) => {
     return (
       <div className="font-['Lato'] font-bold bg-secondary w-screen min-h-screen bg-center bg-contain bg-lobby-pattern overflow-auto text-center flex flex-col justify-center">
         <UserLayout musicPickerSetting volumeSetting lockSetting {...props} />
+
         <div className="my-4">
           <InPlaySpinLoader />
         </div>
@@ -250,6 +253,7 @@ export const LobbyInPlay = (props) => {
     return (
       <>
         <UserLayout musicPickerSetting volumeSetting lockSetting {...props} />
+
         <Scoreboard
           onGoToNextQuestion={goToNextQuestion}
           questions={questions}
@@ -265,8 +269,14 @@ export const LobbyInPlay = (props) => {
     return (
       <div className="font-['Lato'] font-bold bg-secondary bg-center bg-contain bg-lobby-pattern w-screen overflow-auto text-center">
         <UserLayout musicPickerSetting volumeSetting lockSetting {...props} />
+
         <div className="min-h-screen flex flex-col justify-center bg-secondaryDark bg-opacity-50">
-          <ResultCard question={currentQuestion} invalidQuestions={props.lobby.game.invalidQuestions} {...props} />
+          <ResultCard
+            question={currentQuestion}
+            userAnswered={userAnswered}
+            invalidQuestions={props.lobby.game.invalidQuestions}
+            {...props}
+          />
         </div>
       </div>
     );

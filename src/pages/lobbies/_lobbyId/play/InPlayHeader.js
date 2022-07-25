@@ -17,10 +17,10 @@ export const InPlayHeader = (props) => {
   const router = useRouter();
   const { lobbyId } = router.query;
 
+  const { t } = useTranslation();
+
   const { Fetch } = useFetch();
   const { sendError } = useSendError();
-
-  const { t } = useTranslation();
 
   const [authUser] = useGlobal("user");
 
