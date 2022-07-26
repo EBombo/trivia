@@ -24,3 +24,5 @@ export const triviaQuestionsTypes = {
     value: "slide",
   },
 };
+
+export const colors = ["bg-inGameRed", "bg-inGameBlue", "bg-inGameGreen", "bg-inGameYellow"];

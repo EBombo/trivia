@@ -33,7 +33,7 @@ export const AnsweringSection = (props) => {
       isCorrectAnswer ? DEFAULT_POINTS : 0
     );
 
-    const data = {
+    const addAnswerPromise = firestore.collection(`lobbies/${lobbyId}/answers`).add({
       userId: authUser.id,
       user: {
         id: authUser.id,
@@ -47,9 +47,7 @@ export const AnsweringSection = (props) => {
       points: points,
       createAt: new Date(),
       updateAt: new Date(),
-    };
-
-    const addAnswerPromise = firestore.collection(`lobbies/${lobbyId}/answers`).add(data);
+    });
 
     const updateScorePromise = firestore
       .collection(`lobbies/${lobbyId}/users`)
@@ -64,7 +62,7 @@ export const AnsweringSection = (props) => {
     const updateQuestionsPromise = firestore
       .collection(`lobbies/${lobbyId}/gameQuestions`)
       .doc(question.id)
-      .update({ totalAnswerSelected: { [answer]: firebase.firestore.FieldValue.increment(1) } });
+      .update({ [`totalAnswerSelected${answer}`]: firebase.firestore.FieldValue.increment(1) });
 
     const updateAnswersCount = firestore.doc(`lobbies/${lobbyId}`).update({
       answersCount: firebase.firestore.FieldValue.increment(1),

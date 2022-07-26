@@ -1,12 +1,15 @@
 import React from "reactn";
+import { colors } from "./DataList";
 import styled from "styled-components";
 
-const colors = ["bg-inGameRed", "bg-inGameBlue", "bg-inGameGreen", "bg-inGameYellow"];
-
 export const ChartBarResultCard = (props) => {
-  const totalSelected = Object.values(props.question.totalAnswerSelected).reduce((sum, total) => {
-    return sum + total;
-  }, 0);
+  const totalSelected = props.question.options
+    .map((value, index) => {
+      return props.question[`totalAnswerSelected${index}`] ?? 0;
+    })
+    .reduce((sum, value) => {
+      return sum + value;
+    }, 0);
 
   const getPercentage = (value = 0) => {
     const percentage = (value * 100) / totalSelected;
@@ -19,11 +22,11 @@ export const ChartBarResultCard = (props) => {
         return (
           <div key={option} className="h-[10rem] relative">
             <div className="absolute bottom-0 w-full">
-              <div className="text-white">{getPercentage(props.question.totalAnswerSelected[index])}%</div>
+              <div className="text-white">{getPercentage(props.question[`totalAnswerSelected${index}`])}%</div>
 
               <Bar
                 className={`${colors[index]} rounded m-[5px]`}
-                height={getPercentage(props.question.totalAnswerSelected[index])}
+                height={getPercentage(props.question[`totalAnswerSelected${index}`])}
               />
 
               <div className={`${colors[index]} rounded m-[5px] h-[1.5rem]`} />
