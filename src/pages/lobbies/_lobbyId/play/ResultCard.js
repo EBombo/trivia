@@ -103,7 +103,7 @@ export const ResultCard = (props) => {
     return isCorrect
       ? { bgColor: "bg-success", textColor: "text-secondaryDarken" }
       : { bgColor: "bg-danger", textColor: "text-whiteLight" };
-  }, [isSurvey, isBrainStorm, isSlide]);
+  }, [isCorrect, isSurvey, isBrainStorm, isSlide]);
 
   /** Return loading **/
   if (isCorrect === null)
