@@ -105,7 +105,7 @@ export const ResultCard = (props) => {
       : { bgColor: "bg-danger", textColor: "text-whiteLight" };
   }, [isCorrect, isSurvey, isBrainStorm, isSlide]);
 
-  /** Return loading **/
+  /** Return loading. **/
   if (isCorrect === null)
     return (
       <div className="relative my-4 mx-4 pt-8 pb-4 px-4 bg-whiteLight text-lg min-w-[300px] self-center rounded-lg">
