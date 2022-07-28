@@ -5,8 +5,6 @@ import styled from "styled-components";
 export const ChartBarResultCard = (props) => {
   const totalSelected = props.question.options
     .map((value, index) => {
-      if (typeof answer !== "number") return 0;
-
       return props.question[`totalAnswerSelected${index}`] ?? 0;
     })
     .reduce((sum, value) => {
