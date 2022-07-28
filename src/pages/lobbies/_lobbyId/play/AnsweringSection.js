@@ -59,10 +59,13 @@ export const AnsweringSection = (props) => {
         isLastAnswerCorrect: isCorrectAnswer,
       });
 
-    const updateQuestionsPromise = firestore
-      .collection(`lobbies/${lobbyId}/gameQuestions`)
-      .doc(question.id)
-      .update({ [`totalAnswerSelected${answer}`]: firebase.firestore.FieldValue.increment(1) });
+    const updateQuestionsPromise =
+      typeof answer === "number"
+        ? firestore
+            .collection(`lobbies/${lobbyId}/gameQuestions`)
+            .doc(question.id)
+            .update({ [`totalAnswerSelected${answer}`]: firebase.firestore.FieldValue.increment(1) })
+        : null;
 
     const updateAnswersCount = firestore.doc(`lobbies/${lobbyId}`).update({
       answersCount: firebase.firestore.FieldValue.increment(1),
