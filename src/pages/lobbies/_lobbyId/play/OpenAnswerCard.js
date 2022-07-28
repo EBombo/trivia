@@ -47,10 +47,11 @@ export const OpenAnswerCard = (props) => {
           <ButtonAnt
             className="justify-center test-btn-1"
             width="150px"
-            display="inline-block"
             htmlType="submit"
             color="success"
             size="big"
+            margin="auto"
+            display="block"
             disabled={props.isAnswered}
           >
             <span className="font-bold text-lg px-4">{t("pages.lobby.in-play.send-button-label")}</span>

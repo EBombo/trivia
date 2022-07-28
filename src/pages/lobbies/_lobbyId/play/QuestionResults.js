@@ -6,18 +6,14 @@ import { checkIsCorrect } from "../../../../business";
 import { AlternativeBarResult } from "./AlternativeBarResult";
 import { TrueFalseBarResult } from "./TrueFalseBarResult";
 import { OpenAnswerCellResult } from "./OpenAnswerCellResult";
-import {
-  ALTERNATIVES_QUESTION_TYPE,
-  OPEN_QUESTION_TYPE,
-  QUESTION_TIMEOUT,
-  TRUE_FALSE_QUESTION_TYPE,
-} from "../../../../components/common/DataList";
+import { QUESTION_TIMEOUT, TRUE_FALSE_QUESTION_TYPE } from "../../../../components/common/DataList";
+import { triviaQuestionsTypes } from "./DataList";
 
 export const QuestionResults = (props) => {
   const router = useRouter();
-
   const { lobbyId } = router.query;
 
+  const [isBrainStorm] = useState(props.question.type === triviaQuestionsTypes.brainstorm.key);
   const [answerCountMap, setAnswerCountMap] = useState({});
 
   const totalCount = useMemo(
@@ -36,8 +32,7 @@ export const QuestionResults = (props) => {
           const answerCountMap_ = answersSnapshot.docs.reduce((acc, answerSnapshot) => {
             const answer = answerSnapshot.data();
 
-            // GUardar la respuesta que se guarde con el indice y no con el
-            // valor.
+            // Guardar la respuesta que se guarde con el indice y no con el valor.
             if (!(answer.answer in acc)) acc[answer.answer] = { count: 0 };
 
             acc[answer.answer].count += 1;
@@ -54,7 +49,7 @@ export const QuestionResults = (props) => {
 
   if (!props.question) return spinLoaderMin();
 
-  if (props.question?.type === ALTERNATIVES_QUESTION_TYPE)
+  if ([triviaQuestionsTypes.quiz.key, triviaQuestionsTypes.survey.key].includes(props.question?.type))
     return (
       <div>
         {props.question.options.map((_, optionIndex) => (
@@ -100,12 +95,13 @@ export const QuestionResults = (props) => {
       </div>
     );
 
-  if (props.question?.type === OPEN_QUESTION_TYPE)
+  if ([triviaQuestionsTypes.shortAnswer.key, triviaQuestionsTypes.brainstorm.key].includes(props.question?.type))
     return (
       <div className="grid grid-cols-2 md:grid-cols-4 gap-7  mx-6">
         {Object.entries(answerCountMap).map((answerCountEntry, i) => (
           <OpenAnswerCellResult
             key={`open-answer-${i}`}
+            isBrainStorm={isBrainStorm}
             count={answerCountEntry[1]?.count}
             isCorrect={checkIsCorrect(props.question, answerCountEntry[0])}
             answer={answerCountEntry[0]}
